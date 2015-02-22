@@ -1,5 +1,7 @@
 #include "App.hpp"
 
+#include "DrawContext.hpp"
+
 #define CLASSNAME "render"
 
 App *App::sInstance;
@@ -43,6 +45,8 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	ReleaseDC(mHWnd, hDC);
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
+
+	draw();
 
 	MSG msg;
 	while(GetMessage(&msg, NULL, 0, 0))
@@ -95,4 +99,14 @@ void App::postFramebuffer()
 	HBITMAP hBitmap = (HBITMAP)GetCurrentObject(mBackDC, OBJ_BITMAP);
 	SetDIBits(mBackDC, hBitmap, 0, mFramebuffer.height(), mFramebuffer.bits(), &bi, DIB_RGB_COLORS);
 	InvalidateRect(mHWnd, NULL, FALSE);
+}
+
+void App::draw()
+{
+	DrawContext dc(mFramebuffer);
+
+	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), DrawContext::Color(0x80, 0x80, 0x80));
+	dc.aaline(10, 10, 500, 300, DrawContext::Color(0xff, 0x0, 0x0));
+
+	postFramebuffer();
 }

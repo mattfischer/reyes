@@ -20,6 +20,8 @@ private:
 	LRESULT CALLBACK wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	void postFramebuffer();
 
+	void draw();
+
 	HWND mHWnd;
 	HDC mBackDC;
 	Framebuffer mFramebuffer;
