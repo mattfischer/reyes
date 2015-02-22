@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Geo">
+      <UniqueIdentifier>{b16059ab-9b6c-4fd7-82ca-94ebac7d0c31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Geo">
+      <UniqueIdentifier>{d9f95b28-cc4e-4372-9c15-84d0c8a37590}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -27,6 +33,24 @@
     <ClCompile Include="DrawContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Geo\Coordinate.cpp">
+      <Filter>Source Files\Geo</Filter>
+    </ClCompile>
+    <ClCompile Include="Geo\Matrix.cpp">
+      <Filter>Source Files\Geo</Filter>
+    </ClCompile>
+    <ClCompile Include="Geo\Normal.cpp">
+      <Filter>Source Files\Geo</Filter>
+    </ClCompile>
+    <ClCompile Include="Geo\Point.cpp">
+      <Filter>Source Files\Geo</Filter>
+    </ClCompile>
+    <ClCompile Include="Geo\Transformation.cpp">
+      <Filter>Source Files\Geo</Filter>
+    </ClCompile>
+    <ClCompile Include="Geo\Vector.cpp">
+      <Filter>Source Files\Geo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -37,6 +61,27 @@
     </ClInclude>
     <ClInclude Include="DrawContext.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geo\Coordinate.hpp">
+      <Filter>Header Files\Geo</Filter>
+    </ClInclude>
+    <ClInclude Include="Geo\Forwards.hpp">
+      <Filter>Header Files\Geo</Filter>
+    </ClInclude>
+    <ClInclude Include="Geo\Matrix.hpp">
+      <Filter>Header Files\Geo</Filter>
+    </ClInclude>
+    <ClInclude Include="Geo\Normal.hpp">
+      <Filter>Header Files\Geo</Filter>
+    </ClInclude>
+    <ClInclude Include="Geo\Point.hpp">
+      <Filter>Header Files\Geo</Filter>
+    </ClInclude>
+    <ClInclude Include="Geo\Transformation.hpp">
+      <Filter>Header Files\Geo</Filter>
+    </ClInclude>
+    <ClInclude Include="Geo\Vector.hpp">
+      <Filter>Header Files\Geo</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
