@@ -2,6 +2,7 @@
 #define APP_HPP
 
 #include "Framebuffer.hpp"
+#include "Renderer.hpp"
 
 #include <windows.h>
 
@@ -25,6 +26,7 @@ private:
 	HWND mHWnd;
 	HDC mBackDC;
 	Framebuffer mFramebuffer;
+	Renderer mRenderer;
 };
 
 #endif

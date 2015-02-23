@@ -59,12 +59,12 @@ void DrawContext::aaline(float x0, float y0, float x1, float y1, Color &color)
 	
 	float err = y0start - ((float)y - 0.5f);
 	if(steep) {
-		blendPixel(y, x, color, (1.0f - err) * (1.0f - x0gap));
-		blendPixel(y + 1, x, color, err * (1.0f - x0gap));
+		blendPixel(y - 1, x, color, (1.0f - err) * (1.0f - x0gap));
+		blendPixel(y, x, color, err * (1.0f - x0gap));
 	}
 	else {
-		blendPixel(x, y, color, (1.0f - err) * (1.0f - x0gap));
-		blendPixel(x, y + 1, color, err * (1.0f - x0gap));
+		blendPixel(x, y - 1, color, (1.0f - err) * (1.0f - x0gap));
+		blendPixel(x, y, color, err * (1.0f - x0gap));
 	}
 
 	int xend = (int)std::floor(x1);
@@ -81,22 +81,22 @@ void DrawContext::aaline(float x0, float y0, float x1, float y1, Color &color)
 		x++;
 
 		if(steep) {
-			blendPixel(y, x, color, (1.0f - err));
-			blendPixel(y + 1, x, color, err);
+			blendPixel(y - 1, x, color, (1.0f - err));
+			blendPixel(y, x, color, err);
 		}
 		else {
-			blendPixel(x, y, color, (1.0f - err));
-			blendPixel(x, y + 1, color, err);
+			blendPixel(x, y - 1, color, (1.0f - err));
+			blendPixel(x, y, color, err);
 		}
 	}
 
 	float x1gap = x1 - xend;
 	if(steep) {
-		blendPixel(y, x, color, (1.0f - err) * x1gap);
-		blendPixel(y + 1, x, color, err * x1gap);
+		blendPixel(y - 1, x, color, (1.0f - err) * x1gap);
+		blendPixel(y, x, color, err * x1gap);
 	}
 	else {
-		blendPixel(x, y, color, (1.0f - err) * x1gap);
-		blendPixel(x, y + 1, color, err * x1gap);
+		blendPixel(x, y - 1, color, (1.0f - err) * x1gap);
+		blendPixel(x, y, color, err * x1gap);
 	}
 }
