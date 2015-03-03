@@ -13,6 +13,11 @@ Point::Point(float x, float y, float z)
 {
 }
 
+Point::Point(float x, float y, float z, float w)
+	: Coordinate(x, y, z, w)
+{
+}
+
 Point::Point(const Point &c)
 : Coordinate(c)
 {

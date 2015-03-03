@@ -36,6 +36,61 @@ Renderer::Renderer()
 	mMesh = Mesh(std::move(vertices), std::move(edges));
 }
 
+bool Renderer::clipToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Coordinate &normal)
+{
+	Geo::Coordinate m(b.x() - a.x(), b.y() - a.y(), b.z() - a.z(), b.w() - a.w());
+
+	// p = a + m * t
+	// p * normal > 0
+	// a * normal + m * normal * t > 0
+
+	float aN = normal.x() * a.x() + normal.y() * a.y() + normal.z() * a.z() + normal.w() * a.w();
+	float mN = normal.x() * m.x() + normal.y() * m.y() + normal.z() * m.z() + normal.w() * m.w();
+
+	// mN * t > -aN
+
+	if(mN >= 0) {
+		if(-aN <= 0) {
+			return true;
+		}
+		else if(-aN >= mN) {
+			return false;
+		}
+		else {
+			float t = -aN / mN;
+			a = Geo::Point(a.x() + t * m.x(), a.y() + t * m.y(), a.z() + t * m.z(), a.w() + t * m.w());
+			return true;
+		}
+	}
+	else {
+		if(-aN >= 0) {
+			return false;
+		}
+		else if(-aN <= mN) {
+			return true;
+		}
+		else {
+			float t = -aN / mN;
+			b = Geo::Point(a.x() + t * m.x(), a.y() + t * m.y(), a.z() + t * m.z(), a.w() + t * m.w());
+			return true;
+		}
+	}
+}
+
+bool Renderer::clipLine(Mesh::Vertex &a, Mesh::Vertex &b)
+{
+	Geo::Coordinate normal;
+
+	if(!clipToPlane(a, b, Geo::Coordinate(1, 0, 0, 1))) return false;
+	if(!clipToPlane(a, b, Geo::Coordinate(-1, 0, 0, 1))) return false;
+	if(!clipToPlane(a, b, Geo::Coordinate(0, 1, 0, 1))) return false;
+	if(!clipToPlane(a, b, Geo::Coordinate(0, -1, 0, 1))) return false;
+	//if(!clipToPlane(a, b, Geo::Coordinate(0, 0, 1, 1))) return false;
+	//if(!clipToPlane(a, b, Geo::Coordinate(0, 0, -1, 1))) return false;
+
+	return true;
+}
+
 void Renderer::render(Framebuffer &framebuffer)
 {
 	Geo::Transformation transform = Geo::Transformation::translate(0, 0, 5);
@@ -51,8 +106,12 @@ void Renderer::render(Framebuffer &framebuffer)
 
 	dc.fillRect(0, 0, framebuffer.width(), framebuffer.height(), DrawContext::Color(0x80, 0x80, 0x80));
 	for(const Mesh::Edge &edge : mMesh.edges()) {
-		const Mesh::Vertex &a = vertices[std::get<0>(edge)];
-		const Mesh::Vertex &b = vertices[std::get<1>(edge)];
+		Mesh::Vertex a = vertices[std::get<0>(edge)];
+		Mesh::Vertex b = vertices[std::get<1>(edge)];
+
+		if(!clipLine(a, b)) {
+			continue;
+		}
 
 		float x0 = a.x() / a.w();
 		float y0 = a.y() / a.w();

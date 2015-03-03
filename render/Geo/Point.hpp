@@ -11,6 +11,7 @@ class Point : public Coordinate
 public:
 	Point();
 	Point(float x, float y, float z);
+	Point(float x, float y, float z, float w);
 	Point(const Point &c);
 	explicit Point(const Coordinate &c);
 
