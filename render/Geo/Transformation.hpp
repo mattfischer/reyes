@@ -44,7 +44,7 @@ public:
 	static Transformation rotate(float x, float y, float z);
 	static Transformation rotate(const Vector &vector);
 
-	static Transformation perspective(float width, float height);
+	static Transformation perspective(float width, float height, float near, float far);
 
 	Transformation();
 	Transformation(const Matrix &matrix, const Matrix &inverseMatrix);

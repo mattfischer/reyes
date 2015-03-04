@@ -151,13 +151,13 @@ Transformation Transformation::rotate(float x, float y, float z)
 	return Transformation(xRotate * yRotate * zRotate, zRotateInverse * yRotateInverse * xRotateInverse);
 }
 
-Transformation Transformation::perspective(float width, float height)
+Transformation Transformation::perspective(float width, float height, float near, float far)
 {
 	return Transformation(
 		Matrix(
 		2.0f / width, 0, 0, 0,
 		0, 2.0f / height, 0, 0,
-		0, 0, 1, 0,
+		0, 0, (far + near) / (far - near), -2.0f * near * far / (far - near),
 		0, 0, 1, 0),
 		Matrix(
 		1, 0, 0, 0,

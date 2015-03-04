@@ -40,14 +40,8 @@ bool Renderer::clipToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Coordina
 {
 	Geo::Coordinate m(b.x() - a.x(), b.y() - a.y(), b.z() - a.z(), b.w() - a.w());
 
-	// p = a + m * t
-	// p * normal > 0
-	// a * normal + m * normal * t > 0
-
 	float aN = normal.x() * a.x() + normal.y() * a.y() + normal.z() * a.z() + normal.w() * a.w();
 	float mN = normal.x() * m.x() + normal.y() * m.y() + normal.z() * m.z() + normal.w() * m.w();
-
-	// mN * t > -aN
 
 	if(mN >= 0) {
 		if(-aN <= 0) {
@@ -85,8 +79,8 @@ bool Renderer::clipLine(Mesh::Vertex &a, Mesh::Vertex &b)
 	if(!clipToPlane(a, b, Geo::Coordinate(-1, 0, 0, 1))) return false;
 	if(!clipToPlane(a, b, Geo::Coordinate(0, 1, 0, 1))) return false;
 	if(!clipToPlane(a, b, Geo::Coordinate(0, -1, 0, 1))) return false;
-	//if(!clipToPlane(a, b, Geo::Coordinate(0, 0, 1, 1))) return false;
-	//if(!clipToPlane(a, b, Geo::Coordinate(0, 0, -1, 1))) return false;
+	if(!clipToPlane(a, b, Geo::Coordinate(0, 0, 1, 1))) return false;
+	if(!clipToPlane(a, b, Geo::Coordinate(0, 0, -1, 1))) return false;
 
 	return true;
 }
@@ -94,7 +88,7 @@ bool Renderer::clipLine(Mesh::Vertex &a, Mesh::Vertex &b)
 void Renderer::render(Framebuffer &framebuffer)
 {
 	Geo::Transformation transform = Geo::Transformation::translate(0, 0, 5);
-	Geo::Transformation perspective = Geo::Transformation::perspective(2.0f * float(framebuffer.width()) / float(framebuffer.height()), 2.0f);
+	Geo::Transformation perspective = Geo::Transformation::perspective(2.0f * float(framebuffer.width()) / float(framebuffer.height()), 2.0f, 1.0f, 10.0f);
 	std::vector<Mesh::Vertex> vertices = mMesh.vertices();
 
 	for(Mesh::Vertex &vertex : vertices) {
