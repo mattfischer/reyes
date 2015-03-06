@@ -8,32 +8,15 @@ Renderer::Renderer()
 {
 	std::vector<Mesh::Vertex> vertices;
 	std::vector<Mesh::Edge> edges;
+	std::vector<Mesh::Triangle> triangles;
 
 	vertices.push_back(Mesh::Vertex(-1, -1, -1));
 	vertices.push_back(Mesh::Vertex(1, -1, -1));
 	vertices.push_back(Mesh::Vertex(1, 1, -1));
-	vertices.push_back(Mesh::Vertex(-1, 1, -1));
-	vertices.push_back(Mesh::Vertex(-1, -1, 1));
-	vertices.push_back(Mesh::Vertex(1, -1, 1));
-	vertices.push_back(Mesh::Vertex(1, 1, 1));
-	vertices.push_back(Mesh::Vertex(-1, 1, 1));
 
-	edges.push_back(Mesh::Edge(0, 1));
-	edges.push_back(Mesh::Edge(1, 2));
-	edges.push_back(Mesh::Edge(2, 3));
-	edges.push_back(Mesh::Edge(3, 0));
+	triangles.push_back(Mesh::Triangle(0, 1, 2));
 
-	edges.push_back(Mesh::Edge(4, 5));
-	edges.push_back(Mesh::Edge(5, 6));
-	edges.push_back(Mesh::Edge(6, 7));
-	edges.push_back(Mesh::Edge(7, 4));
-
-	edges.push_back(Mesh::Edge(0, 4));
-	edges.push_back(Mesh::Edge(1, 5));
-	edges.push_back(Mesh::Edge(2, 6));
-	edges.push_back(Mesh::Edge(3, 7));
-
-	mMesh = Mesh(std::move(vertices), std::move(edges));
+	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(triangles));
 }
 
 bool Renderer::clipToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector &normal)
@@ -91,17 +74,19 @@ void Renderer::render(Framebuffer &framebuffer)
 	DrawContext dc(framebuffer);
 
 	dc.fillRect(0, 0, framebuffer.width(), framebuffer.height(), DrawContext::Color(0x80, 0x80, 0x80));
-	for(const Mesh::Edge &edge : mMesh.edges()) {
-		Mesh::Vertex a = vertices[std::get<0>(edge)];
-		Mesh::Vertex b = vertices[std::get<1>(edge)];
+	for(const Mesh::Triangle &triangle : mMesh.triangles()) {
+		for(int v = 0; v < 3; v++) {
+			Mesh::Vertex a = vertices[triangle.indices[v]];
+			Mesh::Vertex b = vertices[triangle.indices[(v+1)%3]];
 
-		if(!clipLine(a, b)) {
-			continue;
+			if(!clipLine(a, b)) {
+				continue;
+			}
+
+			a = viewport * a.project();
+			b = viewport * b.project();
+
+			dc.aaline(a.x(), a.y(), b.x(), b.y(), DrawContext::Color(0xff, 0xff, 0xff));
 		}
-
-		a = viewport * a.project();
-		b = viewport * b.project();
-
-		dc.aaline(a.x(), a.y(), b.x(), b.y(), DrawContext::Color(0xff, 0xff, 0xff));
 	}
 }
