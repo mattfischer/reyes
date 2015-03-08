@@ -33,16 +33,7 @@
     <ClCompile Include="DrawContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Geo\Coordinate.cpp">
-      <Filter>Source Files\Geo</Filter>
-    </ClCompile>
     <ClCompile Include="Geo\Matrix.cpp">
-      <Filter>Source Files\Geo</Filter>
-    </ClCompile>
-    <ClCompile Include="Geo\Normal.cpp">
-      <Filter>Source Files\Geo</Filter>
-    </ClCompile>
-    <ClCompile Include="Geo\Point.cpp">
       <Filter>Source Files\Geo</Filter>
     </ClCompile>
     <ClCompile Include="Geo\Transformation.cpp">
@@ -68,19 +59,7 @@
     <ClInclude Include="DrawContext.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Geo\Coordinate.hpp">
-      <Filter>Header Files\Geo</Filter>
-    </ClInclude>
-    <ClInclude Include="Geo\Forwards.hpp">
-      <Filter>Header Files\Geo</Filter>
-    </ClInclude>
     <ClInclude Include="Geo\Matrix.hpp">
-      <Filter>Header Files\Geo</Filter>
-    </ClInclude>
-    <ClInclude Include="Geo\Normal.hpp">
-      <Filter>Header Files\Geo</Filter>
-    </ClInclude>
-    <ClInclude Include="Geo\Point.hpp">
       <Filter>Header Files\Geo</Filter>
     </ClInclude>
     <ClInclude Include="Geo\Transformation.hpp">

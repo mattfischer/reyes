@@ -1,7 +1,7 @@
 #ifndef GEO_MATRIX_HPP
 #define Geo_MATRIX_HPP
 
-#include "Geo/Forwards.hpp"
+#include "Geo/Vector.hpp"
 
 namespace Geo {
 
@@ -29,8 +29,8 @@ protected:
 	bool mIdentity;
 };
 
-Coordinate operator*(const Matrix &matrix, const Coordinate &coordinate);
-Coordinate operator*(const Coordinate &coordinate, const Matrix &matrix);
+Vector operator*(const Matrix &matrix, const Vector &coordinate);
+Vector operator*(const Vector &coordinate, const Matrix &matrix);
 
 }
 

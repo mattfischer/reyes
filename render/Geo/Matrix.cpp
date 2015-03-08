@@ -1,6 +1,6 @@
 #include "Geo/Matrix.hpp"
 
-#include "Geo/Coordinate.hpp"
+#include "Geo/vector.hpp"
 
 namespace Geo {
 
@@ -94,52 +94,52 @@ Matrix Matrix::operator*(const Matrix &b) const
 	return r;
 }
 
-Coordinate operator*(const Matrix &matrix, const Coordinate &coordinate)
+Vector operator*(const Matrix &matrix, const Vector &vector)
 {
-	if(matrix.identity()) return coordinate;
+	if(matrix.identity()) return vector;
 
-	float a = matrix(0, 0) * coordinate(0) +
-		      matrix(1, 0) * coordinate(1) +
-			  matrix(2, 0) * coordinate(2) +
-			  matrix(3, 0) * coordinate(3);
-	float b = matrix(0, 1) * coordinate(0) +
-		      matrix(1, 1) * coordinate(1) +
-			  matrix(2, 1) * coordinate(2) +
-			  matrix(3, 1) * coordinate(3);
-	float c = matrix(0, 2) * coordinate(0) +
-		      matrix(1, 2) * coordinate(1) +
-			  matrix(2, 2) * coordinate(2) +
-			  matrix(3, 2) * coordinate(3);
-	float d = matrix(0, 3) * coordinate(0) +
-		      matrix(1, 3) * coordinate(1) +
-			  matrix(2, 3) * coordinate(2) +
-			  matrix(3, 3) * coordinate(3);
+	float a = matrix(0, 0) * vector(0) +
+		      matrix(1, 0) * vector(1) +
+			  matrix(2, 0) * vector(2) +
+			  matrix(3, 0) * vector(3);
+	float b = matrix(0, 1) * vector(0) +
+		      matrix(1, 1) * vector(1) +
+			  matrix(2, 1) * vector(2) +
+			  matrix(3, 1) * vector(3);
+	float c = matrix(0, 2) * vector(0) +
+		      matrix(1, 2) * vector(1) +
+			  matrix(2, 2) * vector(2) +
+			  matrix(3, 2) * vector(3);
+	float d = matrix(0, 3) * vector(0) +
+		      matrix(1, 3) * vector(1) +
+			  matrix(2, 3) * vector(2) +
+			  matrix(3, 3) * vector(3);
 
-	return Coordinate(a, b, c, d);
+	return Vector(a, b, c, d);
 }
 
-Coordinate operator*(const Coordinate &coordinate, const Matrix &matrix)
+Vector operator*(const Vector &vector, const Matrix &matrix)
 {
-	if(matrix.identity()) return coordinate;
+	if(matrix.identity()) return vector;
 
-	float a = matrix(0, 0) * coordinate(0) +
-		      matrix(0, 1) * coordinate(1) +
-			  matrix(0, 2) * coordinate(2) +
-			  matrix(0, 3) * coordinate(3);
-	float b = matrix(1, 0) * coordinate(0) +
-		      matrix(1, 1) * coordinate(1) +
-			  matrix(1, 2) * coordinate(2) +
-			  matrix(1, 3) * coordinate(3);
-	float c = matrix(2, 0) * coordinate(0) +
-		      matrix(2, 1) * coordinate(1) +
-			  matrix(2, 2) * coordinate(2) +
-			  matrix(2, 3) * coordinate(3);
-	float d = matrix(3, 0) * coordinate(0) +
-		      matrix(3, 1) * coordinate(1) +
-			  matrix(3, 2) * coordinate(2) +
-			  matrix(3, 3) * coordinate(3);
+	float a = matrix(0, 0) * vector(0) +
+		      matrix(0, 1) * vector(1) +
+			  matrix(0, 2) * vector(2) +
+			  matrix(0, 3) * vector(3);
+	float b = matrix(1, 0) * vector(0) +
+		      matrix(1, 1) * vector(1) +
+			  matrix(1, 2) * vector(2) +
+			  matrix(1, 3) * vector(3);
+	float c = matrix(2, 0) * vector(0) +
+		      matrix(2, 1) * vector(1) +
+			  matrix(2, 2) * vector(2) +
+			  matrix(2, 3) * vector(3);
+	float d = matrix(3, 0) * vector(0) +
+		      matrix(3, 1) * vector(1) +
+			  matrix(3, 2) * vector(2) +
+			  matrix(3, 3) * vector(3);
 
-	return Coordinate(a, b, c, d);
+	return Vector(a, b, c, d);
 }
 
 }

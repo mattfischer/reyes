@@ -1,7 +1,7 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
-#include "Geo/Point.hpp"
+#include "Geo/Vector.hpp"
 
 #include <vector>
 #include <tuple>
@@ -9,7 +9,7 @@
 class Mesh
 {
 public:
-	typedef Geo::Point Vertex;
+	typedef Geo::Vector Vertex;
 	typedef std::tuple<int, int> Edge;
 
 	Mesh() = default;

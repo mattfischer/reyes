@@ -1,92 +1,114 @@
 #include "Geo/Vector.hpp"
-#include "Geo/Point.hpp"
-#include "Geo/Transformation.hpp"
-#include "Geo/Normal.hpp"
 
 #include <cmath>
 
 namespace Geo {
+	Vector::Vector(float x, float y, float z, float w)
+	{
+		mValues[0] = x;
+		mValues[1] = y;
+		mValues[2] = z;
+		mValues[3] = w;
+	}
 
-Vector::Vector()
-{
-}
+	float Vector::x() const
+	{
+		return mValues[0];
+	}
 
-Vector::Vector(float x, float y, float z)
-: Coordinate(x, y, z, 0)
-{
-}
+	void Vector::setX(float x)
+	{
+		mValues[0] = x;
+	}
 
-Vector::Vector(const Vector &c)
-: Coordinate(c)
-{
-}
+	float Vector::y() const
+	{
+		return mValues[1];
+	}
 
-Vector::Vector(const Coordinate &c)
-: Coordinate(c)
-{
-}
+	void Vector::setY(float y)
+	{
+		mValues[1] = y;
+	}
 
-Vector::Vector(const Point &point)
-: Coordinate(point)
-{
-}
+	float Vector::z() const
+	{
+		return mValues[2];
+	}
 
-Vector::Vector(const Normal &normal)
-: Coordinate(normal)
-{
-}
+	void Vector::setZ(float z)
+	{
+		mValues[2] = z;
+	}
 
-float Vector::magnitude() const
-{
-	return std::sqrt(magnitude2());
-}
+	float Vector::w() const
+	{
+		return mValues[3];
+	}
 
-float Vector::magnitude2() const
-{
-	return *this * *this;
-}
+	void Vector::setW(float z)
+	{
+		mValues[3] = z;
+	}
 
-Vector Vector::normalize() const
-{
-	float m = magnitude();
+	float &Vector::at(int i)
+	{
+		return mValues[i];
+	}
 
-	return Vector(x() / m, y() / m, z() / m);
-}
+	const float &Vector::at(int i) const
+	{
+		return mValues[i];
+	}
 
-Vector Vector::operator+(const Vector &b) const
-{
-	return Vector(x() + b.x(), y() + b.y(), z() + b.z());
-}
+	float &Vector::operator()(int i)
+	{
+		return at(i);
+	}
 
-Vector Vector::operator-(const Vector &b) const
-{
-	return Vector(x() - b.x(), y() - b.y(), z() - b.z());
-}
+	const float &Vector::operator()(int i) const
+	{
+		return at(i);
+	}
 
-float Vector::operator*(const Vector &b) const
-{
-	return x() * b.x() + y() * b.y() + z() * b.z();
-}
+	Vector Vector::operator+(const Vector &b) const
+	{
+		return Vector(x() + b.x(), y() + b.y(), z() + b.z(), w() + b.w());
+	}
 
-Vector Vector::operator*(float b) const
-{
-	return Vector(x() * b, y() * b, z() * b);
-}
+	Vector Vector::operator-(const Vector &b) const
+	{
+		return Vector(x() - b.x(), y() - b.y(), z() - b.z(), w() - b.w());
+	}
 
-Vector Vector::operator/(float b) const
-{
-	return Vector(x() / b, y() / b, z() / b);
-}
+	float Vector::operator*(const Vector &b) const
+	{
+		return x() * b.x() + y() * b.y() + z() * b.z() + w() * b.w();
+	}
 
-Vector Vector::operator-() const
-{
-	return *this * -1;
-}
+	Vector Vector::operator*(float b) const
+	{
+		return Vector(x() * b, y() * b, z() * b, w() * b);
+	}
 
-Vector operator*(const BaseTransformation &transformation, const Vector &vector)
-{
+	Vector Vector::operator/(float b) const
+	{
+		return Vector(x() / b, y() / b, z() / b, w() / b);
+	}
 
-	return Vector(transformation.matrix() * vector);
-}
+	Vector Vector::operator-() const
+	{
+		return *this * -1;
+	}
+
+	Vector Vector::project() const
+	{
+		return Vector(x() / w(), y() / w(), z() / w(), 1.0f);
+	}
+
+	Vector operator*(float b, const Vector &v)
+	{
+		return v * b;
+	}
 
 }

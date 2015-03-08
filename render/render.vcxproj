@@ -69,10 +69,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="DrawContext.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
-    <ClCompile Include="Geo\Coordinate.cpp" />
     <ClCompile Include="Geo\Matrix.cpp" />
-    <ClCompile Include="Geo\Normal.cpp" />
-    <ClCompile Include="Geo\Point.cpp" />
     <ClCompile Include="Geo\Transformation.cpp" />
     <ClCompile Include="Geo\Vector.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -83,11 +80,7 @@
     <ClInclude Include="App.hpp" />
     <ClInclude Include="DrawContext.hpp" />
     <ClInclude Include="Framebuffer.hpp" />
-    <ClInclude Include="Geo\Coordinate.hpp" />
-    <ClInclude Include="Geo\Forwards.hpp" />
     <ClInclude Include="Geo\Matrix.hpp" />
-    <ClInclude Include="Geo\Normal.hpp" />
-    <ClInclude Include="Geo\Point.hpp" />
     <ClInclude Include="Geo\Transformation.hpp" />
     <ClInclude Include="Geo\Vector.hpp" />
     <ClInclude Include="Mesh.hpp" />

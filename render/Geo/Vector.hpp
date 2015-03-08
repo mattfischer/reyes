@@ -1,35 +1,46 @@
 #ifndef GEO_VECTOR_HPP
 #define GEO_VECTOR_HPP
 
-#include "Geo/Forwards.hpp"
-#include "Geo/Coordinate.hpp"
-
 namespace Geo {
+	class Vector
+	{
+	public:
+		Vector(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 1.0f);
+		Vector(const Vector &v) = default;
+		Vector &operator=(const Vector &v) = default;
 
-class Vector : public Coordinate
-{
-public:
-	Vector();
-	Vector(const Vector &c);
-	Vector(float x, float y, float z);
-	explicit Vector(const Point &point);
-	explicit Vector(const Normal &normal);
-	explicit Vector(const Coordinate &c);
+		float x() const;
+		void setX(float x);
 
-	Vector normalize() const;
-	float magnitude() const;
-	float magnitude2() const;
+		float y() const;
+		void setY(float y);
 
-	Vector operator+(const Vector &b) const;
-	Vector operator-(const Vector &b) const;
-	float operator*(const Vector &b) const;
-	Vector operator*(float b) const;
-	Vector operator/(float b) const;
-	Vector operator-() const;
-};
+		float z() const;
+		void setZ(float z);
 
-Vector operator*(const BaseTransformation &transformation, const Vector &vector);
+		float w() const;
+		void setW(float w);
 
+		float &at(int i);
+		const float &at(int i) const;
+
+		float &operator()(int i);
+		const float &operator()(int i) const;
+
+		Vector project() const;
+
+		Vector operator+(const Vector &b) const;
+		Vector operator-(const Vector &b) const;
+		float operator*(const Vector &b) const;
+		Vector operator*(float b) const;
+		Vector operator/(float b) const;
+		Vector operator-() const;
+
+	protected:
+		float mValues[4];
+	};
+
+	Vector operator*(float b, const Vector &v);
 }
 
 #endif

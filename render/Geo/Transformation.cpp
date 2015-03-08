@@ -1,6 +1,5 @@
 #include "Geo/Transformation.hpp"
 #include "Geo/Vector.hpp"
-#include "Geo/Point.hpp"
 
 #include <cmath>
 
@@ -10,190 +9,91 @@ using std::sin;
 using std::cos;
 
 namespace Geo {
+	Matrix Transformation::translate(const Vector &vector)
+	{
+		return translate(vector.x(), vector.y(), vector.z());
+	}
 
-Point BaseTransformation::origin() const
-{
-	return Point(matrix().at(3,0), matrix().at(3,1), matrix().at(3,2));
-}
+	Matrix Transformation::translate(float x, float y, float z)
+	{
+		return Matrix(
+			1, 0, 0, x,
+			0, 1, 0, y,
+			0, 0, 1, z,
+			0, 0, 0, 1);
+	}
 
-InverseTransformation::InverseTransformation(const Transformation &transformation)
-: mTransformation(transformation)
-{
-}
+	Matrix Transformation::scale(const Vector &vector)
+	{
+		return scale(vector.x(), vector.y(), vector.z());
+	}
 
-const BaseTransformation &InverseTransformation::inverse() const
-{
-	return mTransformation;
-}
+	Matrix Transformation::scale(float x, float y, float z)
+	{
+		return Matrix(
+			x, 0, 0, 0,
+			0, y, 0, 0,
+			0, 0, z, 0,
+			0, 0, 0, 1);
+	}
 
-const Matrix &InverseTransformation::matrix() const
-{
-	return mTransformation.inverseMatrix();
-}
+	Matrix Transformation::uniformScale(float factor)
+	{
+		return scale(factor, factor, factor);
+	}
 
-const Matrix &InverseTransformation::inverseMatrix() const
-{
-	return mTransformation.matrix();
-}
+	static float rad(float deg)
+	{
+		return deg * 3.14f / 180.0f;
+	}
 
-const BaseTransformation &Transformation::inverse() const
-{
-	return mInverse;
-}
+	Matrix Transformation::rotate(const Vector &vector)
+	{
+		return rotate(vector.x(), vector.y(), vector.z());
+	}
 
-const Matrix &Transformation::matrix() const
-{
-	return mMatrix;
-}
+	Matrix Transformation::rotate(float x, float y, float z)
+	{
+		float rx = rad(x);
+		float ry = rad(y);
+		float rz = rad(z);
 
-const Matrix &Transformation::inverseMatrix() const
-{
-	return mInverseMatrix;
-}
+		Matrix xRotate(
+			1, 0, 0, 0,
+			0, cos(rx), -sin(rx), 0,
+			0, sin(rx), cos(rx), 0,
+			0, 0, 0, 1);
 
-Transformation Transformation::translate(const Vector &vector)
-{
-	return translate(vector.x(), vector.y(), vector.z());
-}
+		Matrix yRotate(
+			cos(ry), 0, -sin(ry), 0,
+			0, 1, 0, 0,
+			sin(ry), 0, cos(ry), 0,
+			0, 0, 0, 1);
 
-Transformation Transformation::translate(float x, float y, float z)
-{
-	return Transformation(
-				Matrix(
-				  1, 0, 0, x,
-				  0, 1, 0, y,
-				  0, 0, 1, z,
-				  0, 0, 0, 1), 
-				Matrix(
-				  1, 0, 0, -x,
-				  0, 1, 0, -y,
-				  0, 0, 1, -z,
-				  0, 0, 0, 1));
-}
+		Matrix zRotate(
+			cos(rz), sin(rz), 0, 0,
+			-sin(rz), cos(rz), 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1);
 
-Transformation Transformation::scale(const Vector &vector)
-{
-	return scale(vector.x(), vector.y(), vector.z());
-}
+		return xRotate * yRotate * zRotate;
+	}
 
-Transformation Transformation::scale(float x, float y, float z)
-{
-	return Transformation(
-				Matrix(
-				  x, 0, 0, 0,
-				  0, y, 0, 0,
-				  0, 0, z, 0,
-				  0, 0, 0, 1), 
-				Matrix(
-				  1/x, 0, 0, 0,
-				  0, 1/y, 0, 0,
-				  0, 0, 1/z, 0,
-				  0, 0, 0, 1));
-}
+	Matrix Transformation::perspective(float width, float height, float near, float far)
+	{
+		return Matrix(
+			2.0f / width, 0, 0, 0,
+			0, 2.0f / height, 0, 0,
+			0, 0, (far + near) / (far - near), -2.0f * near * far / (far - near),
+			0, 0, 1, 0);
+	}
 
-Transformation Transformation::uniformScale(float factor)
-{
-	return scale(factor, factor, factor);
-}
-
-static float rad(float deg)
-{
-	return deg * 3.14f / 180.0f;
-}
-
-Transformation Transformation::rotate(const Vector &vector)
-{
-	return rotate(vector.x(), vector.y(), vector.z());
-}
-
-Transformation Transformation::rotate(float x, float y, float z)
-{
-	float rx = rad(x);
-	float ry = rad(y);
-	float rz = rad(z);
-
-	Matrix xRotate(
-				  1, 0, 0, 0,
-				  0, cos(rx), -sin(rx), 0,
-				  0, sin(rx), cos(rx), 0,
-				  0, 0, 0, 1);
-
-	Matrix xRotateInverse(
-				  1, 0, 0, 0,
-				  0, cos(rx), sin(rx), 0,
-				  0, -sin(rx), cos(rx), 0,
-				  0, 0, 0, 1);
-
-	Matrix yRotate(
-				  cos(ry), 0, -sin(ry), 0,
-				  0, 1, 0, 0,
-				  sin(ry), 0, cos(ry), 0,
-				  0, 0, 0, 1);
-
-	Matrix yRotateInverse(
-				  cos(ry), 0, sin(ry), 0,
-				  0, 1, 0, 0,
-				  -sin(ry), 0, cos(ry), 0,
-				  0, 0, 0, 1);
-
-	Matrix zRotate(
-				  cos(rz), sin(rz), 0, 0,
-				  -sin(rz), cos(rz), 0, 0,
-				  0, 0, 1, 0,
-				  0, 0, 0, 1);
-
-	Matrix zRotateInverse(
-				  cos(rz), -sin(rz), 0, 0,
-				  sin(rz), cos(rz), 0, 0,
-				  0, 0, 1, 0,
-				  0, 0, 0, 1);
-
-	return Transformation(xRotate * yRotate * zRotate, zRotateInverse * yRotateInverse * xRotateInverse);
-}
-
-Transformation Transformation::perspective(float width, float height, float near, float far)
-{
-	return Transformation(
-		Matrix(
-		2.0f / width, 0, 0, 0,
-		0, 2.0f / height, 0, 0,
-		0, 0, (far + near) / (far - near), -2.0f * near * far / (far - near),
-		0, 0, 1, 0),
-		Matrix(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1));
-}
-
-Transformation::Transformation()
-: mInverse(*this)
-{
-}
-
-Transformation::Transformation(const Matrix &matrix, const Matrix &inverseMatrix)
-: mMatrix(matrix), mInverseMatrix(inverseMatrix), mInverse(*this)
-{
-}
-
-Transformation::Transformation(const BaseTransformation &c)
-: mMatrix(c.matrix()),
-  mInverseMatrix(c.inverseMatrix()),
-  mInverse(*this)
-{
-}
-
-Transformation &Transformation::operator=(const BaseTransformation &c)
-{
-	mMatrix = c.matrix();
-	mInverseMatrix = c.inverseMatrix();
-
-	return *this;
-}
-
-Transformation operator*(const BaseTransformation &a, const BaseTransformation &b)
-{
-	return Transformation(b.matrix() * a.matrix(), a.inverseMatrix() * b.inverseMatrix());
-}
-
+	Matrix Transformation::viewport(float xMin, float yMin, float xMax, float yMax)
+	{
+		return Matrix(
+			(xMax - xMin) / 2.0f, 0, 0, xMin + (xMax - xMin) / 2.0f,
+			0, (yMax - yMin) / 2.0f, 0, yMin + (yMax - yMin) / 2.0f,
+			0, 0, 1, 0,
+			0, 0, 0, 1);
+	}
 }
