@@ -4,6 +4,23 @@
 
 #include "Geo/Transformation.hpp"
 
+#include <memory>
+
+static Geo::Vector clipPlanes[] = {
+		{ 1, 0, 0, 1 },
+		{ -1, 0, 0, 1 },
+		{ 0, 1, 0, 1 },
+		{ 0, -1, 0, 1 },
+		{ 0, 0, 1, 1 },
+		{ 0, 0, -1, 1 }
+};
+
+struct Polygon
+{
+	std::unique_ptr<Mesh::Vertex[]> vertices;
+	int numVertices;
+};
+
 Renderer::Renderer()
 {
 	std::vector<Mesh::Vertex> vertices;
@@ -19,7 +36,7 @@ Renderer::Renderer()
 	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(triangles));
 }
 
-bool Renderer::clipToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector &normal)
+static bool clipLineToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector &normal)
 {
 	float aN = a * normal;
 	float bN = b * normal;
@@ -46,14 +63,59 @@ bool Renderer::clipToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector &
 	return true;
 }
 
-bool Renderer::clipLine(Mesh::Vertex &a, Mesh::Vertex &b)
+static bool clipPolygonToPlane(Polygon &polygon, const Geo::Vector &normal)
 {
-	if(!clipToPlane(a, b, Geo::Vector(1, 0, 0, 1))) return false;
-	if(!clipToPlane(a, b, Geo::Vector(-1, 0, 0, 1))) return false;
-	if(!clipToPlane(a, b, Geo::Vector(0, 1, 0, 1))) return false;
-	if(!clipToPlane(a, b, Geo::Vector(0, -1, 0, 1))) return false;
-	if(!clipToPlane(a, b, Geo::Vector(0, 0, 1, 1))) return false;
-	if(!clipToPlane(a, b, Geo::Vector(0, 0, -1, 1))) return false;
+	int o = 0;
+	Geo::Vector a = polygon.vertices[polygon.numVertices - 1];
+	float aN = a * normal;
+	Geo::Vector b = polygon.vertices[0];
+	for(int i = 0; i < polygon.numVertices; i++) {
+		Geo::Vector next = polygon.vertices[i + 1];
+		float bN = b * normal;
+		if(bN >= 0) {
+			if(aN < 0) {
+				Geo::Vector m = b - a;
+				float mN = m * normal;
+				float t = -aN / mN;
+				Geo::Vector i = a + t * m;
+				polygon.vertices[o] = i;
+				o++;
+			}
+			polygon.vertices[o] = b;
+			o++;
+		} else {
+			if(aN > 0) {
+				Geo::Vector m = b - a;
+				float mN = m * normal;
+				float t = -aN / mN;
+				Geo::Vector i = a + t * m;
+				polygon.vertices[o] = i;
+				o++;
+			}
+		}
+		a = b;
+		aN = bN;
+		b = next;
+	}
+
+	polygon.numVertices = o;
+	return polygon.numVertices > 0;
+}
+
+static bool clipLine(Mesh::Vertex &a, Mesh::Vertex &b)
+{
+	for(int i = 0; i < 6; i++) {
+		if(!clipLineToPlane(a, b, clipPlanes[i])) return false;
+	}
+
+	return true;
+}
+
+static bool clipPolygon(Polygon &polygon)
+{
+	for(int i = 0; i < 6; i++) {
+		if(!clipPolygonToPlane(polygon, clipPlanes[i])) return false;
+	}
 
 	return true;
 }
@@ -74,19 +136,26 @@ void Renderer::render(Framebuffer &framebuffer)
 	DrawContext dc(framebuffer);
 
 	dc.fillRect(0, 0, framebuffer.width(), framebuffer.height(), DrawContext::Color(0x80, 0x80, 0x80));
+	Polygon polygon;
+	polygon.vertices = std::unique_ptr<Mesh::Vertex[]>(new Mesh::Vertex[3 + 6]);
+
 	for(const Mesh::Triangle &triangle : mMesh.triangles()) {
-		for(int v = 0; v < 3; v++) {
-			Mesh::Vertex a = vertices[triangle.indices[v]];
-			Mesh::Vertex b = vertices[triangle.indices[(v+1)%3]];
+		for(int i = 0; i < 3; i++) {
+			polygon.vertices[i] = vertices[triangle.indices[i]];
+		}
+		polygon.numVertices = 3;
 
-			if(!clipLine(a, b)) {
-				continue;
-			}
+		if(!clipPolygon(polygon)) {
+			continue;
+		}
 
-			a = viewport * a.project();
+		Geo::Vector a = polygon.vertices[polygon.numVertices - 1];
+		a = viewport * a.project();
+		for(int i=0; i<polygon.numVertices; i++) {
+			Geo::Vector b = polygon.vertices[i];
 			b = viewport * b.project();
-
 			dc.aaline(a.x(), a.y(), b.x(), b.y(), DrawContext::Color(0xff, 0xff, 0xff));
+			a = b;
 		}
 	}
 }
