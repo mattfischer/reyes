@@ -173,6 +173,9 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 	float e1 = x02 * ys2 - y02 * xs2;
 	float e2 = x10 * ys0 - y10 * xs0;
 
+	float multisampleBiasX[] = { -0.2f, 0.3f, -0.3f, 0.2f };
+	float multisampleBiasY[] = { -0.3f, -0.2f, 0.2f, 0.3f };
+
 	for(int y = int(yMin); y <= int(yMax); y++)
 	{
 		float e0r = e0;
@@ -181,16 +184,22 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 
 		for(int x = int(xMin); x <= int(xMax); x++)
 		{
-			if(e0 >= 0 && e1 >= 0 && e2 >= 0) {
-				float a = e0 * invdet;
-				float b = e1 * invdet;
-				float c = e2 * invdet;
+			for(int m = 0; m < 4; m++) {
+				float e0m = e0 + multisampleBiasX[m] * -y21 + multisampleBiasY[m] * x21;
+				float e1m = e1 + multisampleBiasX[m] * -y02 + multisampleBiasY[m] * x02;
+				float e2m = e2 + multisampleBiasX[m] * -y10 + multisampleBiasY[m] * x10;
 
-				float z = a * z0 + b * z1 + c * z2;
-				unsigned short depth = unsigned short(z);
-				if(depth <= dc.getDepth(x, y)) {
-					dc.setPixel(x, y, color);
-					dc.setDepth(x, y, depth);
+				if(e0m >= 0 && e1m >= 0 && e2m >= 0) {
+					float a = e0m * invdet;
+					float b = e1m * invdet;
+					float c = e2m * invdet;
+
+					float z = a * z0 + b * z1 + c * z2;
+					unsigned short depth = unsigned short(z);
+					if(depth <= dc.getDepth(x, y, m)) {
+						dc.setPixel(x, y, m, color);
+						dc.setDepth(x, y, m, depth);
+					}
 				}
 			}
 
@@ -246,4 +255,6 @@ void Renderer::render(Framebuffer &framebuffer)
 			p1 = p2;
 		}
 	}
+
+	dc.doMultisample();
 }

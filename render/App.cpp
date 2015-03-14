@@ -27,7 +27,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 
 	RegisterClassEx(&wc);
 
-	mFramebuffer = Framebuffer(800, 600);
+	mFramebuffer = Framebuffer(800, 600, 4);
 
 	RECT rect;
 	rect.left = 10;
@@ -96,6 +96,6 @@ void App::postFramebuffer()
 	bi.bmiHeader.biCompression = BI_RGB;
 
 	HBITMAP hBitmap = (HBITMAP)GetCurrentObject(mBackDC, OBJ_BITMAP);
-	SetDIBits(mBackDC, hBitmap, 0, mFramebuffer.height(), mFramebuffer.colorBits(), &bi, DIB_RGB_COLORS);
+	SetDIBits(mBackDC, hBitmap, 0, mFramebuffer.height(), mFramebuffer.displayColorBits(), &bi, DIB_RGB_COLORS);
 	InvalidateRect(mHWnd, NULL, FALSE);
 }

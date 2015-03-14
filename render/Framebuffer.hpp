@@ -5,7 +5,7 @@ class Framebuffer
 {
 public:
 	Framebuffer();
-	Framebuffer(int width, int height);
+	Framebuffer(int width, int height, int multisample);
 	Framebuffer(Framebuffer &&other);
 	Framebuffer(const Framebuffer &) = delete;
 	~Framebuffer();
@@ -15,6 +15,10 @@ public:
 
 	int width();
 	int height();
+	int multisample();
+
+	const unsigned char *displayColorBits() const;
+	unsigned char *displayColorBits();
 
 	const unsigned char *colorBits() const;
 	unsigned char *colorBits();
@@ -25,6 +29,8 @@ public:
 private:
 	int mWidth;
 	int mHeight;
+	int mMultisample;
+	unsigned char *mDisplayColorBits;
 	unsigned char *mColorBits;
 	unsigned short *mDepthBits;
 };
