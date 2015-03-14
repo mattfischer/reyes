@@ -121,29 +121,60 @@ static bool clipPolygon(Polygon &polygon)
 	return true;
 }
 
-static float edge(const Geo::Vector &v0, const Geo::Vector &v1, const Geo::Vector &p)
-{
-	return (v1.x() - v0.x()) * (p.y() - v0.y()) - (v1.y() - v0.y()) * (p.x() - v0.x());
-}
-
 static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, DrawContext &dc)
 {
-	float xMin = std::min({ p0.x(), p1.x(), p2.x() });
-	float xMax = std::max({ p0.x(), p1.x(), p2.x() });
-	float yMin = std::min({ p0.y(), p1.y(), p2.y() });
-	float yMax = std::max({ p0.y(), p1.y(), p2.y() });
+	float x0 = p0.x();
+	float y0 = p0.y();
+	float x1 = p1.x();
+	float y1 = p1.y();
+	float x2 = p2.x();
+	float y2 = p2.y();
 
-	for(int x = int(xMin); x <= int(xMax); x++) {
-		for(int y = int(yMin); y <= int(yMax); y++)
+	float x10 = x1 - x0;
+	float y10 = y1 - y0;
+	float x21 = x2 - x1;
+	float y21 = y2 - y1;
+	float x02 = x0 - x2;
+	float y02 = y0 - y2;
+
+	float xMin = std::min({ x0, x1, x2 });
+	float xMax = std::max({ x0, x1, x2 });
+	float yMin = std::min({ y0, y1, y2 });
+	float yMax = std::max({ y0, y1, y2 });
+
+	float xs = std::floor(xMin) + 0.5f;
+	float ys = std::floor(yMin) + 0.5f;
+	float xs0 = xs - x0;
+	float ys0 = ys - y0;
+	float xs1 = xs - x1;
+	float ys1 = ys - y1;
+	float xs2 = xs - x2;
+	float ys2 = ys - y2;
+
+	float e0 = x10 * ys0 - y10 * xs0;
+	float e1 = x21 * ys1 - y21 * xs1;
+	float e2 = x02 * ys2 - y02 * xs2;
+
+	for(int y = int(yMin); y <= int(yMax); y++)
+	{
+		float e0r = e0;
+		float e1r = e1;
+		float e2r = e2;
+
+		for(int x = int(xMin); x <= int(xMax); x++)
 		{
-			Geo::Vector p(float(x) + 0.5f, float(y) + 0.5f, 0);
-			float e0 = edge(p0, p1, p);
-			float e1 = edge(p1, p2, p);
-			float e2 = edge(p2, p0, p);
 			if(e0 >= 0 && e1 >= 0 && e2 >= 0) {
-				dc.setPixel(int(x), int(y), DrawContext::Color(0xff, 0xff, 0xff));
+				dc.setPixel(x, y, DrawContext::Color(0xff, 0xff, 0xff));
 			}
+
+			e0 -= y10;
+			e1 -= y21;
+			e2 -= y02;
 		}
+
+		e0 = e0r + x10;
+		e1 = e1r + x21;
+		e2 = e2r + x02;
 	}
 }
 
