@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="Color.hpp" />
     <ClInclude Include="DrawContext.hpp" />
     <ClInclude Include="Framebuffer.hpp" />
     <ClInclude Include="Geo\Matrix.hpp" />

@@ -2,8 +2,10 @@
 #define MESH_HPP
 
 #include "Geo/Vector.hpp"
+#include "Color.hpp"
 
 #include <vector>
+#include <memory>
 #include <tuple>
 
 class Mesh
@@ -12,25 +14,24 @@ public:
 	typedef Geo::Vector Vertex;
 	typedef std::tuple<int, int> Edge;
 
-	struct Triangle {
-		int indices[3];
+	struct Polygon {
+		std::vector<int> indices;
+		Color color;
 
-		Triangle(int i0, int i1, int i2) {
-			indices[0] = i0; indices[1] = i1; indices[2] = i2;
-		}
+		Polygon(std::initializer_list<int> _indices, Color &_color) : indices(_indices), color(_color) {}
 	};
 
 	Mesh() = default;
-	Mesh(std::vector<Vertex> &&vertices, std::vector<Edge> &&edges, std::vector<Triangle> &&triangles);
+	Mesh(std::vector<Vertex> &&vertices, std::vector<Edge> &&edges, std::vector<Polygon> &&polygons);
 
 	const std::vector<Vertex> &vertices() const;
 	const std::vector<Edge> &edges() const;
-	const std::vector<Triangle> &triangles() const;
+	const std::vector<Polygon> &polygons() const;
 
 private:
 	std::vector<Vertex> mVertices;
 	std::vector<Edge> mEdges;
-	std::vector<Triangle> mTriangles;
+	std::vector<Polygon> mPolygons;
 };
 
 #endif

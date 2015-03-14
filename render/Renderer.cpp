@@ -16,9 +16,9 @@ static Geo::Vector clipPlanes[] = {
 		{ 0, 0, -1, 1 }
 };
 
-struct Polygon
+struct ClipPolygon
 {
-	std::unique_ptr<Mesh::Vertex[]> vertices;
+	std::vector<Mesh::Vertex> vertices;
 	int numVertices;
 };
 
@@ -26,15 +26,25 @@ Renderer::Renderer()
 {
 	std::vector<Mesh::Vertex> vertices;
 	std::vector<Mesh::Edge> edges;
-	std::vector<Mesh::Triangle> triangles;
+	std::vector<Mesh::Polygon> polygons;
 
 	vertices.push_back(Mesh::Vertex(-1, -1, -1));
 	vertices.push_back(Mesh::Vertex(1, -1, -1));
+	vertices.push_back(Mesh::Vertex(-1, 1, -1));
 	vertices.push_back(Mesh::Vertex(1, 1, -1));
+	vertices.push_back(Mesh::Vertex(-1, -1, 1));
+	vertices.push_back(Mesh::Vertex(1, -1, 1));
+	vertices.push_back(Mesh::Vertex(-1, 1, 1));
+	vertices.push_back(Mesh::Vertex(1, 1, 1));
 
-	triangles.push_back(Mesh::Triangle(0, 1, 2));
+	polygons.push_back(Mesh::Polygon({ 0, 1, 3, 2 }, Color(0xff, 0x00, 0x00)));
+	polygons.push_back(Mesh::Polygon({ 4, 5, 7, 6 }, Color(0x00, 0x00, 0xff)));
+	polygons.push_back(Mesh::Polygon({ 0, 1, 5, 4 }, Color(0x00, 0xff, 0x00)));
+	polygons.push_back(Mesh::Polygon({ 3, 2, 6, 7 }, Color(0xff, 0xff, 0x00)));
+	polygons.push_back(Mesh::Polygon({ 0, 2, 6, 4 }, Color(0x00, 0xff, 0xff)));
+	polygons.push_back(Mesh::Polygon({ 1, 3, 7, 5 }, Color(0xff, 0x00, 0xff)));
 
-	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(triangles));
+	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(polygons));
 }
 
 static bool clipLineToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector &normal)
@@ -64,7 +74,7 @@ static bool clipLineToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector 
 	return true;
 }
 
-static bool clipPolygonToPlane(Polygon &polygon, const Geo::Vector &normal)
+static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 {
 	int o = 0;
 	Geo::Vector a = polygon.vertices[polygon.numVertices - 1];
@@ -112,7 +122,7 @@ static bool clipLine(Mesh::Vertex &a, Mesh::Vertex &b)
 	return true;
 }
 
-static bool clipPolygon(Polygon &polygon)
+static bool clipPolygon(ClipPolygon &polygon)
 {
 	for(int i = 0; i < 6; i++) {
 		if(!clipPolygonToPlane(polygon, clipPlanes[i])) return false;
@@ -121,7 +131,7 @@ static bool clipPolygon(Polygon &polygon)
 	return true;
 }
 
-static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, DrawContext &dc)
+static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, const Color &color, DrawContext &dc)
 {
 	float x0 = p0.x();
 	float y0 = p0.y();
@@ -167,7 +177,7 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 		for(int x = int(xMin); x <= int(xMax); x++)
 		{
 			if(e0 >= 0 && e1 >= 0 && e2 >= 0) {
-				dc.setPixel(x, y, DrawContext::Color(0xff, 0xff, 0xff));
+				dc.setPixel(x, y, color);
 			}
 
 			e0 -= y10;
@@ -183,7 +193,7 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 
 void Renderer::render(Framebuffer &framebuffer)
 {
-	Geo::Matrix transform = Geo::Transformation::translate(0, 0, 5);
+	Geo::Matrix transform = Geo::Transformation::translate(0, 0, 5) * Geo::Transformation::rotate(20, 20, 0);
 	Geo::Matrix perspective = Geo::Transformation::perspective(2.0f * float(framebuffer.width()) / float(framebuffer.height()), 2.0f, 1.0f, 10.0f);
 	Geo::Matrix viewport = Geo::Transformation::viewport(0.0f, 0.0f, float(framebuffer.width()), float(framebuffer.height()));
 
@@ -196,25 +206,28 @@ void Renderer::render(Framebuffer &framebuffer)
 
 	DrawContext dc(framebuffer);
 
-	dc.fillRect(0, 0, framebuffer.width(), framebuffer.height(), DrawContext::Color(0x80, 0x80, 0x80));
-	Polygon polygon;
-	polygon.vertices = std::unique_ptr<Mesh::Vertex[]>(new Mesh::Vertex[3 + 6]);
+	dc.fillRect(0, 0, framebuffer.width(), framebuffer.height(), Color(0x80, 0x80, 0x80));
+	ClipPolygon clippedPolygon;
 
-	for(const Mesh::Triangle &triangle : mMesh.triangles()) {
-		for(int i = 0; i < 3; i++) {
-			polygon.vertices[i] = vertices[triangle.indices[i]];
+	for(const Mesh::Polygon &polygon : mMesh.polygons()) {
+		if(clippedPolygon.vertices.size() < polygon.indices.size() + 6) {
+			clippedPolygon.vertices.resize(polygon.indices.size() + 6);
 		}
-		polygon.numVertices = 3;
 
-		if(!clipPolygon(polygon)) {
+		for(unsigned int i = 0; i < polygon.indices.size(); i++) {
+			clippedPolygon.vertices[i] = vertices[polygon.indices[i]];
+		}
+		clippedPolygon.numVertices = polygon.indices.size();
+
+		if(!clipPolygon(clippedPolygon)) {
 			continue;
 		}
 
-		Geo::Vector p0 = viewport * polygon.vertices[0].project();
-		Geo::Vector p1 = viewport * polygon.vertices[1].project();
-		for(int i = 2; i < polygon.numVertices; i++) {
-			Geo::Vector p2 = viewport * polygon.vertices[i].project();
-			renderTriangle(p0, p1, p2, dc);
+		Geo::Vector p0 = viewport * clippedPolygon.vertices[0].project();
+		Geo::Vector p1 = viewport * clippedPolygon.vertices[1].project();
+		for(int i = 2; i < clippedPolygon.numVertices; i++) {
+			Geo::Vector p2 = viewport * clippedPolygon.vertices[i].project();
+			renderTriangle(p0, p1, p2, polygon.color, dc);
 			p1 = p2;
 		}
 	}

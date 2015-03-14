@@ -18,7 +18,7 @@ int DrawContext::height()
 	return mFramebuffer.height();
 }
 
-void DrawContext::setPixel(int x, int y, Color &color)
+void DrawContext::setPixel(int x, int y, const Color &color)
 {
 	unsigned char *bits = mFramebuffer.bits();
 	int addr = (y * mFramebuffer.width() + x) * 3;
@@ -27,7 +27,7 @@ void DrawContext::setPixel(int x, int y, Color &color)
 	bits[addr + 2] = color.r;
 }
 
-void DrawContext::blendPixel(int x, int y, Color &color, float alpha)
+void DrawContext::blendPixel(int x, int y, const Color &color, float alpha)
 {
 	unsigned char *bits = mFramebuffer.bits();
 	int addr = (y * mFramebuffer.width() + x) * 3;
@@ -36,7 +36,7 @@ void DrawContext::blendPixel(int x, int y, Color &color, float alpha)
 	bits[addr + 2] = unsigned char(bits[addr + 2] * (1.0f - alpha) + color.r * alpha);
 }
 
-void DrawContext::fillRect(int x, int y, int width, int height, Color &color)
+void DrawContext::fillRect(int x, int y, int width, int height, const Color &color)
 {
 	for(int i = x; i < x + width; i++) {
 		for(int j = y; j < y + height; j++) {
@@ -45,7 +45,7 @@ void DrawContext::fillRect(int x, int y, int width, int height, Color &color)
 	}
 }
 
-void DrawContext::aaline(float x0, float y0, float x1, float y1, Color &color)
+void DrawContext::aaline(float x0, float y0, float x1, float y1, const Color &color)
 {
 	bool steep = false;
 	if(std::abs(y1 - y0) > std::abs(x1 - x0)) {
