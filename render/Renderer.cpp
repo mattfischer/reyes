@@ -130,12 +130,15 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 	float x2 = p2.x();
 	float y2 = p2.y();
 
-	float x10 = x1 - x0;
-	float y10 = y1 - y0;
-	float x21 = x2 - x1;
-	float y21 = y2 - y1;
-	float x02 = x0 - x2;
-	float y02 = y0 - y2;
+	float det = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
+	float winding = (det > 0) ? 1.0f : -1.0f;
+
+	float x10 = (x1 - x0) * winding;
+	float y10 = (y1 - y0) * winding;
+	float x21 = (x2 - x1) * winding;
+	float y21 = (y2 - y1) * winding;
+	float x02 = (x0 - x2) * winding;
+	float y02 = (y0 - y2) * winding;
 
 	float xMin = std::min({ x0, x1, x2 });
 	float xMax = std::max({ x0, x1, x2 });
