@@ -28,27 +28,27 @@ Renderer::Renderer()
 	std::vector<Mesh::Vertex> vertices;
 	std::vector<Mesh::Edge> edges;
 	std::vector<Mesh::Polygon> polygons;
+	std::vector<Mesh::Texture> textures;
 
-	vertices.push_back(Mesh::Vertex(-1, -1, -1));
-	vertices.push_back(Mesh::Vertex(1, -1, -1));
-	vertices.push_back(Mesh::Vertex(-1, 1, -1));
-	vertices.push_back(Mesh::Vertex(1, 1, -1));
-	vertices.push_back(Mesh::Vertex(-1, -1, 1));
-	vertices.push_back(Mesh::Vertex(1, -1, 1));
-	vertices.push_back(Mesh::Vertex(-1, 1, 1));
-	vertices.push_back(Mesh::Vertex(1, 1, 1));
+	vertices.push_back(Mesh::Vertex(Geo::Vector(-1, -1, -1), Geo::Vector(0, 0, 0)));
+	vertices.push_back(Mesh::Vertex(Geo::Vector(1, -1, -1), Geo::Vector(1, 0, 0)));
+	vertices.push_back(Mesh::Vertex(Geo::Vector(-1, 1, -1), Geo::Vector(0, 1, 0)));
+	vertices.push_back(Mesh::Vertex(Geo::Vector(1, 1, -1), Geo::Vector(1, 1, 0)));
 
-	polygons.push_back(Mesh::Polygon({ 0, 1, 3, 2 }, Color(0xff, 0x00, 0x00)));
-	polygons.push_back(Mesh::Polygon({ 4, 5, 7, 6 }, Color(0x00, 0x00, 0xff)));
-	polygons.push_back(Mesh::Polygon({ 0, 1, 5, 4 }, Color(0x00, 0xff, 0x00)));
-	polygons.push_back(Mesh::Polygon({ 3, 2, 6, 7 }, Color(0xff, 0xff, 0x00)));
-	polygons.push_back(Mesh::Polygon({ 0, 2, 6, 4 }, Color(0x00, 0xff, 0xff)));
-	polygons.push_back(Mesh::Polygon({ 1, 3, 7, 5 }, Color(0xff, 0x00, 0xff)));
+	polygons.push_back(Mesh::Polygon({ 0, 1, 3, 2 }, Color(0xff, 0x00, 0x00), 0));
 
-	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(polygons));
+	std::vector<Color> data;
+	data.push_back(Color(0x0, 0x0, 0x0));
+	data.push_back(Color(0xff, 0xff, 0xff));
+	data.push_back(Color(0xff, 0xff, 0xff));
+	data.push_back(Color(0x0, 0x0, 0x0));
+	Mesh::Texture texture(2, 2, std::move(data));
+	textures.push_back(std::move(texture));
+
+	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(polygons), std::move(textures));
 }
 
-static bool clipLineToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector &normal)
+static bool clipLineToPlane(Geo::Vector &a, Geo::Vector &b, const Geo::Vector &normal)
 {
 	float aN = a * normal;
 	float bN = b * normal;
@@ -78,30 +78,34 @@ static bool clipLineToPlane(Mesh::Vertex &a, Mesh::Vertex &b, const Geo::Vector 
 static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 {
 	int o = 0;
-	Geo::Vector a = polygon.vertices[polygon.numVertices - 1];
-	float aN = a * normal;
-	Geo::Vector b = polygon.vertices[0];
+	Mesh::Vertex a = polygon.vertices[polygon.numVertices - 1];
+	float aN = a.position * normal;
+	Mesh::Vertex b = polygon.vertices[0];
 	for(int i = 0; i < polygon.numVertices; i++) {
-		Geo::Vector next = polygon.vertices[i + 1];
-		float bN = b * normal;
+		Mesh::Vertex next = polygon.vertices[i + 1];
+		float bN = b.position * normal;
 		if(bN >= 0) {
 			if(aN < 0) {
-				Geo::Vector m = b - a;
+				Geo::Vector m = b.position - a.position;
+				Geo::Vector mt = b.texCoord - a.texCoord;
 				float mN = m * normal;
 				float t = -aN / mN;
-				Geo::Vector i = a + t * m;
-				polygon.vertices[o] = i;
+				Geo::Vector i = a.position + t * m;
+				Geo::Vector it = a.texCoord + t * mt;
+				polygon.vertices[o] = Mesh::Vertex(i, it);
 				o++;
 			}
 			polygon.vertices[o] = b;
 			o++;
 		} else {
 			if(aN > 0) {
-				Geo::Vector m = b - a;
+				Geo::Vector m = b.position - a.position;
+				Geo::Vector mt = b.texCoord - a.texCoord;
 				float mN = m * normal;
 				float t = -aN / mN;
-				Geo::Vector i = a + t * m;
-				polygon.vertices[o] = i;
+				Geo::Vector i = a.position + t * m;
+				Geo::Vector it = a.texCoord + t * mt;
+				polygon.vertices[o] = Mesh::Vertex(i, it);
 				o++;
 			}
 		}
@@ -114,7 +118,7 @@ static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 	return polygon.numVertices > 0;
 }
 
-static bool clipLine(Mesh::Vertex &a, Mesh::Vertex &b)
+static bool clipLine(Geo::Vector &a, Geo::Vector &b)
 {
 	for(int i = 0; i < 6; i++) {
 		if(!clipLineToPlane(a, b, clipPlanes[i])) return false;
@@ -132,17 +136,24 @@ static bool clipPolygon(ClipPolygon &polygon)
 	return true;
 }
 
-static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, const Color &color, DrawContext &dc)
+static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const Mesh::Vertex &p2, const Color &color, const Mesh::Texture &texture, DrawContext &dc)
 {
-	float x0 = p0.x();
-	float y0 = p0.y();
-	float z0 = p0.z();
-	float x1 = p1.x();
-	float y1 = p1.y();
-	float z1 = p1.z();
-	float x2 = p2.x();
-	float y2 = p2.y();
-	float z2 = p2.z();
+	Geo::Vector pv0 = p0.position.project();
+	Geo::Vector pv1 = p1.position.project();
+	Geo::Vector pv2 = p2.position.project();
+
+	float x0 = pv0.x();
+	float y0 = pv0.y();
+	float z0 = pv0.z();
+	float w0 = p0.position.w();
+	float x1 = pv1.x();
+	float y1 = pv1.y();
+	float z1 = pv1.z();
+	float w1 = p1.position.w();
+	float x2 = pv2.x();
+	float y2 = pv2.y();
+	float z2 = pv2.z();
+	float w2 = p2.position.w();
 
 	float det = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
 	float winding = (det > 0) ? 1.0f : -1.0f;
@@ -181,6 +192,17 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 	float e1 = x02 * ys2 - y02 * xs2;
 	float e2 = x10 * ys0 - y10 * xs0;
 
+	float iw0 = 1.0f / w0;
+	float iw1 = 1.0f / w1;
+	float iw2 = 1.0f / w2;
+
+	float s0 = p0.texCoord.x() * iw0;
+	float t0 = p0.texCoord.y() * iw0;
+	float s1 = p1.texCoord.x() * iw1;
+	float t1 = p1.texCoord.y() * iw1;
+	float s2 = p2.texCoord.x() * iw2;
+	float t2 = p2.texCoord.y() * iw2;
+
 	float multisampleBiasX[] = { -0.2f, 0.3f, -0.3f, 0.2f };
 	float multisampleBiasY[] = { -0.3f, -0.2f, 0.2f, 0.3f };
 
@@ -205,7 +227,14 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 					float z = a * z0 + b * z1 + c * z2;
 					unsigned short depth = unsigned short(z);
 					if(depth <= dc.getDepth(x, y, m)) {
-						dc.setPixel(x, y, m, color);
+						float iw = a * iw0 + b * iw1 + c * iw2;
+						float w = 1.0f / iw;
+						float s = a * s0 + b * s1 + c * s2;
+						float t = a * t0 + b * t1 + c * t2;
+
+						int si = int(std::round(s * w));
+						int ti = int(std::round(t * w));
+						dc.setPixel(x, y, m, texture.data[ti * texture.width + si]);
 						dc.setDepth(x, y, m, depth);
 					}
 				}
@@ -231,8 +260,8 @@ void Renderer::render(Framebuffer &framebuffer)
 	std::vector<Mesh::Vertex> vertices = mMesh.vertices();
 
 	for(Mesh::Vertex &vertex : vertices) {
-		vertex = transform * vertex;
-		vertex = perspective * vertex;
+		vertex = Mesh::Vertex(transform * vertex.position, vertex.texCoord);
+		vertex = Mesh::Vertex(perspective * vertex.position, vertex.texCoord);
 	}
 
 	DrawContext dc(framebuffer);
@@ -255,11 +284,11 @@ void Renderer::render(Framebuffer &framebuffer)
 			continue;
 		}
 
-		Geo::Vector p0 = viewport * clippedPolygon.vertices[0].project();
-		Geo::Vector p1 = viewport * clippedPolygon.vertices[1].project();
+		Mesh::Vertex p0(viewport * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord);
+		Mesh::Vertex p1(viewport * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord);
 		for(int i = 2; i < clippedPolygon.numVertices; i++) {
-			Geo::Vector p2 = viewport * clippedPolygon.vertices[i].project();
-			renderTriangle(p0, p1, p2, polygon.color, dc);
+			Mesh::Vertex p2(viewport * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord);
+			renderTriangle(p0, p1, p2, polygon.color, mMesh.textures()[polygon.texture], dc);
 			p1 = p2;
 		}
 	}

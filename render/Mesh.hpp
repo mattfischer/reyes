@@ -11,27 +11,47 @@
 class Mesh
 {
 public:
-	typedef Geo::Vector Vertex;
 	typedef std::tuple<int, int> Edge;
+
+	struct Vertex
+	{
+		Geo::Vector position;
+		Geo::Vector texCoord;
+
+		Vertex() = default;
+		Vertex(const Geo::Vector &_position, const Geo::Vector &_texCoord) : position(_position), texCoord(_texCoord) {}
+	};
 
 	struct Polygon {
 		std::vector<int> indices;
 		Color color;
+		int texture;
 
-		Polygon(std::initializer_list<int> _indices, Color &_color) : indices(_indices), color(_color) {}
+		Polygon(std::initializer_list<int> _indices, Color &_color, int _texture) : indices(_indices), color(_color), texture(_texture) {}
+	};
+
+	struct Texture
+	{
+		int width;
+		int height;
+		std::vector<Color> data;
+
+		Texture(int _width, int _height, std::vector<Color> &&_data) : data(std::move(_data)), width(_width), height(_height) {}
 	};
 
 	Mesh() = default;
-	Mesh(std::vector<Vertex> &&vertices, std::vector<Edge> &&edges, std::vector<Polygon> &&polygons);
+	Mesh(std::vector<Vertex> &&vertices, std::vector<Edge> &&edges, std::vector<Polygon> &&polygons, std::vector<Texture> &&textures);
 
 	const std::vector<Vertex> &vertices() const;
 	const std::vector<Edge> &edges() const;
 	const std::vector<Polygon> &polygons() const;
+	const std::vector<Texture> &textures() const;
 
 private:
 	std::vector<Vertex> mVertices;
 	std::vector<Edge> mEdges;
 	std::vector<Polygon> mPolygons;
+	std::vector<Texture> mTextures;
 };
 
 #endif
