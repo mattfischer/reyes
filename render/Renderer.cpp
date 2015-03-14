@@ -169,6 +169,14 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 	float xs2 = xs - x2;
 	float ys2 = ys - y2;
 
+	float X0 = -y21;
+	float X1 = -y02;
+	float X2 = -y10;
+
+	float Y0 = x21;
+	float Y1 = x02;
+	float Y2 = x10;
+
 	float e0 = x21 * ys1 - y21 * xs1;
 	float e1 = x02 * ys2 - y02 * xs2;
 	float e2 = x10 * ys0 - y10 * xs0;
@@ -185,9 +193,9 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 		for(int x = int(xMin); x <= int(xMax); x++)
 		{
 			for(int m = 0; m < 4; m++) {
-				float e0m = e0 + multisampleBiasX[m] * -y21 + multisampleBiasY[m] * x21;
-				float e1m = e1 + multisampleBiasX[m] * -y02 + multisampleBiasY[m] * x02;
-				float e2m = e2 + multisampleBiasX[m] * -y10 + multisampleBiasY[m] * x10;
+				float e0m = e0 + X0 * multisampleBiasX[m] + Y0 * multisampleBiasY[m];
+				float e1m = e1 + X1 * multisampleBiasX[m] + Y1 * multisampleBiasY[m];
+				float e2m = e2 + X2 * multisampleBiasX[m] + Y2 * multisampleBiasY[m];
 
 				if(e0m >= 0 && e1m >= 0 && e2m >= 0) {
 					float a = e0m * invdet;
@@ -203,14 +211,14 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 				}
 			}
 
-			e0 -= y21;
-			e1 -= y02;
-			e2 -= y10;
+			e0 += X0;
+			e1 += X1;
+			e2 += X2;
 		}
 
-		e0 = e0r + x21;
-		e1 = e1r + x02;
-		e2 = e2r + x10;
+		e0 = e0r + Y0;
+		e1 = e1r + Y1;
+		e2 = e2r + Y2;
 	}
 }
 
