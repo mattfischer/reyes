@@ -20,7 +20,7 @@ int DrawContext::height()
 
 void DrawContext::setPixel(int x, int y, const Color &color)
 {
-	unsigned char *bits = mFramebuffer.bits();
+	unsigned char *bits = mFramebuffer.colorBits();
 	int addr = (y * mFramebuffer.width() + x) * 3;
 	bits[addr + 0] = color.b;
 	bits[addr + 1] = color.g;
@@ -29,7 +29,7 @@ void DrawContext::setPixel(int x, int y, const Color &color)
 
 void DrawContext::blendPixel(int x, int y, const Color &color, float alpha)
 {
-	unsigned char *bits = mFramebuffer.bits();
+	unsigned char *bits = mFramebuffer.colorBits();
 	int addr = (y * mFramebuffer.width() + x) * 3;
 	bits[addr + 0] = unsigned char(bits[addr + 0] * (1.0f - alpha) + color.b * alpha);
 	bits[addr + 1] = unsigned char(bits[addr + 1] * (1.0f - alpha) + color.g * alpha);
@@ -109,4 +109,23 @@ void DrawContext::aaline(float x0, float y0, float x1, float y1, const Color &co
 		blendPixel(x, y - 1, color, (1.0f - err) * x1gap);
 		blendPixel(x, y, color, err * x1gap);
 	}
+}
+
+void DrawContext::setDepth(int x, int y, unsigned short depth)
+{
+	mFramebuffer.depthBits()[y * mFramebuffer.width() + x] = depth;
+}
+
+void DrawContext::fillRectDepth(int x, int y, int width, int height, unsigned short depth)
+{
+	for(int i = x; i < x + width; i++) {
+		for(int j = y; j < y + height; j++) {
+			setDepth(i, j, depth);
+		}
+	}
+}
+
+unsigned short DrawContext::getDepth(int x, int y)
+{
+	return mFramebuffer.depthBits()[y * mFramebuffer.width() + x];
 }

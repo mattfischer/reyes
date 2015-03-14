@@ -19,7 +19,7 @@ namespace Transformation
 	Matrix rotate(const Vector &vector);
 
 	Matrix perspective(float width, float height, float near, float far);
-	Matrix viewport(float xMin, float yMin, float xMax, float yMax);
+	Matrix viewport(float xMin, float yMin, float xMax, float yMax, float zMin, float zMax);
 };
 
 }

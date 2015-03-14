@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <climits>
 
 static Geo::Vector clipPlanes[] = {
 		{ 1, 0, 0, 1 },
@@ -135,13 +136,17 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 {
 	float x0 = p0.x();
 	float y0 = p0.y();
+	float z0 = p0.z();
 	float x1 = p1.x();
 	float y1 = p1.y();
+	float z1 = p1.z();
 	float x2 = p2.x();
 	float y2 = p2.y();
+	float z2 = p2.z();
 
 	float det = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
 	float winding = (det > 0) ? 1.0f : -1.0f;
+	float invdet = 1.0f / det * winding;
 
 	float x10 = (x1 - x0) * winding;
 	float y10 = (y1 - y0) * winding;
@@ -164,9 +169,9 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 	float xs2 = xs - x2;
 	float ys2 = ys - y2;
 
-	float e0 = x10 * ys0 - y10 * xs0;
-	float e1 = x21 * ys1 - y21 * xs1;
-	float e2 = x02 * ys2 - y02 * xs2;
+	float e0 = x21 * ys1 - y21 * xs1;
+	float e1 = x02 * ys2 - y02 * xs2;
+	float e2 = x10 * ys0 - y10 * xs0;
 
 	for(int y = int(yMin); y <= int(yMax); y++)
 	{
@@ -177,17 +182,26 @@ static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const G
 		for(int x = int(xMin); x <= int(xMax); x++)
 		{
 			if(e0 >= 0 && e1 >= 0 && e2 >= 0) {
-				dc.setPixel(x, y, color);
+				float a = e0 * invdet;
+				float b = e1 * invdet;
+				float c = e2 * invdet;
+
+				float z = a * z0 + b * z1 + c * z2;
+				unsigned short depth = unsigned short(z);
+				if(depth <= dc.getDepth(x, y)) {
+					dc.setPixel(x, y, color);
+					dc.setDepth(x, y, depth);
+				}
 			}
 
-			e0 -= y10;
-			e1 -= y21;
-			e2 -= y02;
+			e0 -= y21;
+			e1 -= y02;
+			e2 -= y10;
 		}
 
-		e0 = e0r + x10;
-		e1 = e1r + x21;
-		e2 = e2r + x02;
+		e0 = e0r + x21;
+		e1 = e1r + x02;
+		e2 = e2r + x10;
 	}
 }
 
@@ -195,7 +209,7 @@ void Renderer::render(Framebuffer &framebuffer)
 {
 	Geo::Matrix transform = Geo::Transformation::translate(0, 0, 5) * Geo::Transformation::rotate(20, 20, 0);
 	Geo::Matrix perspective = Geo::Transformation::perspective(2.0f * float(framebuffer.width()) / float(framebuffer.height()), 2.0f, 1.0f, 10.0f);
-	Geo::Matrix viewport = Geo::Transformation::viewport(0.0f, 0.0f, float(framebuffer.width()), float(framebuffer.height()));
+	Geo::Matrix viewport = Geo::Transformation::viewport(0.0f, 0.0f, float(framebuffer.width()), float(framebuffer.height()), 0, float(USHRT_MAX));
 
 	std::vector<Mesh::Vertex> vertices = mMesh.vertices();
 
@@ -207,6 +221,7 @@ void Renderer::render(Framebuffer &framebuffer)
 	DrawContext dc(framebuffer);
 
 	dc.fillRect(0, 0, framebuffer.width(), framebuffer.height(), Color(0x80, 0x80, 0x80));
+	dc.fillRectDepth(0, 0, framebuffer.width(), framebuffer.height(), USHRT_MAX);
 	ClipPolygon clippedPolygon;
 
 	for(const Mesh::Polygon &polygon : mMesh.polygons()) {

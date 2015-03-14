@@ -4,28 +4,35 @@ Framebuffer::Framebuffer()
 {
 	mWidth = 0;
 	mHeight = 0;
-	mBits = 0;
+	mColorBits = 0;
 }
 
 Framebuffer::Framebuffer(int width, int height)
 {
 	mWidth = width;
 	mHeight = height;
-	mBits = new unsigned char[mWidth * mHeight * 3];
+	mColorBits = new unsigned char[mWidth * mHeight * 3];
+	mDepthBits = new unsigned short[mWidth * mHeight];
 }
 
 Framebuffer::Framebuffer(Framebuffer &&other)
 {
 	mWidth = other.mWidth;
 	mHeight = other.mHeight;
-	mBits = other.mBits;
-	other.mBits = 0;
+	mColorBits = other.mColorBits;
+	other.mColorBits = 0;
+	mDepthBits = other.mDepthBits;
+	other.mDepthBits = 0;
 }
 
 Framebuffer::~Framebuffer()
 {
-	if(mBits) {
-		delete[] mBits;
+	if(mColorBits) {
+		delete[] mColorBits;
+	}
+
+	if(mDepthBits) {
+		delete[] mDepthBits;
 	}
 }
 
@@ -33,11 +40,17 @@ Framebuffer &Framebuffer::operator=(Framebuffer &&other)
 {
 	mWidth = other.mWidth;
 	mHeight = other.mHeight;
-	if(mBits) {
-		delete[] mBits;
+	if(mColorBits) {
+		delete[] mColorBits;
 	}
-	mBits = other.mBits;
-	other.mBits = 0;
+	mColorBits = other.mColorBits;
+	other.mColorBits = 0;
+
+	if(mDepthBits) {
+		delete[] mDepthBits;
+	}
+	mDepthBits = other.mDepthBits;
+	other.mDepthBits = 0;
 
 	return *this;
 }
@@ -52,12 +65,22 @@ int Framebuffer::height()
 	return mHeight;
 }
 
-const unsigned char *Framebuffer::bits() const
+const unsigned char *Framebuffer::colorBits() const
 {
-	return mBits;
+	return mColorBits;
 }
 
-unsigned char *Framebuffer::bits()
+unsigned char *Framebuffer::colorBits()
 {
-	return mBits;
+	return mColorBits;
+}
+
+const unsigned short *Framebuffer::depthBits() const
+{
+	return mDepthBits;
+}
+
+unsigned short *Framebuffer::depthBits()
+{
+	return mDepthBits;
 }

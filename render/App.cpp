@@ -96,6 +96,6 @@ void App::postFramebuffer()
 	bi.bmiHeader.biCompression = BI_RGB;
 
 	HBITMAP hBitmap = (HBITMAP)GetCurrentObject(mBackDC, OBJ_BITMAP);
-	SetDIBits(mBackDC, hBitmap, 0, mFramebuffer.height(), mFramebuffer.bits(), &bi, DIB_RGB_COLORS);
+	SetDIBits(mBackDC, hBitmap, 0, mFramebuffer.height(), mFramebuffer.colorBits(), &bi, DIB_RGB_COLORS);
 	InvalidateRect(mHWnd, NULL, FALSE);
 }

@@ -16,13 +16,17 @@ public:
 	int width();
 	int height();
 
-	const unsigned char *bits() const;
-	unsigned char *bits();
+	const unsigned char *colorBits() const;
+	unsigned char *colorBits();
+
+	const unsigned short *depthBits() const;
+	unsigned short *depthBits();
 
 private:
 	int mWidth;
 	int mHeight;
-	unsigned char *mBits;
+	unsigned char *mColorBits;
+	unsigned short *mDepthBits;
 };
 
 #endif

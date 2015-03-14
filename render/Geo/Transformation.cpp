@@ -88,12 +88,12 @@ namespace Geo {
 			0, 0, 1, 0);
 	}
 
-	Matrix Transformation::viewport(float xMin, float yMin, float xMax, float yMax)
+	Matrix Transformation::viewport(float xMin, float yMin, float xMax, float yMax, float zMin, float zMax)
 	{
 		return Matrix(
 			(xMax - xMin) / 2.0f, 0, 0, xMin + (xMax - xMin) / 2.0f,
 			0, (yMax - yMin) / 2.0f, 0, yMin + (yMax - yMin) / 2.0f,
-			0, 0, 1, 0,
+			0, 0, (zMax - zMin) / 2.0f, zMin + (zMax - zMin) / 2.0f,
 			0, 0, 0, 1);
 	}
 }
