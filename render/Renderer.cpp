@@ -5,6 +5,7 @@
 #include "Geo/Transformation.hpp"
 
 #include <memory>
+#include <algorithm>
 
 static Geo::Vector clipPlanes[] = {
 		{ 1, 0, 0, 1 },
@@ -120,6 +121,32 @@ static bool clipPolygon(Polygon &polygon)
 	return true;
 }
 
+static float edge(const Geo::Vector &v0, const Geo::Vector &v1, const Geo::Vector &p)
+{
+	return (v1.x() - v0.x()) * (p.y() - v0.y()) - (v1.y() - v0.y()) * (p.x() - v0.x());
+}
+
+static void renderTriangle(const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, DrawContext &dc)
+{
+	float xMin = std::min({ p0.x(), p1.x(), p2.x() });
+	float xMax = std::max({ p0.x(), p1.x(), p2.x() });
+	float yMin = std::min({ p0.y(), p1.y(), p2.y() });
+	float yMax = std::max({ p0.y(), p1.y(), p2.y() });
+
+	for(int x = int(xMin); x <= int(xMax); x++) {
+		for(int y = int(yMin); y <= int(yMax); y++)
+		{
+			Geo::Vector p(float(x) + 0.5f, float(y) + 0.5f, 0);
+			float e0 = edge(p0, p1, p);
+			float e1 = edge(p1, p2, p);
+			float e2 = edge(p2, p0, p);
+			if(e0 >= 0 && e1 >= 0 && e2 >= 0) {
+				dc.setPixel(int(x), int(y), DrawContext::Color(0xff, 0xff, 0xff));
+			}
+		}
+	}
+}
+
 void Renderer::render(Framebuffer &framebuffer)
 {
 	Geo::Matrix transform = Geo::Transformation::translate(0, 0, 5);
@@ -149,13 +176,12 @@ void Renderer::render(Framebuffer &framebuffer)
 			continue;
 		}
 
-		Geo::Vector a = polygon.vertices[polygon.numVertices - 1];
-		a = viewport * a.project();
-		for(int i=0; i<polygon.numVertices; i++) {
-			Geo::Vector b = polygon.vertices[i];
-			b = viewport * b.project();
-			dc.aaline(a.x(), a.y(), b.x(), b.y(), DrawContext::Color(0xff, 0xff, 0xff));
-			a = b;
+		Geo::Vector p0 = viewport * polygon.vertices[0].project();
+		Geo::Vector p1 = viewport * polygon.vertices[1].project();
+		for(int i = 2; i < polygon.numVertices; i++) {
+			Geo::Vector p2 = viewport * polygon.vertices[i].project();
+			renderTriangle(p0, p1, p2, dc);
+			p1 = p2;
 		}
 	}
 }

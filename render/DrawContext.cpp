@@ -8,6 +8,16 @@ DrawContext::DrawContext(Framebuffer &framebuffer)
 {
 }
 
+int DrawContext::width()
+{
+	return mFramebuffer.width();
+}
+
+int DrawContext::height()
+{
+	return mFramebuffer.height();
+}
+
 void DrawContext::setPixel(int x, int y, Color &color)
 {
 	unsigned char *bits = mFramebuffer.bits();

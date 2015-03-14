@@ -16,6 +16,9 @@ public:
 		Color(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b) {}
 	};
 
+	int width();
+	int height();
+
 	void setPixel(int x, int y, Color &color);
 	void blendPixel(int x, int y, Color &color, float alpha);
 	void fillRect(int x, int y, int width, int height, Color &color);
