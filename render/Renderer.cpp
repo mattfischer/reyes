@@ -229,12 +229,19 @@ static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const
 					if(depth <= dc.getDepth(x, y, m)) {
 						float iw = a * iw0 + b * iw1 + c * iw2;
 						float w = 1.0f / iw;
-						float s = a * s0 + b * s1 + c * s2;
-						float t = a * t0 + b * t1 + c * t2;
+						float s = (a * s0 + b * s1 + c * s2) * w;
+						float t = (a * t0 + b * t1 + c * t2) * w;
 
-						int si = int(std::round(s * w));
-						int ti = int(std::round(t * w));
-						dc.setPixel(x, y, m, texture.data[ti * texture.width + si]);
+						int si = int(std::floor(s));
+						int ti = int(std::floor(t));
+						float sf = s - float(si);
+						float tf = t - float(ti);
+						Color c0 = texture.data[ti * texture.width + si];
+						Color cs = texture.data[ti * texture.width + si + 1];
+						Color ct = texture.data[(ti + 1) * texture.width + si];
+						Color cst = texture.data[(ti + 1) * texture.width + si + 1];
+						Color c = c0 * sf * tf + cs * (1 - s) * t + ct * s * (1 - t) + cst * (1 - s) * (1 - t);
+						dc.setPixel(x, y, m, c);
 						dc.setDepth(x, y, m, depth);
 					}
 				}
