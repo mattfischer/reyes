@@ -44,7 +44,8 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	mRenderer.render(mFramebuffer);
+	Renderer renderer(mFramebuffer);
+	renderer.render();
 	postFramebuffer();
 
 	MSG msg;

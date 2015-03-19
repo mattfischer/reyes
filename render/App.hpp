@@ -26,7 +26,6 @@ private:
 	HWND mHWnd;
 	HDC mBackDC;
 	Framebuffer mFramebuffer;
-	Renderer mRenderer;
 };
 
 #endif

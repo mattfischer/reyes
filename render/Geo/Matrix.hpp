@@ -1,5 +1,5 @@
 #ifndef GEO_MATRIX_HPP
-#define Geo_MATRIX_HPP
+#define GEO_MATRIX_HPP
 
 #include "Geo/Vector.hpp"
 

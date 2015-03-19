@@ -3,16 +3,33 @@
 
 #include "Framebuffer.hpp"
 #include "Mesh.hpp"
+#include "Geo/Matrix.hpp"
 
 class Renderer
 {
 public:
-	Renderer();
+	Renderer(Framebuffer &framebuffer);
+	Renderer &operator=(Renderer &other) = default;
 
-	void render(Framebuffer &framebuffer);
+	enum class MatrixType
+	{
+		ModelView,
+		Projection,
+		Viewport,
+		Count
+	};
+
+	void setMatrix(MatrixType type, const Geo::Matrix &modelView);
+	const Geo::Matrix &matrix(MatrixType type);
+
+	void renderMeshWireframe(const Mesh &mesh);
+	void renderMeshPolygons(const Mesh &mesh);
+	void render();
 
 private:
+	Framebuffer &mFramebuffer;
 	Mesh mMesh;
+	Geo::Matrix mMatrices[unsigned int(MatrixType::Count)];
 };
 
 #endif
