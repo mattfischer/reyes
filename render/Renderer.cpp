@@ -25,7 +25,7 @@ struct ClipPolygon
 	int numVertices;
 };
 
-static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, int divisions)
+static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, std::vector<Mesh::Polygon> &polygons, int divisions)
 {
 	int startVertex = vertices.size();
 
@@ -62,11 +62,20 @@ static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Verte
 			if(j > 0) {
 				edges.push_back(Mesh::Edge(startVertex + i * (divisions + 1) + j - 1, startVertex + i * (divisions + 1) + j));
 			}
+
+			if(i > 0 && j > 0) {
+				int i0 = startVertex + (i - 1) * (divisions + 1) + j - 1;
+				int i1 = startVertex + (i - 1) * (divisions + 1) + j;
+				int i2 = startVertex + i * (divisions + 1) + j;
+				int i3 = startVertex + i * (divisions + 1) + j - 1;
+
+				polygons.push_back(Mesh::Polygon({ i0, i1, i2, i3 }, Color(0xff, 0x0, 0x0), -1));
+			}
 		}
 	}
 }
 
-static void loadBptFile(const std::string &filename, std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, int divisions)
+static void loadBptFile(const std::string &filename, std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, std::vector<Mesh::Polygon> &polygons, int divisions)
 {
 	std::ifstream file(filename.c_str());
 	int numPatches;
@@ -81,7 +90,7 @@ static void loadBptFile(const std::string &filename, std::vector<Mesh::Vertex> &
 			file >> x >> y >> z;
 			points[j] = Geo::Vector(x, y, z);
 		}
-		tesselatePatch(points, vertices, edges, divisions);
+		tesselatePatch(points, vertices, edges, polygons, divisions);
 	}
 }
 
@@ -97,7 +106,7 @@ Renderer::Renderer(Framebuffer &framebuffer)
 	std::vector<Mesh::Polygon> polygons;
 	std::vector<Mesh::Texture> textures;
 
-	loadBptFile("teapot.bpt", vertices, edges, 16);
+	loadBptFile("teapot.bpt", vertices, edges, polygons, 16);
 
 	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(polygons), std::move(textures));
 }
@@ -300,12 +309,14 @@ static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const
 						int ti = int(std::floor(t));
 						float sf = s - float(si);
 						float tf = t - float(ti);
+						/*
 						Color c0 = texture.data[ti * texture.width + si];
 						Color cs = texture.data[ti * texture.width + si + 1];
 						Color ct = texture.data[(ti + 1) * texture.width + si];
 						Color cst = texture.data[(ti + 1) * texture.width + si + 1];
 						Color c = c0 * sf * tf + cs * (1 - s) * t + ct * s * (1 - t) + cst * (1 - s) * (1 - t);
-						dc.setPixel(x, y, m, c);
+						*/
+						dc.setPixel(x, y, m, color);
 						dc.setDepth(x, y, m, depth);
 					}
 				}
@@ -390,6 +401,9 @@ void Renderer::render()
 	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Color(0x80, 0x80, 0x80));
 	dc.fillRectDepth(0, 0, mFramebuffer.width(), mFramebuffer.height(), USHRT_MAX);
 
+	renderMeshPolygons(mMesh);
+
 	dc.doMultisample();
-	renderMeshWireframe(mMesh);
+
+	//renderMeshWireframe(mMesh);
 }
