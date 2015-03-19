@@ -7,6 +7,8 @@
 #include <memory>
 #include <algorithm>
 #include <climits>
+#include <string>
+#include <fstream>
 
 static Geo::Vector clipPlanes[] = {
 		{ 1, 0, 0, 1 },
@@ -64,10 +66,29 @@ static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Verte
 	}
 }
 
+static void loadBptFile(const std::string &filename, std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, int divisions)
+{
+	std::ifstream file(filename.c_str());
+	int numPatches;
+
+	file >> numPatches;
+	for(int i = 0; i < numPatches; i++) {
+		int dimx, dimy;
+		file >> dimx >> dimy;
+		Geo::Vector points[16];
+		for(int j = 0; j < 16; j++) {
+			float x, y, z;
+			file >> x >> y >> z;
+			points[j] = Geo::Vector(x, y, z);
+		}
+		tesselatePatch(points, vertices, edges, divisions);
+	}
+}
+
 Renderer::Renderer(Framebuffer &framebuffer)
 	: mFramebuffer(framebuffer)
 {
-	setMatrix(MatrixType::ModelView, Geo::Transformation::translate(0, 0, 3) * Geo::Transformation::rotate(30, 20, 0));
+	setMatrix(MatrixType::ModelView, Geo::Transformation::translate(0, -2, 5) * Geo::Transformation::rotate(-100, 0, 0));
 	setMatrix(MatrixType::Projection, Geo::Transformation::perspective(2.0f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 2.0f, 1.0f, 10.0f));
 	setMatrix(MatrixType::Viewport, Geo::Transformation::viewport(0.0f, 0.0f, float(mFramebuffer.width()), float(mFramebuffer.height()), 0, float(USHRT_MAX)));
 
@@ -76,12 +97,7 @@ Renderer::Renderer(Framebuffer &framebuffer)
 	std::vector<Mesh::Polygon> polygons;
 	std::vector<Mesh::Texture> textures;
 
-	Geo::Vector points[] = {
-			{ -1.0f, -1.0f,  -1.0f }, {-0.5f, -1.0f,  1.0f}, {0.5f, -1.0f, -1.0f}, { 1.0f, -1.0f, 0.0f },
-			{ -0.5f, -0.5f,  0.0f }, {-0.5f, -0.5f,  0.0f}, {0.5f, -0.5f, 0.0f}, { 1.0f, -0.5f, 0.0f },
-			{ -1.5f,  0.5f,  0.0f }, {-0.5f,  0.5f,  0.0f}, {0.5f,  0.5f, 0.0f}, { 1.0f,  0.5f, 0.0f },
-			{ -1.0f,  1.0f,  0.0f }, {-0.5f,  1.0f,  0.0f}, {0.5f,  1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f } };
-	tesselatePatch(points, vertices, edges, 16);
+	loadBptFile("teapot.bpt", vertices, edges, 16);
 
 	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(polygons), std::move(textures));
 }

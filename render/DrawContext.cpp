@@ -29,6 +29,10 @@ void DrawContext::setPixel(int x, int y, int m, const Color &color)
 
 void DrawContext::blendDisplayPixel(int x, int y, const Color &color, float alpha)
 {
+	if(x < 0 || y < 0 || x >= mFramebuffer.width() || y >= mFramebuffer.height()) {
+		return;
+	}
+
 	unsigned char *bits = mFramebuffer.displayColorBits();
 	int addr = (y * mFramebuffer.width() + x) * 3;
 	bits[addr + 0] = unsigned char(bits[addr + 0] * (1.0f - alpha) + color.b * alpha);
