@@ -23,10 +23,51 @@ struct ClipPolygon
 	int numVertices;
 };
 
+static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, int divisions)
+{
+	int startVertex = vertices.size();
+
+	for(int i = 0; i <= divisions; i++) {
+		for(int j = 0; j <= divisions; j++) {
+			float s = float(i) / float(divisions);
+			float t = float(j) / float(divisions);
+			Geo::Vector colPoints[4];
+			for(int k = 0; k < 4; k++) {
+				Geo::Vector rowPoints[3];
+				rowPoints[0] = points[k * 4 + 0] * s + points[k * 4 + 1] * (1 - s);
+				rowPoints[1] = points[k * 4 + 1] * s + points[k * 4 + 2] * (1 - s);
+				rowPoints[2] = points[k * 4 + 2] * s + points[k * 4 + 3] * (1 - s);
+
+				rowPoints[0] = rowPoints[0] * s + rowPoints[1] * (1 - s);
+				rowPoints[1] = rowPoints[1] * s + rowPoints[2] * (1 - s);
+
+				colPoints[k] = rowPoints[0] * s + rowPoints[1] * (1 - s);
+			}
+			colPoints[0] = colPoints[0] * t + colPoints[1] * (1 - t);
+			colPoints[1] = colPoints[1] * t + colPoints[2] * (1 - t);
+			colPoints[2] = colPoints[2] * t + colPoints[3] * (1 - t);
+
+			colPoints[0] = colPoints[0] * t + colPoints[1] * (1 - t);
+			colPoints[1] = colPoints[1] * t + colPoints[2] * (1 - t);
+
+			Geo::Vector point = colPoints[0] * t + colPoints[1] * (1 - t);
+			vertices.push_back(Mesh::Vertex(point, Geo::Vector(s, t)));
+
+			if(i > 0) {
+				edges.push_back(Mesh::Edge(startVertex + i * (divisions + 1) + j, startVertex + (i - 1) * (divisions + 1) + j));
+			}
+
+			if(j > 0) {
+				edges.push_back(Mesh::Edge(startVertex + i * (divisions + 1) + j - 1, startVertex + i * (divisions + 1) + j));
+			}
+		}
+	}
+}
+
 Renderer::Renderer(Framebuffer &framebuffer)
 	: mFramebuffer(framebuffer)
 {
-	setMatrix(MatrixType::ModelView, Geo::Transformation::translate(0, 0, 5) * Geo::Transformation::rotate(20, 20, 0));
+	setMatrix(MatrixType::ModelView, Geo::Transformation::translate(0, 0, 3) * Geo::Transformation::rotate(30, 20, 0));
 	setMatrix(MatrixType::Projection, Geo::Transformation::perspective(2.0f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 2.0f, 1.0f, 10.0f));
 	setMatrix(MatrixType::Viewport, Geo::Transformation::viewport(0.0f, 0.0f, float(mFramebuffer.width()), float(mFramebuffer.height()), 0, float(USHRT_MAX)));
 
@@ -35,25 +76,12 @@ Renderer::Renderer(Framebuffer &framebuffer)
 	std::vector<Mesh::Polygon> polygons;
 	std::vector<Mesh::Texture> textures;
 
-	vertices.push_back(Mesh::Vertex(Geo::Vector(-1, -1, -1), Geo::Vector(0, 0, 0)));
-	vertices.push_back(Mesh::Vertex(Geo::Vector(1, -1, -1), Geo::Vector(1, 0, 0)));
-	vertices.push_back(Mesh::Vertex(Geo::Vector(-1, 1, -1), Geo::Vector(0, 1, 0)));
-	vertices.push_back(Mesh::Vertex(Geo::Vector(1, 1, -1), Geo::Vector(1, 1, 0)));
-
-	edges.push_back(Mesh::Edge(0, 1));
-	edges.push_back(Mesh::Edge(1, 3));
-	edges.push_back(Mesh::Edge(3, 2));
-	edges.push_back(Mesh::Edge(2, 0));
-
-	polygons.push_back(Mesh::Polygon({ 0, 1, 3, 2 }, Color(0xff, 0x00, 0x00), 0));
-
-	std::vector<Color> data;
-	data.push_back(Color(0x0, 0x0, 0x0));
-	data.push_back(Color(0xff, 0xff, 0xff));
-	data.push_back(Color(0xff, 0xff, 0xff));
-	data.push_back(Color(0x0, 0x0, 0x0));
-	Mesh::Texture texture(2, 2, std::move(data));
-	textures.push_back(std::move(texture));
+	Geo::Vector points[] = {
+			{ -1.0f, -1.0f,  -1.0f }, {-0.5f, -1.0f,  1.0f}, {0.5f, -1.0f, -1.0f}, { 1.0f, -1.0f, 0.0f },
+			{ -0.5f, -0.5f,  0.0f }, {-0.5f, -0.5f,  0.0f}, {0.5f, -0.5f, 0.0f}, { 1.0f, -0.5f, 0.0f },
+			{ -1.5f,  0.5f,  0.0f }, {-0.5f,  0.5f,  0.0f}, {0.5f,  0.5f, 0.0f}, { 1.0f,  0.5f, 0.0f },
+			{ -1.0f,  1.0f,  0.0f }, {-0.5f,  1.0f,  0.0f}, {0.5f,  1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f } };
+	tesselatePatch(points, vertices, edges, 16);
 
 	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(polygons), std::move(textures));
 }
