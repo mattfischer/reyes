@@ -273,12 +273,13 @@ static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const
 	float iw1 = 1.0f / w1;
 	float iw2 = 1.0f / w2;
 
-	float s0 = p0.texCoord.x() * iw0;
-	float t0 = p0.texCoord.y() * iw0;
-	float s1 = p1.texCoord.x() * iw1;
-	float t1 = p1.texCoord.y() * iw1;
-	float s2 = p2.texCoord.x() * iw2;
-	float t2 = p2.texCoord.y() * iw2;
+	Geo::Vector texCoord0 = p0.texCoord * iw0;
+	Geo::Vector texCoord1 = p1.texCoord * iw1;
+	Geo::Vector texCoord2 = p2.texCoord * iw2;
+
+	Geo::Vector normal0 = p0.normal * iw0;
+	Geo::Vector normal1 = p1.normal * iw1;
+	Geo::Vector normal2 = p2.normal * iw2;
 
 	float multisampleBiasX[] = { -0.2f, 0.3f, -0.3f, 0.2f };
 	float multisampleBiasY[] = { -0.3f, -0.2f, 0.2f, 0.3f };
@@ -306,10 +307,11 @@ static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const
 					if(depth <= dc.getDepth(x, y, m)) {
 						float iw = a * iw0 + b * iw1 + c * iw2;
 						float w = 1.0f / iw;
-						float s = (a * s0 + b * s1 + c * s2) * w;
-						float t = (a * t0 + b * t1 + c * t2) * w;
-						Geo::Vector normal = a * p0.normal + b * p1.normal + c * p2.normal;
+						Geo::Vector texCoord = (a * texCoord0 + b * texCoord1 + c * texCoord2) * w;
+						Geo::Vector normal = (a * normal0 + b * normal1 + c * normal2) * w;
 
+						float s = texCoord.x();
+						float t = texCoord.y();
 						int si = int(std::floor(s));
 						int ti = int(std::floor(t));
 						float sf = s - float(si);
