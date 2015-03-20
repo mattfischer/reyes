@@ -106,9 +106,23 @@ namespace Geo {
 		return Vector(x() / w(), y() / w(), z() / w(), 1.0f);
 	}
 
+	float Vector::magnitude() const
+	{
+		return std::sqrt(x() * x() + y() * y() + z() * z());
+	}
+
+	Vector Vector::normalize() const
+	{
+		return *this / magnitude();
+	}
+
+	Vector Vector::operator%(const Vector &b) const
+	{
+		return Vector(y() * b.z() - b.y() * z(), z() * b.x() - b.z() * x(), x() * b.y() - b.x() * y());
+	}
+
 	Vector operator*(float b, const Vector &v)
 	{
 		return v * b;
 	}
-
 }

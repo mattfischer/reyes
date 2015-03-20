@@ -9,6 +9,7 @@
 #include <climits>
 #include <string>
 #include <fstream>
+#include <algorithm>
 
 static Geo::Vector clipPlanes[] = {
 		{ 1, 0, 0, 1 },
@@ -34,6 +35,8 @@ static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Verte
 			float s = float(i) / float(divisions);
 			float t = float(j) / float(divisions);
 			Geo::Vector colPoints[4];
+			Geo::Vector u;
+			Geo::Vector v;
 			for(int k = 0; k < 4; k++) {
 				Geo::Vector rowPoints[3];
 				rowPoints[0] = points[k * 4 + 0] * s + points[k * 4 + 1] * (1 - s);
@@ -44,6 +47,7 @@ static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Verte
 				rowPoints[1] = rowPoints[1] * s + rowPoints[2] * (1 - s);
 
 				colPoints[k] = rowPoints[0] * s + rowPoints[1] * (1 - s);
+				u = rowPoints[1] - rowPoints[0];
 			}
 			colPoints[0] = colPoints[0] * t + colPoints[1] * (1 - t);
 			colPoints[1] = colPoints[1] * t + colPoints[2] * (1 - t);
@@ -52,8 +56,12 @@ static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Verte
 			colPoints[0] = colPoints[0] * t + colPoints[1] * (1 - t);
 			colPoints[1] = colPoints[1] * t + colPoints[2] * (1 - t);
 
+			v = colPoints[1] - colPoints[0];
+
 			Geo::Vector point = colPoints[0] * t + colPoints[1] * (1 - t);
-			vertices.push_back(Mesh::Vertex(point, Geo::Vector(s, t)));
+			Geo::Vector normal = u % v;
+			normal.setW(0);
+			vertices.push_back(Mesh::Vertex(point, Geo::Vector(s, t), normal.normalize()));
 
 			if(i > 0) {
 				edges.push_back(Mesh::Edge(startVertex + i * (divisions + 1) + j, startVertex + (i - 1) * (divisions + 1) + j));
@@ -161,11 +169,13 @@ static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 			if(aN < 0) {
 				Geo::Vector m = b.position - a.position;
 				Geo::Vector mt = b.texCoord - a.texCoord;
+				Geo::Vector mn = b.normal - a.normal;
 				float mN = m * normal;
 				float t = -aN / mN;
 				Geo::Vector i = a.position + t * m;
 				Geo::Vector it = a.texCoord + t * mt;
-				polygon.vertices[o] = Mesh::Vertex(i, it);
+				Geo::Vector in = a.normal + t * mn;
+				polygon.vertices[o] = Mesh::Vertex(i, it, in);
 				o++;
 			}
 			polygon.vertices[o] = b;
@@ -174,11 +184,13 @@ static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 			if(aN > 0) {
 				Geo::Vector m = b.position - a.position;
 				Geo::Vector mt = b.texCoord - a.texCoord;
+				Geo::Vector mn = b.normal - a.normal;
 				float mN = m * normal;
 				float t = -aN / mN;
 				Geo::Vector i = a.position + t * m;
 				Geo::Vector it = a.texCoord + t * mt;
-				polygon.vertices[o] = Mesh::Vertex(i, it);
+				Geo::Vector in = a.normal + t * mn;
+				polygon.vertices[o] = Mesh::Vertex(i, it, in);
 				o++;
 			}
 		}
@@ -304,6 +316,7 @@ static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const
 						float w = 1.0f / iw;
 						float s = (a * s0 + b * s1 + c * s2) * w;
 						float t = (a * t0 + b * t1 + c * t2) * w;
+						Geo::Vector normal = a * p0.normal + b * p1.normal + c * p2.normal;
 
 						int si = int(std::floor(s));
 						int ti = int(std::floor(t));
@@ -316,7 +329,8 @@ static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const
 						Color cst = texture.data[(ti + 1) * texture.width + si + 1];
 						Color c = c0 * sf * tf + cs * (1 - s) * t + ct * s * (1 - t) + cst * (1 - s) * (1 - t);
 						*/
-						dc.setPixel(x, y, m, color);
+						float l = std::max(normal * (Geo::Vector(1, 1, -1, 0).normalize()), 0.0f);
+						dc.setPixel(x, y, m, color * l);
 						dc.setDepth(x, y, m, depth);
 					}
 				}
@@ -338,8 +352,8 @@ void Renderer::renderMeshWireframe(const Mesh &mesh)
 	std::vector<Mesh::Vertex> vertices = mesh.vertices();
 
 	for(Mesh::Vertex &vertex : vertices) {
-		vertex = Mesh::Vertex(matrix(MatrixType::ModelView) * vertex.position, vertex.texCoord);
-		vertex = Mesh::Vertex(matrix(MatrixType::Projection) * vertex.position, vertex.texCoord);
+		vertex = Mesh::Vertex(matrix(MatrixType::ModelView) * vertex.position, vertex.texCoord, matrix(MatrixType::ModelView) * vertex.normal);
+		vertex = Mesh::Vertex(matrix(MatrixType::Projection) * vertex.position, vertex.texCoord, vertex.normal);
 	}
 
 	DrawContext dc(mFramebuffer);
@@ -363,8 +377,8 @@ void Renderer::renderMeshPolygons(const Mesh &mesh)
 	std::vector<Mesh::Vertex> vertices = mesh.vertices();
 
 	for(Mesh::Vertex &vertex : vertices) {
-		vertex = Mesh::Vertex(matrix(MatrixType::ModelView) * vertex.position, vertex.texCoord);
-		vertex = Mesh::Vertex(matrix(MatrixType::Projection) * vertex.position, vertex.texCoord);
+		vertex = Mesh::Vertex(matrix(MatrixType::ModelView) * vertex.position, vertex.texCoord, matrix(MatrixType::ModelView) * vertex.normal);
+		vertex = Mesh::Vertex(matrix(MatrixType::Projection) * vertex.position, vertex.texCoord, vertex.normal);
 	}
 
 	DrawContext dc(mFramebuffer);
@@ -384,10 +398,10 @@ void Renderer::renderMeshPolygons(const Mesh &mesh)
 			continue;
 		}
 
-		Mesh::Vertex p0(matrix(MatrixType::Viewport) * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord);
-		Mesh::Vertex p1(matrix(MatrixType::Viewport) * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord);
+		Mesh::Vertex p0(matrix(MatrixType::Viewport) * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord, clippedPolygon.vertices[0].normal);
+		Mesh::Vertex p1(matrix(MatrixType::Viewport) * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
 		for(int i = 2; i < clippedPolygon.numVertices; i++) {
-			Mesh::Vertex p2(matrix(MatrixType::Viewport) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord);
+			Mesh::Vertex p2(matrix(MatrixType::Viewport) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
 			renderTriangle(p0, p1, p2, polygon.color, mMesh.textures()[polygon.texture], dc);
 			p1 = p2;
 		}

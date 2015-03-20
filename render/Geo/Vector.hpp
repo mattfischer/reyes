@@ -28,6 +28,8 @@ namespace Geo {
 		const float &operator()(int i) const;
 
 		Vector project() const;
+		Vector normalize() const;
+		float magnitude() const;
 
 		Vector operator+(const Vector &b) const;
 		Vector operator-(const Vector &b) const;
@@ -35,6 +37,7 @@ namespace Geo {
 		Vector operator*(float b) const;
 		Vector operator/(float b) const;
 		Vector operator-() const;
+		Vector operator%(const Vector &b) const;
 
 	protected:
 		float mValues[4];

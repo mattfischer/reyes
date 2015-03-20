@@ -17,9 +17,10 @@ public:
 	{
 		Geo::Vector position;
 		Geo::Vector texCoord;
+		Geo::Vector normal;
 
 		Vertex() = default;
-		Vertex(const Geo::Vector &_position, const Geo::Vector &_texCoord) : position(_position), texCoord(_texCoord) {}
+		Vertex(const Geo::Vector &_position, const Geo::Vector &_texCoord, const Geo::Vector &_normal) : position(_position), texCoord(_texCoord), normal(_normal) {}
 	};
 
 	struct Polygon {

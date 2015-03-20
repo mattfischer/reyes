@@ -7,12 +7,12 @@ struct Color
 	unsigned char g;
 	unsigned char b;
 
-	Color operator*(float c)
+	Color operator*(float c) const
 	{
 		return Color(unsigned char(r * c), unsigned char(g * c), unsigned char(b * c));
 	}
 
-	Color operator+(const Color &other)
+	Color operator+(const Color &other) const
 	{
 		return Color(r + other.r, g + other.g, b + other.b);
 	}
