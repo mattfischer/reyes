@@ -34,32 +34,24 @@ static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Verte
 		for(int j = 0; j <= divisions; j++) {
 			float s = float(i) / float(divisions);
 			float t = float(j) / float(divisions);
-			Geo::Vector colPoints[4];
-			Geo::Vector u;
-			Geo::Vector v;
-			for(int k = 0; k < 4; k++) {
-				Geo::Vector rowPoints[3];
-				rowPoints[0] = points[k * 4 + 0] * s + points[k * 4 + 1] * (1 - s);
-				rowPoints[1] = points[k * 4 + 1] * s + points[k * 4 + 2] * (1 - s);
-				rowPoints[2] = points[k * 4 + 2] * s + points[k * 4 + 3] * (1 - s);
 
-				rowPoints[0] = rowPoints[0] * s + rowPoints[1] * (1 - s);
-				rowPoints[1] = rowPoints[1] * s + rowPoints[2] * (1 - s);
-
-				colPoints[k] = rowPoints[0] * s + rowPoints[1] * (1 - s);
-				u = rowPoints[1] - rowPoints[0];
+			Geo::Vector interp[9];
+			for(int k = 0; k < 3; k++) {
+				for(int l = 0; l < 3; l++) {
+					interp[k * 3 + l] = points[k * 4 + l] * s * t + points[k * 4 + l + 1] * (1 - s) * t + points[(k + 1) * 4 + l] * s * (1 - t) + points[(k + 1) * 4 + l + 1] * (1 - s) * (1 - t);
+				}
 			}
-			colPoints[0] = colPoints[0] * t + colPoints[1] * (1 - t);
-			colPoints[1] = colPoints[1] * t + colPoints[2] * (1 - t);
-			colPoints[2] = colPoints[2] * t + colPoints[3] * (1 - t);
 
-			colPoints[0] = colPoints[0] * t + colPoints[1] * (1 - t);
-			colPoints[1] = colPoints[1] * t + colPoints[2] * (1 - t);
+			for(int k = 0; k < 2; k++) {
+				for(int l = 0; l < 2; l++) {
+					interp[k * 3 + l] = interp[k * 3 + l] * s * t + interp[k * 3 + l + 1] * (1 - s) * t + interp[(k + 1) * 3 + l] * s * (1 - t) + interp[(k + 1) * 3 + l + 1] * (1 - s) * (1 - t);
+				}
+			}
 
-			v = colPoints[1] - colPoints[0];
-
-			Geo::Vector point = colPoints[0] * t + colPoints[1] * (1 - t);
-			Geo::Vector normal = u % v;
+			Geo::Vector point = interp[0 * 3 + 0] * s * t + interp[0 * 3 + 1] * (1 - s) * t + interp[1 * 3 + 0] * s * (1 - t) + interp[1 * 3 + 1] * (1 - s) * (1 - t);
+			Geo::Vector u = (interp[1 * 3 + 0] - interp[0 * 3 + 0]) * s + (interp[1 * 3 + 1] - interp[0 * 3 + 1]) * (1 - s);
+			Geo::Vector v = (interp[0 * 3 + 1] - interp[0 * 3 + 0]) * t + (interp[1 * 3 + 1] - interp[1 * 3 + 0]) * (1 - t);
+			Geo::Vector normal = v % u;
 			normal.setW(0);
 			vertices.push_back(Mesh::Vertex(point, Geo::Vector(s, t), normal.normalize()));
 
