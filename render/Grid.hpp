@@ -2,6 +2,7 @@
 #define GRID_HPP
 
 #include "Geo/Vector.hpp"
+#include "Renderer.hpp"
 
 #include <memory>
 
@@ -28,6 +29,9 @@ public:
 
 	void setPoint(int x, int y, const Point &point);
 	const Point &point(int x, int y) const;
+
+	void renderWireframe(Renderer &renderer);
+	void renderSolid(Renderer &renderer);
 
 private:
 	int mWidth;
