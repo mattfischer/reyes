@@ -67,24 +67,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="BptFileLoader.cpp" />
     <ClCompile Include="DrawContext.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="Geo\Matrix.cpp" />
     <ClCompile Include="Geo\Transformation.cpp" />
     <ClCompile Include="Geo\Vector.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Patch.cpp" />
+    <ClCompile Include="PatchSet.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="BptFileLoader.hpp" />
     <ClInclude Include="Color.hpp" />
     <ClInclude Include="DrawContext.hpp" />
     <ClInclude Include="Framebuffer.hpp" />
     <ClInclude Include="Geo\Matrix.hpp" />
     <ClInclude Include="Geo\Transformation.hpp" />
     <ClInclude Include="Geo\Vector.hpp" />
+    <ClInclude Include="Grid.hpp" />
     <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="Patch.hpp" />
+    <ClInclude Include="PatchSet.hpp" />
     <ClInclude Include="Renderer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

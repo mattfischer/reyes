@@ -4,6 +4,9 @@
 
 #include "Geo/Transformation.hpp"
 
+#include "PatchSet.hpp"
+#include "BptFileLoader.hpp"
+
 #include <memory>
 #include <algorithm>
 #include <climits>
@@ -26,74 +29,6 @@ struct ClipPolygon
 	int numVertices;
 };
 
-static void tesselatePatch(const Geo::Vector points[16], std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, std::vector<Mesh::Polygon> &polygons, int divisions)
-{
-	int startVertex = vertices.size();
-
-	for(int i = 0; i <= divisions; i++) {
-		for(int j = 0; j <= divisions; j++) {
-			float s = float(i) / float(divisions);
-			float t = float(j) / float(divisions);
-
-			Geo::Vector interp[9];
-			for(int k = 0; k < 3; k++) {
-				for(int l = 0; l < 3; l++) {
-					interp[k * 3 + l] = points[k * 4 + l] * s * t + points[k * 4 + l + 1] * (1 - s) * t + points[(k + 1) * 4 + l] * s * (1 - t) + points[(k + 1) * 4 + l + 1] * (1 - s) * (1 - t);
-				}
-			}
-
-			for(int k = 0; k < 2; k++) {
-				for(int l = 0; l < 2; l++) {
-					interp[k * 3 + l] = interp[k * 3 + l] * s * t + interp[k * 3 + l + 1] * (1 - s) * t + interp[(k + 1) * 3 + l] * s * (1 - t) + interp[(k + 1) * 3 + l + 1] * (1 - s) * (1 - t);
-				}
-			}
-
-			Geo::Vector point = interp[0 * 3 + 0] * s * t + interp[0 * 3 + 1] * (1 - s) * t + interp[1 * 3 + 0] * s * (1 - t) + interp[1 * 3 + 1] * (1 - s) * (1 - t);
-			Geo::Vector u = (interp[1 * 3 + 0] - interp[0 * 3 + 0]) * s + (interp[1 * 3 + 1] - interp[0 * 3 + 1]) * (1 - s);
-			Geo::Vector v = (interp[0 * 3 + 1] - interp[0 * 3 + 0]) * t + (interp[1 * 3 + 1] - interp[1 * 3 + 0]) * (1 - t);
-			Geo::Vector normal = v % u;
-			normal.setW(0);
-			vertices.push_back(Mesh::Vertex(point, Geo::Vector(s, t), normal.normalize()));
-
-			if(i > 0) {
-				edges.push_back(Mesh::Edge(startVertex + i * (divisions + 1) + j, startVertex + (i - 1) * (divisions + 1) + j));
-			}
-
-			if(j > 0) {
-				edges.push_back(Mesh::Edge(startVertex + i * (divisions + 1) + j - 1, startVertex + i * (divisions + 1) + j));
-			}
-
-			if(i > 0 && j > 0) {
-				int i0 = startVertex + (i - 1) * (divisions + 1) + j - 1;
-				int i1 = startVertex + (i - 1) * (divisions + 1) + j;
-				int i2 = startVertex + i * (divisions + 1) + j;
-				int i3 = startVertex + i * (divisions + 1) + j - 1;
-
-				polygons.push_back(Mesh::Polygon({ i0, i1, i2, i3 }, Color(0xff, 0x0, 0x0), -1));
-			}
-		}
-	}
-}
-
-static void loadBptFile(const std::string &filename, std::vector<Mesh::Vertex> &vertices, std::vector<Mesh::Edge> &edges, std::vector<Mesh::Polygon> &polygons, int divisions)
-{
-	std::ifstream file(filename.c_str());
-	int numPatches;
-
-	file >> numPatches;
-	for(int i = 0; i < numPatches; i++) {
-		int dimx, dimy;
-		file >> dimx >> dimy;
-		Geo::Vector points[16];
-		for(int j = 0; j < 16; j++) {
-			float x, y, z;
-			file >> x >> y >> z;
-			points[j] = Geo::Vector(x, y, z);
-		}
-		tesselatePatch(points, vertices, edges, polygons, divisions);
-	}
-}
-
 Renderer::Renderer(Framebuffer &framebuffer)
 	: mFramebuffer(framebuffer)
 {
@@ -106,9 +41,7 @@ Renderer::Renderer(Framebuffer &framebuffer)
 	std::vector<Mesh::Polygon> polygons;
 	std::vector<Mesh::Texture> textures;
 
-	loadBptFile("teapot.bpt", vertices, edges, polygons, 16);
-
-	mMesh = Mesh(std::move(vertices), std::move(edges), std::move(polygons), std::move(textures));
+	mPatchSet = BptFileLoader::load("teapot.bpt");
 }
 
 void Renderer::setMatrix(MatrixType type, const Geo::Matrix &matrix)
@@ -213,7 +146,7 @@ static bool clipPolygon(ClipPolygon &polygon)
 	return true;
 }
 
-static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const Mesh::Vertex &p2, const Color &color, const Mesh::Texture &texture, DrawContext &dc)
+static void renderTriangle(const Mesh::Vertex &p0, const Mesh::Vertex &p1, const Mesh::Vertex &p2, const Color &color, DrawContext &dc)
 {
 	Geo::Vector pv0 = p0.position.project();
 	Geo::Vector pv1 = p1.position.project();
@@ -396,8 +329,84 @@ void Renderer::renderMeshPolygons(const Mesh &mesh)
 		Mesh::Vertex p1(matrix(MatrixType::Viewport) * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
 		for(int i = 2; i < clippedPolygon.numVertices; i++) {
 			Mesh::Vertex p2(matrix(MatrixType::Viewport) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
-			renderTriangle(p0, p1, p2, polygon.color, mMesh.textures()[polygon.texture], dc);
+			renderTriangle(p0, p1, p2, polygon.color, dc);
 			p1 = p2;
+		}
+	}
+}
+
+void Renderer::renderPatchSetPolygons(const PatchSet &patchSet)
+{
+	DrawContext dc(mFramebuffer);
+
+	for(const Patch &patch : patchSet) {
+		Grid grid = patch.tesselate(16);
+
+		ClipPolygon clippedPolygon;
+		clippedPolygon.vertices.resize(4 + 6);
+		for(int x = 0; x < grid.width() - 1; x++) {
+			for(int y = 0; y < grid.height() - 1; y++) {
+				clippedPolygon.numVertices = 4;
+				clippedPolygon.vertices[0] = Mesh::Vertex(grid.point(x, y).position, Geo::Vector(), grid.point(x, y).normal);
+				clippedPolygon.vertices[1] = Mesh::Vertex(grid.point(x + 1, y).position, Geo::Vector(), grid.point(x + 1, y).normal);
+				clippedPolygon.vertices[2] = Mesh::Vertex(grid.point(x + 1, y + 1).position, Geo::Vector(), grid.point(x + 1, y + 1).normal);
+				clippedPolygon.vertices[3] = Mesh::Vertex(grid.point(x, y + 1).position, Geo::Vector(), grid.point(x, y + 1).normal);
+
+				for(int i=0; i<4; i++) {
+					clippedPolygon.vertices[i] = Mesh::Vertex(matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, matrix(MatrixType::ModelView) * clippedPolygon.vertices[i].normal);
+				}
+
+				if(!clipPolygon(clippedPolygon)) {
+					continue;
+				}
+
+				Mesh::Vertex p0(matrix(MatrixType::Viewport) * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord, clippedPolygon.vertices[0].normal);
+				Mesh::Vertex p1(matrix(MatrixType::Viewport) * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
+				for(int i = 2; i < clippedPolygon.numVertices; i++) {
+					Mesh::Vertex p2(matrix(MatrixType::Viewport) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
+					renderTriangle(p0, p1, p2, Color(0xff, 0x0, 0x0), dc);
+					p1 = p2;
+				}
+			}
+		}
+	}
+}
+
+void Renderer::renderPatchSetWireframe(const PatchSet &patchSet)
+{
+	DrawContext dc(mFramebuffer);
+
+	for(const Patch &patch : patchSet) {
+		Grid grid = patch.tesselate(16);
+
+		for(int x = 0; x < grid.width(); x++) {
+			for(int y = 0; y < grid.height(); y++) {
+				if(x > 0) {
+					Geo::Vector a = matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * grid.point(x - 1, y).position;
+					Geo::Vector b = matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * grid.point(x, y).position;
+
+					if(!clipLine(a, b)) {
+						continue;
+					}
+
+					a = matrix(MatrixType::Viewport) * a.project();
+					b = matrix(MatrixType::Viewport) * b.project();
+					dc.aaline(a.x(), a.y(), b.x(), b.y(), Color(0xc0, 0xc0, 0xc0));
+				}
+
+				if(y > 0) {
+					Geo::Vector a = matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * grid.point(x, y - 1).position;
+					Geo::Vector b = matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * grid.point(x, y).position;
+
+					if(!clipLine(a, b)) {
+						continue;
+					}
+
+					a = matrix(MatrixType::Viewport) * a.project();
+					b = matrix(MatrixType::Viewport) * b.project();
+					dc.aaline(a.x(), a.y(), b.x(), b.y(), Color(0xc0, 0xc0, 0xc0));
+				}
+			}
 		}
 	}
 }
@@ -409,9 +418,9 @@ void Renderer::render()
 	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Color(0x80, 0x80, 0x80));
 	dc.fillRectDepth(0, 0, mFramebuffer.width(), mFramebuffer.height(), USHRT_MAX);
 
-	renderMeshPolygons(mMesh);
+	renderPatchSetPolygons(mPatchSet);
 
 	dc.doMultisample();
 
-	//renderMeshWireframe(mMesh);
+	//renderPatchSetWireframe(mPatchSet);
 }

@@ -4,6 +4,7 @@
 #include "Framebuffer.hpp"
 #include "Mesh.hpp"
 #include "Geo/Matrix.hpp"
+#include "PatchSet.hpp"
 
 class Renderer
 {
@@ -24,11 +25,14 @@ public:
 
 	void renderMeshWireframe(const Mesh &mesh);
 	void renderMeshPolygons(const Mesh &mesh);
+	void renderPatchSetPolygons(const PatchSet &patchSet);
+	void renderPatchSetWireframe(const PatchSet &patchSet);
+
 	void render();
 
 private:
 	Framebuffer &mFramebuffer;
-	Mesh mMesh;
+	PatchSet mPatchSet;
 	Geo::Matrix mMatrices[unsigned int(MatrixType::Count)];
 };
 
