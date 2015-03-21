@@ -11,10 +11,11 @@ public:
 	struct Point
 	{
 		Geo::Vector position;
+		Geo::Vector texCoord;
 		Geo::Vector normal;
 
 		Point() = default;
-		Point(const Geo::Vector &_position, const Geo::Vector &_normal) : position(_position), normal(_normal) {}
+		Point(const Geo::Vector &_position, const Geo::Vector &_texCoord, Geo::Vector &_normal) : position(_position), texCoord(_texCoord), normal(_normal) {}
 	};
 
 	Grid(int width, int height);

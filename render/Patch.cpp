@@ -46,7 +46,7 @@ Grid Patch::tesselate(int divisions) const
 			Geo::Vector v = (interp[0 * 3 + 1] - interp[0 * 3 + 0]) * t + (interp[1 * 3 + 1] - interp[1 * 3 + 0]) * (1 - t);
 			Geo::Vector normal = v % u;
 			normal.setW(0);
-			grid.setPoint(i, j, Grid::Point(point, normal.normalize()));
+			grid.setPoint(i, j, Grid::Point(point, Geo::Vector(s, t, 0), normal.normalize()));
 		}
 	}
 
