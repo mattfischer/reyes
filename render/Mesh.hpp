@@ -3,6 +3,7 @@
 
 #include "Geo/Vector.hpp"
 #include "Color.hpp"
+#include "Renderer.hpp"
 
 #include <vector>
 #include <memory>
@@ -47,6 +48,9 @@ public:
 	const std::vector<Edge> &edges() const;
 	const std::vector<Polygon> &polygons() const;
 	const std::vector<Texture> &textures() const;
+
+	void renderWireframe(Renderer &renderer);
+	void renderSolid(Renderer &renderer);
 
 private:
 	std::vector<Vertex> mVertices;

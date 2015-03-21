@@ -1,18 +1,11 @@
 #include "Renderer.hpp"
 
-#include "DrawContext.hpp"
-
 #include "Geo/Transformation.hpp"
-
-#include "PatchSet.hpp"
-#include "BptFileLoader.hpp"
+#include "DrawContext.hpp"
 
 #include <memory>
 #include <algorithm>
 #include <climits>
-#include <string>
-#include <fstream>
-#include <algorithm>
 
 static Geo::Vector clipPlanes[] = {
 		{ 1, 0, 0, 1 },
@@ -23,32 +16,12 @@ static Geo::Vector clipPlanes[] = {
 		{ 0, 0, -1, 1 }
 };
 
-struct Vertex
-{
-	Geo::Vector position;
-	Geo::Vector texCoord;
-	Geo::Vector normal;
-
-	Vertex() = default;
-	Vertex(const Geo::Vector &_position, const Geo::Vector &_texCoord, const Geo::Vector &_normal) : position(_position), texCoord(_texCoord), normal(_normal) {}
-	Vertex(const Grid::Point &point) : position(point.position), texCoord(point.texCoord), normal(point.normal) {}
-	Vertex(const Mesh::Vertex &vertex) : position(vertex.position), texCoord(vertex.texCoord), normal(vertex.normal) {}
-};
-
-struct ClipPolygon
-{
-	std::vector<Vertex> vertices;
-	int numVertices;
-};
-
 Renderer::Renderer(Framebuffer &framebuffer)
 	: mFramebuffer(framebuffer)
 {
 	setMatrix(MatrixType::ModelView, Geo::Transformation::translate(0, -2, 5) * Geo::Transformation::rotate(-100, 0, 0));
 	setMatrix(MatrixType::Projection, Geo::Transformation::perspective(2.0f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 2.0f, 1.0f, 10.0f));
 	setMatrix(MatrixType::Viewport, Geo::Transformation::viewport(0.0f, 0.0f, float(mFramebuffer.width()), float(mFramebuffer.height()), 0, float(USHRT_MAX)));
-
-	mPatchSet = BptFileLoader::load("teapot.bpt");
 }
 
 void Renderer::setMatrix(MatrixType type, const Geo::Matrix &matrix)
@@ -59,6 +32,11 @@ void Renderer::setMatrix(MatrixType type, const Geo::Matrix &matrix)
 const Geo::Matrix &Renderer::matrix(MatrixType type)
 {
 	return mMatrices[unsigned int(type)];
+}
+
+Framebuffer &Renderer::framebuffer()
+{
+	return mFramebuffer;
 }
 
 static bool clipLineToPlane(Geo::Vector &a, Geo::Vector &b, const Geo::Vector &normal)
@@ -88,14 +66,14 @@ static bool clipLineToPlane(Geo::Vector &a, Geo::Vector &b, const Geo::Vector &n
 	return true;
 }
 
-static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
+static bool clipPolygonToPlane(Renderer::Polygon &polygon, const Geo::Vector &normal)
 {
 	int o = 0;
-	Vertex a = polygon.vertices[polygon.numVertices - 1];
+	Renderer::Vertex a = polygon.vertices[polygon.numVertices - 1];
 	float aN = a.position * normal;
-	Vertex b = polygon.vertices[0];
+	Renderer::Vertex b = polygon.vertices[0];
 	for(int i = 0; i < polygon.numVertices; i++) {
-		Vertex next = polygon.vertices[i + 1];
+		Renderer::Vertex next = polygon.vertices[i + 1];
 		float bN = b.position * normal;
 		if(bN >= 0) {
 			if(aN < 0) {
@@ -107,7 +85,7 @@ static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 				Geo::Vector i = a.position + t * m;
 				Geo::Vector it = a.texCoord + t * mt;
 				Geo::Vector in = a.normal + t * mn;
-				polygon.vertices[o] = Vertex(i, it, in);
+				polygon.vertices[o] = Renderer::Vertex(i, it, in);
 				o++;
 			}
 			polygon.vertices[o] = b;
@@ -122,7 +100,7 @@ static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 				Geo::Vector i = a.position + t * m;
 				Geo::Vector it = a.texCoord + t * mt;
 				Geo::Vector in = a.normal + t * mn;
-				polygon.vertices[o] = Vertex(i, it, in);
+				polygon.vertices[o] = Renderer::Vertex(i, it, in);
 				o++;
 			}
 		}
@@ -135,7 +113,7 @@ static bool clipPolygonToPlane(ClipPolygon &polygon, const Geo::Vector &normal)
 	return polygon.numVertices > 0;
 }
 
-static bool clipLine(Geo::Vector &a, Geo::Vector &b)
+bool Renderer::clipLine(Geo::Vector &a, Geo::Vector &b)
 {
 	for(int i = 0; i < 6; i++) {
 		if(!clipLineToPlane(a, b, clipPlanes[i])) return false;
@@ -144,7 +122,7 @@ static bool clipLine(Geo::Vector &a, Geo::Vector &b)
 	return true;
 }
 
-static bool clipPolygon(ClipPolygon &polygon)
+bool Renderer::clipPolygon(Polygon &polygon)
 {
 	for(int i = 0; i < 6; i++) {
 		if(!clipPolygonToPlane(polygon, clipPlanes[i])) return false;
@@ -153,8 +131,10 @@ static bool clipPolygon(ClipPolygon &polygon)
 	return true;
 }
 
-static void renderTriangle(const Vertex &p0, const Vertex &p1, const Vertex &p2, const Color &color, DrawContext &dc)
+void Renderer::renderTriangle(const Vertex &p0, const Vertex &p1, const Vertex &p2, const Color &color)
 {
+	DrawContext dc(mFramebuffer);
+
 	Geo::Vector pv0 = p0.position.project();
 	Geo::Vector pv1 = p1.position.project();
 	Geo::Vector pv2 = p2.position.project();
@@ -279,168 +259,4 @@ static void renderTriangle(const Vertex &p0, const Vertex &p1, const Vertex &p2,
 		e1 = e1r + Y1;
 		e2 = e2r + Y2;
 	}
-}
-
-void Renderer::renderMeshWireframe(const Mesh &mesh)
-{
-	std::vector<Mesh::Vertex> vertices = mesh.vertices();
-
-	for(Mesh::Vertex &vertex : vertices) {
-		vertex = Mesh::Vertex(matrix(MatrixType::ModelView) * vertex.position, vertex.texCoord, matrix(MatrixType::ModelView) * vertex.normal);
-		vertex = Mesh::Vertex(matrix(MatrixType::Projection) * vertex.position, vertex.texCoord, vertex.normal);
-	}
-
-	DrawContext dc(mFramebuffer);
-
-	for(const Mesh::Edge &edge : mesh.edges()) {
-		Geo::Vector a = vertices[std::get<0>(edge)].position;
-		Geo::Vector b = vertices[std::get<1>(edge)].position;
-
-		if(!clipLine(a, b)) {
-			continue;
-		}
-
-		a = matrix(MatrixType::Viewport) * a.project();
-		b = matrix(MatrixType::Viewport) * b.project();
-		dc.aaline(a.x(), a.y(), b.x(), b.y(), Color(0xc0, 0xc0, 0xc0));
-	}
-}
-
-void Renderer::renderMeshPolygons(const Mesh &mesh)
-{
-	std::vector<Mesh::Vertex> vertices = mesh.vertices();
-
-	for(Mesh::Vertex &vertex : vertices) {
-		vertex = Mesh::Vertex(matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * vertex.position, vertex.texCoord, matrix(MatrixType::ModelView) * vertex.normal);
-	}
-
-	DrawContext dc(mFramebuffer);
-
-	ClipPolygon clippedPolygon;
-	for(const Mesh::Polygon &polygon : mesh.polygons()) {
-		if(clippedPolygon.vertices.size() < polygon.indices.size() + 6) {
-			clippedPolygon.vertices.resize(polygon.indices.size() + 6);
-		}
-
-		for(unsigned int i = 0; i < polygon.indices.size(); i++) {
-			clippedPolygon.vertices[i] = Vertex(vertices[polygon.indices[i]]);
-		}
-		clippedPolygon.numVertices = polygon.indices.size();
-
-		if(!clipPolygon(clippedPolygon)) {
-			continue;
-		}
-
-		Vertex p0(matrix(MatrixType::Viewport) * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord, clippedPolygon.vertices[0].normal);
-		Vertex p1(matrix(MatrixType::Viewport) * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
-		for(int i = 2; i < clippedPolygon.numVertices; i++) {
-			Vertex p2(matrix(MatrixType::Viewport) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
-			renderTriangle(p0, p1, p2, polygon.color, dc);
-			p1 = p2;
-		}
-	}
-}
-
-void Renderer::renderPatchSetPolygons(const PatchSet &patchSet)
-{
-	DrawContext dc(mFramebuffer);
-
-	for(const Patch &patch : patchSet) {
-		Grid grid = patch.tesselate(16);
-
-		for(int x = 0; x < grid.width(); x++) {
-			for(int y = 0; y < grid.height(); y++) {
-				Geo::Vector position = matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * grid.point(x, y).position;
-				Geo::Vector texCoord = grid.point(x, y).texCoord;
-				Geo::Vector normal = matrix(MatrixType::ModelView) * grid.point(x, y).normal;
-				grid.setPoint(x, y, Grid::Point(position, texCoord, normal));
-			}
-		}
-
-		ClipPolygon clippedPolygon;
-		clippedPolygon.vertices.resize(4 + 6);
-		for(int x = 0; x < grid.width() - 1; x++) {
-			for(int y = 0; y < grid.height() - 1; y++) {
-				clippedPolygon.numVertices = 4;
-				clippedPolygon.vertices[0] = Vertex(grid.point(x, y));
-				clippedPolygon.vertices[1] = Vertex(grid.point(x + 1, y));
-				clippedPolygon.vertices[2] = Vertex(grid.point(x + 1, y + 1));
-				clippedPolygon.vertices[3] = Vertex(grid.point(x, y + 1));
-
-				if(!clipPolygon(clippedPolygon)) {
-					continue;
-				}
-
-				Vertex p0(matrix(MatrixType::Viewport) * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord, clippedPolygon.vertices[0].normal);
-				Vertex p1(matrix(MatrixType::Viewport) * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
-				for(int i = 2; i < clippedPolygon.numVertices; i++) {
-					Vertex p2(matrix(MatrixType::Viewport) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
-					renderTriangle(p0, p1, p2, Color(0xff, 0x0, 0x0), dc);
-					p1 = p2;
-				}
-			}
-		}
-	}
-}
-
-void Renderer::renderPatchSetWireframe(const PatchSet &patchSet)
-{
-	DrawContext dc(mFramebuffer);
-
-	for(const Patch &patch : patchSet) {
-		Grid grid = patch.tesselate(16);
-
-		for(int x = 0; x < grid.width(); x++) {
-			for(int y = 0; y < grid.height(); y++) {
-				Geo::Vector position = matrix(MatrixType::Projection) * matrix(MatrixType::ModelView) * grid.point(x, y).position;
-				Geo::Vector texCoord = grid.point(x, y).texCoord;
-				Geo::Vector normal = matrix(MatrixType::ModelView) * grid.point(x, y).normal;
-				grid.setPoint(x, y, Grid::Point(position, texCoord, normal));
-			}
-		}
-
-		for(int x = 0; x < grid.width(); x++) {
-			for(int y = 0; y < grid.height(); y++) {
-				if(x > 0) {
-					Geo::Vector a = grid.point(x - 1, y).position;
-					Geo::Vector b = grid.point(x, y).position;
-
-					if(!clipLine(a, b)) {
-						continue;
-					}
-
-					a = matrix(MatrixType::Viewport) * a.project();
-					b = matrix(MatrixType::Viewport) * b.project();
-					dc.aaline(a.x(), a.y(), b.x(), b.y(), Color(0xc0, 0xc0, 0xc0));
-				}
-
-				if(y > 0) {
-					Geo::Vector a = grid.point(x, y - 1).position;
-					Geo::Vector b = grid.point(x, y).position;
-
-					if(!clipLine(a, b)) {
-						continue;
-					}
-
-					a = matrix(MatrixType::Viewport) * a.project();
-					b = matrix(MatrixType::Viewport) * b.project();
-					dc.aaline(a.x(), a.y(), b.x(), b.y(), Color(0xc0, 0xc0, 0xc0));
-				}
-			}
-		}
-	}
-}
-
-void Renderer::render()
-{
-	DrawContext dc(mFramebuffer);
-
-	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Color(0x80, 0x80, 0x80));
-	dc.fillRectDepth(0, 0, mFramebuffer.width(), mFramebuffer.height(), USHRT_MAX);
-
-	renderPatchSetPolygons(mPatchSet);
-
-	dc.doMultisample();
-
-	//renderPatchSetWireframe(mPatchSet);
 }

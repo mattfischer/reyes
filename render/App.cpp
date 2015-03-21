@@ -1,4 +1,7 @@
 #include "App.hpp"
+#include "PatchSet.hpp"
+#include "BptFileLoader.hpp"
+#include "DrawContext.hpp"
 
 #define CLASSNAME "render"
 
@@ -45,7 +48,17 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	DeleteObject(oldBitmap);
 
 	Renderer renderer(mFramebuffer);
-	renderer.render();
+
+	DrawContext dc(mFramebuffer);
+
+	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Color(0x80, 0x80, 0x80));
+	dc.fillRectDepth(0, 0, mFramebuffer.width(), mFramebuffer.height(), USHRT_MAX);
+
+	PatchSet patchSet = BptFileLoader::load("teapot.bpt");
+	patchSet.renderSolid(renderer);
+
+	dc.doMultisample();
+
 	postFramebuffer();
 
 	MSG msg;

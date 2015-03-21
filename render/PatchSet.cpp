@@ -11,12 +11,16 @@ PatchSet &PatchSet::operator=(PatchSet &&other)
 	return *this;
 }
 
-PatchSet::const_iterator PatchSet::begin() const
+void PatchSet::renderWireframe(Renderer &renderer)
 {
-	return mPatches.begin();
+	for(Patch &patch : mPatches) {
+		patch.renderWireframe(renderer);
+	}
 }
 
-PatchSet::const_iterator PatchSet::end() const
+void PatchSet::renderSolid(Renderer &renderer)
 {
-	return mPatches.end();
+	for(Patch &patch : mPatches) {
+		patch.renderSolid(renderer);
+	}
 }

@@ -4,6 +4,7 @@
 #include "Geo/Vector.hpp"
 
 #include "Grid.hpp"
+#include "Renderer.hpp"
 
 #include <memory>
 
@@ -16,6 +17,9 @@ public:
 	const Geo::Vector &point(int x, int y) const;
 
 	Grid tesselate(int divisions) const;
+
+	void renderWireframe(Renderer &renderer);
+	void renderSolid(Renderer &renderer);
 
 private:
 	std::unique_ptr<Geo::Vector[]> mPoints;
