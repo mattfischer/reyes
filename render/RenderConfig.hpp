@@ -1,15 +1,15 @@
 #ifndef RENDER_CONFIG_HPP
 #define RENDER_CONFIG_HPP
 
-#include "Framebuffer.hpp"
+#include "Draw/Framebuffer.hpp"
 #include "Geo/Matrix.hpp"
 
 class RenderConfig
 {
 public:
-	RenderConfig(Framebuffer &framebuffer);
+	RenderConfig(Draw::Framebuffer &framebuffer);
 
-	Framebuffer &framebuffer() const;
+	Draw::Framebuffer &framebuffer() const;
 
 	const Geo::Matrix &view() const;
 	void setView(const Geo::Matrix &view);
@@ -30,7 +30,7 @@ public:
 	void setType(Type type);
 
 private:
-	Framebuffer &mFramebuffer;
+	Draw::Framebuffer &mFramebuffer;
 	Geo::Matrix mView;
 	Geo::Matrix mProjection;
 	Geo::Matrix mViewport;

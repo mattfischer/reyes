@@ -2,7 +2,7 @@
 #define MESH_HPP
 
 #include "Geo/Vector.hpp"
-#include "Color.hpp"
+#include "Draw/Color.hpp"
 #include "RenderObject.hpp"
 
 #include <vector>
@@ -26,19 +26,19 @@ public:
 
 	struct Polygon {
 		std::vector<int> indices;
-		Color color;
+		Draw::Color color;
 		int texture;
 
-		Polygon(std::initializer_list<int> _indices, Color &_color, int _texture) : indices(_indices), color(_color), texture(_texture) {}
+		Polygon(std::initializer_list<int> _indices, Draw::Color &_color, int _texture) : indices(_indices), color(_color), texture(_texture) {}
 	};
 
 	struct Texture
 	{
 		int width;
 		int height;
-		std::vector<Color> data;
+		std::vector<Draw::Color> data;
 
-		Texture(int _width, int _height, std::vector<Color> &&_data) : data(std::move(_data)), width(_width), height(_height) {}
+		Texture(int _width, int _height, std::vector<Draw::Color> &&_data) : data(std::move(_data)), width(_width), height(_height) {}
 	};
 
 	Mesh() = default;

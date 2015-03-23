@@ -19,18 +19,18 @@
     <Filter Include="Source Files\Geo">
       <UniqueIdentifier>{d9f95b28-cc4e-4372-9c15-84d0c8a37590}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Draw">
+      <UniqueIdentifier>{0030cf84-6f80-4215-9a31-e65f37c37781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Draw">
+      <UniqueIdentifier>{27d4ba67-3d20-4461-ada0-7d2dbbc983a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Framebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Geo\Matrix.cpp">
@@ -69,15 +69,15 @@
     <ClCompile Include="Triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Draw\Framebuffer.cpp">
+      <Filter>Source Files\Draw</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw\Context.cpp">
+      <Filter>Source Files\Draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Framebuffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawContext.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geo\Matrix.hpp">
@@ -90,9 +90,6 @@
       <Filter>Header Files\Geo</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Color.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Patch.hpp">
@@ -121,6 +118,15 @@
     </ClInclude>
     <ClInclude Include="Triangle.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw\Color.hpp">
+      <Filter>Header Files\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw\Framebuffer.hpp">
+      <Filter>Header Files\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw\Context.hpp">
+      <Filter>Header Files\Draw</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

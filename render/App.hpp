@@ -1,7 +1,7 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include "Framebuffer.hpp"
+#include "Draw/Framebuffer.hpp"
 
 #include <windows.h>
 
@@ -24,7 +24,7 @@ private:
 
 	HWND mHWnd;
 	HDC mBackDC;
-	Framebuffer mFramebuffer;
+	Draw::Framebuffer mFramebuffer;
 };
 
 #endif

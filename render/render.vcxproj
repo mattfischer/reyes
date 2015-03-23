@@ -70,8 +70,8 @@
     <ClCompile Include="BptFileLoader.cpp" />
     <ClCompile Include="Clipper.cpp" />
     <ClCompile Include="Container.cpp" />
-    <ClCompile Include="DrawContext.cpp" />
-    <ClCompile Include="Framebuffer.cpp" />
+    <ClCompile Include="Draw\Context.cpp" />
+    <ClCompile Include="Draw\Framebuffer.cpp" />
     <ClCompile Include="Geo\Matrix.cpp" />
     <ClCompile Include="Geo\Transformation.cpp" />
     <ClCompile Include="Geo\Vector.cpp" />
@@ -87,10 +87,10 @@
     <ClInclude Include="App.hpp" />
     <ClInclude Include="BptFileLoader.hpp" />
     <ClInclude Include="Clipper.hpp" />
-    <ClInclude Include="Color.hpp" />
+    <ClInclude Include="Draw\Color.hpp" />
     <ClInclude Include="Container.hpp" />
-    <ClInclude Include="DrawContext.hpp" />
-    <ClInclude Include="Framebuffer.hpp" />
+    <ClInclude Include="Draw\Context.hpp" />
+    <ClInclude Include="Draw\Framebuffer.hpp" />
     <ClInclude Include="Geo\Matrix.hpp" />
     <ClInclude Include="Geo\Transformation.hpp" />
     <ClInclude Include="Geo\Vector.hpp" />

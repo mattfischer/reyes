@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-void Triangle::render(Framebuffer &framebuffer, const Vertex &p0, const Vertex &p1, const Vertex &p2, const Color &color)
+void Triangle::render(Draw::Framebuffer &framebuffer, const Vertex &p0, const Vertex &p1, const Vertex &p2, const Draw::Color &color)
 {
 	Geo::Vector pv0 = p0.position.project();
 	Geo::Vector pv1 = p1.position.project();

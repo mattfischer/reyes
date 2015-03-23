@@ -1,11 +1,11 @@
 #include "RenderConfig.hpp"
 
-RenderConfig::RenderConfig(Framebuffer &framebuffer)
+RenderConfig::RenderConfig(Draw::Framebuffer &framebuffer)
 	: mFramebuffer(framebuffer)
 {
 }
 
-Framebuffer &RenderConfig::framebuffer() const
+Draw::Framebuffer &RenderConfig::framebuffer() const
 {
 	return mFramebuffer;
 }

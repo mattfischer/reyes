@@ -1,6 +1,6 @@
 #include "App.hpp"
 #include "BptFileLoader.hpp"
-#include "DrawContext.hpp"
+#include "Draw/Context.hpp"
 #include "Geo/Transformation.hpp"
 
 #define CLASSNAME "render"
@@ -30,7 +30,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 
 	RegisterClassEx(&wc);
 
-	mFramebuffer = Framebuffer(800, 600, 4);
+	mFramebuffer = Draw::Framebuffer(800, 600, 4);
 
 	RECT rect;
 	rect.left = 10;
@@ -47,9 +47,9 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	DrawContext dc(mFramebuffer);
+	Draw::Context dc(mFramebuffer);
 
-	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Color(0x80, 0x80, 0x80));
+	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Draw::Color(0x80, 0x80, 0x80));
 	dc.fillRectDepth(0, 0, mFramebuffer.width(), mFramebuffer.height(), USHRT_MAX);
 
 	std::unique_ptr<RenderObject> object = BptFileLoader::load("teapot.bpt");

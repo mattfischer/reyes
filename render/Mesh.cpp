@@ -1,5 +1,5 @@
 #include "Mesh.hpp"
-#include "DrawContext.hpp"
+#include "Draw/Context.hpp"
 #include "Clipper.hpp"
 #include "Triangle.hpp"
 
@@ -54,7 +54,7 @@ void Mesh::renderWireframe(const RenderConfig &config) const
 		vertex = Vertex(position, texCoord, normal);
 	}
 
-	DrawContext dc(config.framebuffer());
+	Draw::Context dc(config.framebuffer());
 
 	for(const Edge &edge : edges()) {
 		Geo::Vector a = verts[std::get<0>(edge)].position;
@@ -66,7 +66,7 @@ void Mesh::renderWireframe(const RenderConfig &config) const
 
 		a = config.viewport() * a.project();
 		b = config.viewport() * b.project();
-		dc.aaline(a.x(), a.y(), b.x(), b.y(), Color(0xc0, 0xc0, 0xc0));
+		dc.aaline(a.x(), a.y(), b.x(), b.y(), Draw::Color(0xc0, 0xc0, 0xc0));
 	}
 }
 
@@ -80,8 +80,6 @@ void Mesh::renderSolid(const RenderConfig &config) const
 		Geo::Vector normal = config.view() * transformation() * vertex.normal;
 		vertex = Vertex(position, texCoord, normal);
 	}
-
-	DrawContext dc(config.framebuffer());
 
 	Clipper::Polygon clippedPolygon;
 	for(const Polygon &polygon : polygons()) {
