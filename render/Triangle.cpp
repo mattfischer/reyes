@@ -1,13 +1,9 @@
 #include "Triangle.hpp"
 
-#include "DrawContext.hpp"
-
 #include <algorithm>
 
 void Triangle::render(Framebuffer &framebuffer, const Vertex &p0, const Vertex &p1, const Vertex &p2, const Color &color)
 {
-	DrawContext dc(framebuffer);
-
 	Geo::Vector pv0 = p0.position.project();
 	Geo::Vector pv1 = p1.position.project();
 	Geo::Vector pv2 = p2.position.project();
@@ -95,7 +91,7 @@ void Triangle::render(Framebuffer &framebuffer, const Vertex &p0, const Vertex &
 
 					float z = a * z0 + b * z1 + c * z2;
 					unsigned short depth = unsigned short(z);
-					if(depth <= dc.getDepth(x, y, m)) {
+					if(depth <= framebuffer.getDepth(x, y, m)) {
 						float iw = a * iw0 + b * iw1 + c * iw2;
 						float w = 1.0f / iw;
 						Geo::Vector texCoord = (a * texCoord0 + b * texCoord1 + c * texCoord2) * w;
@@ -115,8 +111,8 @@ void Triangle::render(Framebuffer &framebuffer, const Vertex &p0, const Vertex &
 						Color c = c0 * sf * tf + cs * (1 - s) * t + ct * s * (1 - t) + cst * (1 - s) * (1 - t);
 						*/
 						float l = std::max(normal * (Geo::Vector(1, 1, -1, 0).normalize()), 0.0f);
-						dc.setPixel(x, y, m, color * l);
-						dc.setDepth(x, y, m, depth);
+						framebuffer.setPixel(x, y, m, color * l);
+						framebuffer.setDepth(x, y, m, depth);
 					}
 				}
 			}

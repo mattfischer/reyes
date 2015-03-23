@@ -76,17 +76,17 @@ Framebuffer &Framebuffer::operator=(Framebuffer &&other)
 	return *this;
 }
 
-int Framebuffer::width()
+int Framebuffer::width() const
 {
 	return mWidth;
 }
 
-int Framebuffer::height()
+int Framebuffer::height() const
 {
 	return mHeight;
 }
 
-int Framebuffer::multisample()
+int Framebuffer::multisample() const
 {
 	return mMultisample;
 }
@@ -119,4 +119,38 @@ const unsigned short *Framebuffer::depthBits() const
 unsigned short *Framebuffer::depthBits()
 {
 	return mDepthBits;
+}
+
+void Framebuffer::setPixel(int x, int y, int m, const Color &color)
+{
+	unsigned char *bits = colorBits();
+	int addr = ((y * width() + x) * multisample() + m) * 3;
+	bits[addr + 0] = color.b;
+	bits[addr + 1] = color.g;
+	bits[addr + 2] = color.r;
+}
+
+void Framebuffer::setDepth(int x, int y, int m, unsigned short depth)
+{
+	depthBits()[(y * width() + x) * multisample() + m] = depth;
+}
+
+unsigned short Framebuffer::getDepth(int x, int y, int m) const
+{
+	return depthBits()[(y * width() + x) * multisample() + m];
+}
+
+void Framebuffer::postMultisampleBuffer()
+{
+	for(int x = 0; x < width(); x++) {
+		for(int y = 0; y < height(); y++) {
+			for(int c = 0; c < 3; c++) {
+				unsigned int val = 0;
+				for(int m = 0; m < multisample(); m++) {
+					val += colorBits()[(((y * width()) + x) * multisample() + m) * 3 + c];
+				}
+				displayColorBits()[((y * width()) + x) * 3 + c] = val / multisample();
+			}
+		}
+	}
 }

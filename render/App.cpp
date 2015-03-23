@@ -61,7 +61,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 
 	object->render(config);
 
-	dc.doMultisample();
+	mFramebuffer.postMultisampleBuffer();
 
 	postFramebuffer();
 

@@ -1,6 +1,8 @@
 #ifndef FRAMEBUFFER_HPP
 #define FRAMEBUFFER_HPP
 
+#include "Color.hpp"
+
 class Framebuffer
 {
 public:
@@ -13,9 +15,9 @@ public:
 	Framebuffer &operator=(Framebuffer &&other);
 	Framebuffer &operator=(const Framebuffer &) = delete;
 
-	int width();
-	int height();
-	int multisample();
+	int width() const;
+	int height() const;
+	int multisample() const;
 
 	const unsigned char *displayColorBits() const;
 	unsigned char *displayColorBits();
@@ -25,6 +27,12 @@ public:
 
 	const unsigned short *depthBits() const;
 	unsigned short *depthBits();
+
+	void setPixel(int x, int y, int m, const Color &color);
+	void setDepth(int x, int y, int m, unsigned short depth);
+	unsigned short getDepth(int x, int y, int m) const;
+
+	void postMultisampleBuffer();
 
 private:
 	int mWidth;
