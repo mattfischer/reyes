@@ -68,39 +68,38 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="BptFileLoader.cpp" />
-    <ClCompile Include="Clipper.cpp" />
-    <ClCompile Include="Container.cpp" />
+    <ClCompile Include="Render\Clipper.cpp" />
+    <ClCompile Include="Render\Objects.cpp" />
     <ClCompile Include="Draw\Context.cpp" />
     <ClCompile Include="Draw\Framebuffer.cpp" />
     <ClCompile Include="Geo\Matrix.cpp" />
     <ClCompile Include="Geo\Transformation.cpp" />
     <ClCompile Include="Geo\Vector.cpp" />
-    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Render\Grid.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Patch.cpp" />
-    <ClCompile Include="RenderConfig.cpp" />
-    <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="Render\Mesh.cpp" />
+    <ClCompile Include="Render\Object.cpp" />
+    <ClCompile Include="Render\Patch.cpp" />
+    <ClCompile Include="Render\Config.cpp" />
+    <ClCompile Include="Render\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
     <ClInclude Include="BptFileLoader.hpp" />
-    <ClInclude Include="Clipper.hpp" />
+    <ClInclude Include="Render\Clipper.hpp" />
     <ClInclude Include="Draw\Color.hpp" />
-    <ClInclude Include="Container.hpp" />
+    <ClInclude Include="Render\Objects.hpp" />
     <ClInclude Include="Draw\Context.hpp" />
     <ClInclude Include="Draw\Framebuffer.hpp" />
     <ClInclude Include="Geo\Matrix.hpp" />
     <ClInclude Include="Geo\Transformation.hpp" />
     <ClInclude Include="Geo\Vector.hpp" />
-    <ClInclude Include="Grid.hpp" />
-    <ClInclude Include="Mesh.hpp" />
-    <ClInclude Include="Object.hpp" />
-    <ClInclude Include="Patch.hpp" />
-    <ClInclude Include="RenderConfig.hpp" />
-    <ClInclude Include="RenderObject.hpp" />
-    <ClInclude Include="Triangle.hpp" />
+    <ClInclude Include="Render\Grid.hpp" />
+    <ClInclude Include="Render\Mesh.hpp" />
+    <ClInclude Include="Render\Object.hpp" />
+    <ClInclude Include="Render\Patch.hpp" />
+    <ClInclude Include="Render\Config.hpp" />
+    <ClInclude Include="Render\Triangle.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
