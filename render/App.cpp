@@ -52,7 +52,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Draw::Color(0x80, 0x80, 0x80));
 	dc.fillRectDepth(0, 0, mFramebuffer.width(), mFramebuffer.height(), USHRT_MAX);
 
-	std::unique_ptr<Render::Object> object = BptFileLoader::load("teapot.bpt");
+	std::unique_ptr<Render::Object> object = BptFileLoader::load("teapot.bpt", Draw::Color(0xff, 0x00, 0x00));
 	Render::Config config(mFramebuffer);
 	config.setView(Geo::Transformation::translate(0, -2, 5) * Geo::Transformation::rotate(-100, 0, 0));
 	config.setProjection(Geo::Transformation::perspective(2.0f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 2.0f, 1.0f, 10.0f));

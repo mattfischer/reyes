@@ -5,7 +5,8 @@
 #include "Draw/Context.hpp"
 
 namespace Render {
-	Grid::Grid(int width, int height)
+	Grid::Grid(int width, int height, const Draw::Color &color)
+		: mColor(color)
 	{
 		mWidth = width;
 		mHeight = height;
@@ -13,7 +14,7 @@ namespace Render {
 	}
 
 	Grid::Grid(Grid &&other)
-		: mPoints(std::move(other.mPoints))
+		: mPoints(std::move(other.mPoints)), mColor(other.mColor)
 	{
 		mWidth = other.mWidth;
 		mHeight = other.mHeight;
@@ -106,7 +107,7 @@ namespace Render {
 				Triangle::Vertex p1(config.viewport() * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
 				for(int i = 2; i < clippedPolygon.numVertices; i++) {
 					Triangle::Vertex p2(config.viewport() * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
-					Triangle::render(config.framebuffer(), p0, p1, p2, Draw::Color(0xff, 0x0, 0x0));
+					Triangle::render(config.framebuffer(), p0, p1, p2, mColor);
 					p1 = p2;
 				}
 			}

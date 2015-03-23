@@ -3,6 +3,7 @@
 
 #include "Geo/Vector.hpp"
 #include "Render/Object.hpp"
+#include "Draw/Color.hpp"
 
 #include <memory>
 
@@ -20,7 +21,7 @@ namespace Render {
 			Point(const Geo::Vector &_position, const Geo::Vector &_texCoord, Geo::Vector &_normal) : position(_position), texCoord(_texCoord), normal(_normal) {}
 		};
 
-		Grid(int width, int height);
+		Grid(int width, int height, const Draw::Color &color);
 		Grid(Grid &&other);
 
 		Grid &operator=(Grid &&other);
@@ -39,6 +40,7 @@ namespace Render {
 
 		int mWidth;
 		int mHeight;
+		Draw::Color mColor;
 		std::unique_ptr<Point[]> mPoints;
 	};
 }

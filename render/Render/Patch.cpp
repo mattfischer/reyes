@@ -1,7 +1,8 @@
 #include "Render/Patch.hpp"
 
 namespace Render {
-	Patch::Patch(Geo::Vector points[16])
+	Patch::Patch(Geo::Vector points[16], const Draw::Color &color)
+		: mColor(color)
 	{
 		mPoints = std::make_unique<Geo::Vector[]>(16);
 
@@ -11,7 +12,7 @@ namespace Render {
 	}
 
 	Patch::Patch(Patch &&other)
-		: mPoints(std::move(other.mPoints))
+		: mPoints(std::move(other.mPoints)), mColor(other.mColor)
 	{
 	}
 
@@ -22,7 +23,7 @@ namespace Render {
 
 	Grid Patch::tesselate(const Config &config, int divisions) const
 	{
-		Grid grid(divisions + 1, divisions + 1);
+		Grid grid(divisions + 1, divisions + 1, mColor);
 
 		for(int i = 0; i <= divisions; i++) {
 			for(int j = 0; j <= divisions; j++) {
