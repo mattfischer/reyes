@@ -1,5 +1,7 @@
 #include "Draw/Framebuffer.hpp"
 
+#include <climits>
+
 namespace Draw {
 	Framebuffer::Framebuffer()
 	{
@@ -151,6 +153,18 @@ namespace Draw {
 						val += colorBits()[(((y * width()) + x) * multisample() + m) * 3 + c];
 					}
 					displayColorBits()[((y * width()) + x) * 3 + c] = val / multisample();
+				}
+			}
+		}
+	}
+
+	void Framebuffer::clear(const Color &color)
+	{
+		for(int i = 0; i < width(); i++) {
+			for(int j = 0; j < height(); j++) {
+				for(int m = 0; m < multisample(); m++) {
+					setPixel(i, j, m, color);
+					setDepth(i, j, m, USHRT_MAX);
 				}
 			}
 		}

@@ -34,6 +34,7 @@ namespace Draw {
 		unsigned short getDepth(int x, int y, int m) const;
 
 		void postMultisampleBuffer();
+		void clear(const Color &color);
 
 	private:
 		int mWidth;

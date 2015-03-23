@@ -1,6 +1,5 @@
 #include "App.hpp"
 #include "BptFileLoader.hpp"
-#include "Draw/Context.hpp"
 #include "Geo/Transformation.hpp"
 
 #define CLASSNAME "render"
@@ -47,11 +46,6 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	Draw::Context dc(mFramebuffer);
-
-	dc.fillRect(0, 0, mFramebuffer.width(), mFramebuffer.height(), Draw::Color(0x80, 0x80, 0x80));
-	dc.fillRectDepth(0, 0, mFramebuffer.width(), mFramebuffer.height(), USHRT_MAX);
-
 	std::unique_ptr<Render::Object> object = BptFileLoader::load("teapot.bpt", Draw::Color(0xff, 0x00, 0x00));
 	Render::Config config(mFramebuffer);
 	config.setView(Geo::Transformation::translate(0, -2, 5) * Geo::Transformation::rotate(-100, 0, 0));
@@ -59,8 +53,8 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	config.setViewport(Geo::Transformation::viewport(0.0f, 0.0f, float(mFramebuffer.width()), float(mFramebuffer.height()), 0, float(USHRT_MAX)));
 	config.setType(Render::Config::Type::Solid);
 
+	mFramebuffer.clear(Draw::Color(0x80, 0x80, 0x80));
 	object->render(config);
-
 	mFramebuffer.postMultisampleBuffer();
 
 	postFramebuffer();

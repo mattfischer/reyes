@@ -32,17 +32,6 @@ namespace Draw {
 		bits[addr + 2] = unsigned char(bits[addr + 2] * (1.0f - alpha) + color.r * alpha);
 	}
 
-	void Context::fillRect(int x, int y, int width, int height, const Color &color)
-	{
-		for(int i = x; i < x + width; i++) {
-			for(int j = y; j < y + height; j++) {
-				for(int m = 0; m < mFramebuffer.multisample(); m++) {
-					mFramebuffer.setPixel(i, j, m, color);
-				}
-			}
-		}
-	}
-
 	void Context::aaline(float x0, float y0, float x1, float y1, const Color &color)
 	{
 		bool steep = false;
@@ -102,17 +91,6 @@ namespace Draw {
 		} else {
 			blendDisplayPixel(x, y - 1, color, (1.0f - err) * x1gap);
 			blendDisplayPixel(x, y, color, err * x1gap);
-		}
-	}
-
-	void Context::fillRectDepth(int x, int y, int width, int height, unsigned short depth)
-	{
-		for(int i = x; i < x + width; i++) {
-			for(int j = y; j < y + height; j++) {
-				for(int m = 0; m < mFramebuffer.multisample(); m++) {
-					mFramebuffer.setDepth(i, j, m, depth);
-				}
-			}
 		}
 	}
 }
