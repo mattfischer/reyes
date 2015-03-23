@@ -1,5 +1,7 @@
 #include "Mesh.hpp"
 #include "DrawContext.hpp"
+#include "Clipper.hpp"
+#include "Triangle.hpp"
 
 Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<Edge> &&edges, std::vector<Polygon> &&polygons, std::vector<Texture> &&textures)
 	: mVertices(std::move(vertices)),
@@ -29,47 +31,59 @@ const std::vector<Mesh::Texture> &Mesh::textures() const
 	return mTextures;
 }
 
-void Mesh::renderWireframe(Renderer &renderer)
+void Mesh::render(const RenderConfig &config) const
+{
+	switch(config.type()) {
+	case RenderConfig::Type::Wireframe:
+		renderWireframe(config);
+		break;
+	case RenderConfig::Type::Solid:
+		renderSolid(config);
+		break;
+	}
+}
+
+void Mesh::renderWireframe(const RenderConfig &config) const
 {
 	std::vector<Vertex> verts = vertices();
 
 	for(Vertex &vertex : verts) {
-		Geo::Vector position = renderer.matrix(Renderer::MatrixType::Projection) * renderer.matrix(Renderer::MatrixType::ModelView) * vertex.position;
+		Geo::Vector position = config.projection() * config.view() * transformation() * vertex.position;
 		Geo::Vector texCoord = vertex.texCoord;
-		Geo::Vector normal = renderer.matrix(Renderer::MatrixType::ModelView) * vertex.normal;
+		Geo::Vector normal = config.view() * transformation() * vertex.normal;
 		vertex = Vertex(position, texCoord, normal);
 	}
 
-	DrawContext dc(renderer.framebuffer());
+	DrawContext dc(config.framebuffer());
 
 	for(const Edge &edge : edges()) {
 		Geo::Vector a = verts[std::get<0>(edge)].position;
 		Geo::Vector b = verts[std::get<1>(edge)].position;
 
-		if(!renderer.clipLine(a, b)) {
+		if(!Clipper::clipLine(a, b)) {
 			continue;
 		}
 
-		a = renderer.matrix(Renderer::MatrixType::Viewport) * a.project();
-		b = renderer.matrix(Renderer::MatrixType::Viewport) * b.project();
+		a = config.viewport() * a.project();
+		b = config.viewport() * b.project();
 		dc.aaline(a.x(), a.y(), b.x(), b.y(), Color(0xc0, 0xc0, 0xc0));
 	}
 }
 
-void Mesh::renderSolid(Renderer &renderer)
+void Mesh::renderSolid(const RenderConfig &config) const
 {
 	std::vector<Vertex> verts = vertices();
 
 	for(Vertex &vertex : verts) {
-		Geo::Vector position = renderer.matrix(Renderer::MatrixType::Projection) * renderer.matrix(Renderer::MatrixType::ModelView) * vertex.position;
+		Geo::Vector position = config.projection() * config.view() * transformation() * vertex.position;
 		Geo::Vector texCoord = vertex.texCoord;
-		Geo::Vector normal = renderer.matrix(Renderer::MatrixType::ModelView) * vertex.normal;
+		Geo::Vector normal = config.view() * transformation() * vertex.normal;
 		vertex = Vertex(position, texCoord, normal);
 	}
 
-	DrawContext dc(renderer.framebuffer());
+	DrawContext dc(config.framebuffer());
 
-	Renderer::Polygon clippedPolygon;
+	Clipper::Polygon clippedPolygon;
 	for(const Polygon &polygon : polygons()) {
 		if(clippedPolygon.vertices.size() < polygon.indices.size() + 6) {
 			clippedPolygon.vertices.resize(polygon.indices.size() + 6);
@@ -77,19 +91,19 @@ void Mesh::renderSolid(Renderer &renderer)
 
 		for(unsigned int i = 0; i < polygon.indices.size(); i++) {
 			const Vertex &vertex = verts[polygon.indices[i]];
-			clippedPolygon.vertices[i] = Renderer::Vertex(vertex.position, vertex.texCoord, vertex.normal);
+			clippedPolygon.vertices[i] = Clipper::Vertex(vertex.position, vertex.texCoord, vertex.normal);
 		}
 		clippedPolygon.numVertices = polygon.indices.size();
 
-		if(!renderer.clipPolygon(clippedPolygon)) {
+		if(!Clipper::clipPolygon(clippedPolygon)) {
 			continue;
 		}
 
-		Renderer::Vertex p0(renderer.matrix(Renderer::MatrixType::Viewport) * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord, clippedPolygon.vertices[0].normal);
-		Renderer::Vertex p1(renderer.matrix(Renderer::MatrixType::Viewport) * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
+		Triangle::Vertex p0(config.viewport() * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord, clippedPolygon.vertices[0].normal);
+		Triangle::Vertex p1(config.viewport() * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
 		for(int i = 2; i < clippedPolygon.numVertices; i++) {
-			Renderer::Vertex p2(renderer.matrix(Renderer::MatrixType::Viewport) * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
-			renderer.renderTriangle(p0, p1, p2, polygon.color);
+			Triangle::Vertex p2(config.viewport() * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
+			Triangle::render(config.framebuffer(), p0, p1, p2, polygon.color);
 			p1 = p2;
 		}
 	}

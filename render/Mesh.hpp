@@ -3,13 +3,13 @@
 
 #include "Geo/Vector.hpp"
 #include "Color.hpp"
-#include "Renderer.hpp"
+#include "RenderObject.hpp"
 
 #include <vector>
 #include <memory>
 #include <tuple>
 
-class Mesh
+class Mesh : public RenderObject
 {
 public:
 	typedef std::tuple<int, int> Edge;
@@ -49,10 +49,12 @@ public:
 	const std::vector<Polygon> &polygons() const;
 	const std::vector<Texture> &textures() const;
 
-	void renderWireframe(Renderer &renderer);
-	void renderSolid(Renderer &renderer);
+	virtual void render(const RenderConfig &config) const;
 
 private:
+	void renderWireframe(const RenderConfig &config) const;
+	void renderSolid(const RenderConfig &renderer) const;
+
 	std::vector<Vertex> mVertices;
 	std::vector<Edge> mEdges;
 	std::vector<Polygon> mPolygons;

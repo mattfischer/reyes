@@ -68,6 +68,8 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="BptFileLoader.cpp" />
+    <ClCompile Include="Clipper.cpp" />
+    <ClCompile Include="Container.cpp" />
     <ClCompile Include="DrawContext.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="Geo\Matrix.cpp" />
@@ -76,14 +78,17 @@
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Patch.cpp" />
-    <ClCompile Include="PatchSet.cpp" />
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RenderConfig.cpp" />
+    <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
     <ClInclude Include="BptFileLoader.hpp" />
+    <ClInclude Include="Clipper.hpp" />
     <ClInclude Include="Color.hpp" />
+    <ClInclude Include="Container.hpp" />
     <ClInclude Include="DrawContext.hpp" />
     <ClInclude Include="Framebuffer.hpp" />
     <ClInclude Include="Geo\Matrix.hpp" />
@@ -91,9 +96,11 @@
     <ClInclude Include="Geo\Vector.hpp" />
     <ClInclude Include="Grid.hpp" />
     <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="Object.hpp" />
     <ClInclude Include="Patch.hpp" />
-    <ClInclude Include="PatchSet.hpp" />
-    <ClInclude Include="Renderer.hpp" />
+    <ClInclude Include="RenderConfig.hpp" />
+    <ClInclude Include="RenderObject.hpp" />
+    <ClInclude Include="Triangle.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

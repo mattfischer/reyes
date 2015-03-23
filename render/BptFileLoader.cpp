@@ -1,14 +1,18 @@
 #include "BptFileLoader.hpp"
 
+#include "Container.hpp"
+#include "Patch.hpp"
+
+#include <vector>
 #include <fstream>
 
-PatchSet BptFileLoader::load(const std::string &filename)
+std::unique_ptr<RenderObject> BptFileLoader::load(const std::string &filename)
 {
 	std::ifstream file(filename.c_str());
 	int numPatches;
 
 	file >> numPatches;
-	std::vector<Patch> patches;
+	std::vector<std::unique_ptr<RenderObject>> patches;
 	for(int i = 0; i < numPatches; i++) {
 		int dimx, dimy;
 		file >> dimx >> dimy;
@@ -18,8 +22,8 @@ PatchSet BptFileLoader::load(const std::string &filename)
 			file >> x >> y >> z;
 			points[j] = Geo::Vector(x, y, z);
 		}
-		patches.push_back(Patch(points));
+		patches.push_back(std::make_unique<Patch>(points));
 	}
 
-	return PatchSet(std::move(patches));
+	return std::make_unique<Container>(std::move(patches));
 }

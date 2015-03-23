@@ -1,139 +1,12 @@
-#include "Renderer.hpp"
+#include "Triangle.hpp"
 
-#include "Geo/Transformation.hpp"
 #include "DrawContext.hpp"
 
-#include <memory>
 #include <algorithm>
-#include <climits>
 
-static Geo::Vector clipPlanes[] = {
-		{ 1, 0, 0, 1 },
-		{ -1, 0, 0, 1 },
-		{ 0, 1, 0, 1 },
-		{ 0, -1, 0, 1 },
-		{ 0, 0, 1, 1 },
-		{ 0, 0, -1, 1 }
-};
-
-Renderer::Renderer(Framebuffer &framebuffer)
-	: mFramebuffer(framebuffer)
+void Triangle::render(Framebuffer &framebuffer, const Vertex &p0, const Vertex &p1, const Vertex &p2, const Color &color)
 {
-	setMatrix(MatrixType::ModelView, Geo::Transformation::translate(0, -2, 5) * Geo::Transformation::rotate(-100, 0, 0));
-	setMatrix(MatrixType::Projection, Geo::Transformation::perspective(2.0f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 2.0f, 1.0f, 10.0f));
-	setMatrix(MatrixType::Viewport, Geo::Transformation::viewport(0.0f, 0.0f, float(mFramebuffer.width()), float(mFramebuffer.height()), 0, float(USHRT_MAX)));
-}
-
-void Renderer::setMatrix(MatrixType type, const Geo::Matrix &matrix)
-{
-	mMatrices[unsigned int(type)] = matrix;
-}
-
-const Geo::Matrix &Renderer::matrix(MatrixType type)
-{
-	return mMatrices[unsigned int(type)];
-}
-
-Framebuffer &Renderer::framebuffer()
-{
-	return mFramebuffer;
-}
-
-static bool clipLineToPlane(Geo::Vector &a, Geo::Vector &b, const Geo::Vector &normal)
-{
-	float aN = a * normal;
-	float bN = b * normal;
-
-	if(aN >= 0 && bN >= 0) {
-		return true;
-	}
-
-	if(aN <= 0 && bN <= 0) {
-		return false;
-	}
-
-	Geo::Vector m = b - a;
-	float mN = m * normal;
-	float t = -aN / mN;
-	Geo::Vector i = a + t * m;
-
-	if(aN >= 0) {
-		b = i;
-	} else {
-		a = i;
-	}
-
-	return true;
-}
-
-static bool clipPolygonToPlane(Renderer::Polygon &polygon, const Geo::Vector &normal)
-{
-	int o = 0;
-	Renderer::Vertex a = polygon.vertices[polygon.numVertices - 1];
-	float aN = a.position * normal;
-	Renderer::Vertex b = polygon.vertices[0];
-	for(int i = 0; i < polygon.numVertices; i++) {
-		Renderer::Vertex next = polygon.vertices[i + 1];
-		float bN = b.position * normal;
-		if(bN >= 0) {
-			if(aN < 0) {
-				Geo::Vector m = b.position - a.position;
-				Geo::Vector mt = b.texCoord - a.texCoord;
-				Geo::Vector mn = b.normal - a.normal;
-				float mN = m * normal;
-				float t = -aN / mN;
-				Geo::Vector i = a.position + t * m;
-				Geo::Vector it = a.texCoord + t * mt;
-				Geo::Vector in = a.normal + t * mn;
-				polygon.vertices[o] = Renderer::Vertex(i, it, in);
-				o++;
-			}
-			polygon.vertices[o] = b;
-			o++;
-		} else {
-			if(aN > 0) {
-				Geo::Vector m = b.position - a.position;
-				Geo::Vector mt = b.texCoord - a.texCoord;
-				Geo::Vector mn = b.normal - a.normal;
-				float mN = m * normal;
-				float t = -aN / mN;
-				Geo::Vector i = a.position + t * m;
-				Geo::Vector it = a.texCoord + t * mt;
-				Geo::Vector in = a.normal + t * mn;
-				polygon.vertices[o] = Renderer::Vertex(i, it, in);
-				o++;
-			}
-		}
-		a = b;
-		aN = bN;
-		b = next;
-	}
-
-	polygon.numVertices = o;
-	return polygon.numVertices > 0;
-}
-
-bool Renderer::clipLine(Geo::Vector &a, Geo::Vector &b)
-{
-	for(int i = 0; i < 6; i++) {
-		if(!clipLineToPlane(a, b, clipPlanes[i])) return false;
-	}
-
-	return true;
-}
-
-bool Renderer::clipPolygon(Polygon &polygon)
-{
-	for(int i = 0; i < 6; i++) {
-		if(!clipPolygonToPlane(polygon, clipPlanes[i])) return false;
-	}
-
-	return true;
-}
-
-void Renderer::renderTriangle(const Vertex &p0, const Vertex &p1, const Vertex &p2, const Color &color)
-{
-	DrawContext dc(mFramebuffer);
+	DrawContext dc(framebuffer);
 
 	Geo::Vector pv0 = p0.position.project();
 	Geo::Vector pv1 = p1.position.project();
@@ -204,14 +77,12 @@ void Renderer::renderTriangle(const Vertex &p0, const Vertex &p1, const Vertex &
 	float multisampleBiasX[] = { -0.2f, 0.3f, -0.3f, 0.2f };
 	float multisampleBiasY[] = { -0.3f, -0.2f, 0.2f, 0.3f };
 
-	for(int y = int(yMin); y <= int(yMax); y++)
-	{
+	for(int y = int(yMin); y <= int(yMax); y++) {
 		float e0r = e0;
 		float e1r = e1;
 		float e2r = e2;
 
-		for(int x = int(xMin); x <= int(xMax); x++)
-		{
+		for(int x = int(xMin); x <= int(xMax); x++) {
 			for(int m = 0; m < 4; m++) {
 				float e0m = e0 + X0 * multisampleBiasX[m] + Y0 * multisampleBiasY[m];
 				float e1m = e1 + X1 * multisampleBiasX[m] + Y1 * multisampleBiasY[m];

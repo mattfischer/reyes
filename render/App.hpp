@@ -2,7 +2,6 @@
 #define APP_HPP
 
 #include "Framebuffer.hpp"
-#include "Renderer.hpp"
 
 #include <windows.h>
 

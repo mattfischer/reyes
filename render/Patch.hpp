@@ -4,11 +4,11 @@
 #include "Geo/Vector.hpp"
 
 #include "Grid.hpp"
-#include "Renderer.hpp"
+#include "RenderObject.hpp"
 
 #include <memory>
 
-class Patch
+class Patch : public RenderObject
 {
 public:
 	Patch(Geo::Vector points[16]);
@@ -16,12 +16,11 @@ public:
 
 	const Geo::Vector &point(int x, int y) const;
 
-	Grid tesselate(int divisions) const;
-
-	void renderWireframe(Renderer &renderer);
-	void renderSolid(Renderer &renderer);
+	virtual void render(const RenderConfig &config) const;
 
 private:
+	Grid tesselate(const RenderConfig &config, int divisions) const;
+
 	std::unique_ptr<Geo::Vector[]> mPoints;
 };
 

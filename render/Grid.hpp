@@ -2,11 +2,11 @@
 #define GRID_HPP
 
 #include "Geo/Vector.hpp"
-#include "Renderer.hpp"
+#include "RenderObject.hpp"
 
 #include <memory>
 
-class Grid
+class Grid : public RenderObject
 {
 public:
 	struct Point
@@ -30,10 +30,12 @@ public:
 	void setPoint(int x, int y, const Point &point);
 	const Point &point(int x, int y) const;
 
-	void renderWireframe(Renderer &renderer);
-	void renderSolid(Renderer &renderer);
+	virtual void render(const RenderConfig &config) const;
 
 private:
+	void renderWireframe(const RenderConfig &config) const;
+	void renderSolid(const RenderConfig &config) const;
+
 	int mWidth;
 	int mHeight;
 	std::unique_ptr<Point[]> mPoints;

@@ -1,14 +1,15 @@
 #ifndef BPT_FILE_LOADER_HPP
 #define BPT_FILE_LOADER_HPP
 
-#include "PatchSet.hpp"
+#include "RenderObject.hpp"
 
 #include <string>
+#include <memory>
 
 class BptFileLoader
 {
 public:
-	static PatchSet load(const std::string &filename);
+	static std::unique_ptr<RenderObject> load(const std::string &filename);
 };
 
 #endif
