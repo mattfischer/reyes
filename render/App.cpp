@@ -46,7 +46,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	std::unique_ptr<Render::Object> object = BptFileLoader::load("teapot.bpt");
+	std::unique_ptr<Render::Object> object = BptFileLoader::load("teapot.bpt", Draw::Color(0xff, 0x0, 0x0));
 	Render::Config config(mFramebuffer);
 	config.setView(Geo::Transformation::translate(0, -2, 5) * Geo::Transformation::rotate(-100, 0, 0));
 	config.setProjection(Geo::Transformation::perspective(2.0f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 2.0f, 1.0f, 10.0f));
