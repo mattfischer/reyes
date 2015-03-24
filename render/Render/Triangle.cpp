@@ -72,10 +72,9 @@ namespace Render{
 						float c = e2m * invdet;
 
 						float z = a * z0 + b * z1 + c * z2;
-						unsigned short depth = unsigned short(z);
-						if(depth <= framebuffer.getDepth(x, y, m)) {
+						if(z <= framebuffer.getDepth(x, y, m)) {
 							framebuffer.setPixel(x, y, m, color);
-							framebuffer.setDepth(x, y, m, depth);
+							framebuffer.setDepth(x, y, m, z);
 						}
 					}
 				}

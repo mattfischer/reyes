@@ -128,19 +128,19 @@ namespace Draw {
 	{
 		unsigned char *bits = colorBits();
 		int addr = ((y * width() + x) * multisample() + m) * 3;
-		bits[addr + 0] = color.b;
-		bits[addr + 1] = color.g;
-		bits[addr + 2] = color.r;
+		bits[addr + 0] = unsigned char(color.b * 0xff);
+		bits[addr + 1] = unsigned char(color.g * 0xff);
+		bits[addr + 2] = unsigned char(color.r * 0xff);
 	}
 
-	void Framebuffer::setDepth(int x, int y, int m, unsigned short depth)
+	void Framebuffer::setDepth(int x, int y, int m, float depth)
 	{
-		depthBits()[(y * width() + x) * multisample() + m] = depth;
+		depthBits()[(y * width() + x) * multisample() + m] = unsigned short(depth * float(USHRT_MAX));
 	}
 
-	unsigned short Framebuffer::getDepth(int x, int y, int m) const
+	float Framebuffer::getDepth(int x, int y, int m) const
 	{
-		return depthBits()[(y * width() + x) * multisample() + m];
+		return float(depthBits()[(y * width() + x) * multisample() + m]) / float(USHRT_MAX);
 	}
 
 	void Framebuffer::postMultisampleBuffer()
@@ -164,7 +164,7 @@ namespace Draw {
 			for(int j = 0; j < height(); j++) {
 				for(int m = 0; m < multisample(); m++) {
 					setPixel(i, j, m, color);
-					setDepth(i, j, m, USHRT_MAX);
+					setDepth(i, j, m, 1.0f);
 				}
 			}
 		}

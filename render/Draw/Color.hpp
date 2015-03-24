@@ -4,13 +4,13 @@
 namespace Draw {
 	struct Color
 	{
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
+		float r;
+		float g;
+		float b;
 
 		Color operator*(float c) const
 		{
-			return Color(unsigned char(r * c), unsigned char(g * c), unsigned char(b * c));
+			return Color(r * c, g * c, b * c);
 		}
 
 		Color operator+(const Color &other) const
@@ -19,7 +19,7 @@ namespace Draw {
 		}
 
 		Color() = default;
-		Color(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b) {}
+		Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
 	};
 }
 

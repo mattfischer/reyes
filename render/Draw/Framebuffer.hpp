@@ -30,8 +30,8 @@ namespace Draw {
 		unsigned short *depthBits();
 
 		void setPixel(int x, int y, int m, const Color &color);
-		void setDepth(int x, int y, int m, unsigned short depth);
-		unsigned short getDepth(int x, int y, int m) const;
+		void setDepth(int x, int y, int m, float depth);
+		float getDepth(int x, int y, int m) const;
 
 		void postMultisampleBuffer();
 		void clear(const Color &color);

@@ -67,7 +67,7 @@ namespace Render {
 
 			a = config.viewport() * a.project();
 			b = config.viewport() * b.project();
-			dc.aaline(a.x(), a.y(), b.x(), b.y(), Draw::Color(0xc0, 0xc0, 0xc0));
+			dc.aaline(a.x(), a.y(), b.x(), b.y(), Draw::Color(0.75f, 0.75f, 0.75f));
 		}
 	}
 

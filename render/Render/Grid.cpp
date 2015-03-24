@@ -72,14 +72,14 @@ namespace Render {
 					Geo::Vector a = point(x - 1, y);
 					Geo::Vector b = point(x, y);
 
-					dc.aaline(a.x(), a.y(), b.x(), b.y(), Draw::Color(0xc0, 0xc0, 0xc0));
+					dc.aaline(a.x(), a.y(), b.x(), b.y(), Draw::Color(0.75f, 0.75f, 0.75f));
 				}
 
 				if(y > 0) {
 					Geo::Vector a = point(x, y - 1);
 					Geo::Vector b = point(x, y);
 
-					dc.aaline(a.x(), a.y(), b.x(), b.y(), Draw::Color(0xc0, 0xc0, 0xc0));
+					dc.aaline(a.x(), a.y(), b.x(), b.y(), Draw::Color(0.75f, 0.75f, 0.75f));
 				}
 			}
 		}
