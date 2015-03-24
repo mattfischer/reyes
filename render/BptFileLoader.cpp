@@ -6,7 +6,7 @@
 #include <vector>
 #include <fstream>
 
-std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename, const Draw::Color &color)
+std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename)
 {
 	std::ifstream file(filename.c_str());
 	int numPatches;
@@ -22,7 +22,7 @@ std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename,
 			file >> x >> y >> z;
 			points[j] = Geo::Vector(x, y, z);
 		}
-		patches.push_back(std::make_unique<Render::Patch>(points, color));
+		patches.push_back(std::make_unique<Render::Patch>(points));
 	}
 
 	return std::make_unique<Render::Objects>(std::move(patches));

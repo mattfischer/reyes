@@ -10,7 +10,7 @@
 class BptFileLoader
 {
 public:
-	static std::unique_ptr<Render::Object> load(const std::string &filename, const Draw::Color &color);
+	static std::unique_ptr<Render::Object> load(const std::string &filename);
 };
 
 #endif

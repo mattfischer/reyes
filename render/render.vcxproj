@@ -81,6 +81,7 @@
     <ClCompile Include="Render\Object.cpp" />
     <ClCompile Include="Render\Patch.cpp" />
     <ClCompile Include="Render\Config.cpp" />
+    <ClCompile Include="Render\Primitive.cpp" />
     <ClCompile Include="Render\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +100,7 @@
     <ClInclude Include="Render\Object.hpp" />
     <ClInclude Include="Render\Patch.hpp" />
     <ClInclude Include="Render\Config.hpp" />
+    <ClInclude Include="Render\Primitive.hpp" />
     <ClInclude Include="Render\Triangle.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

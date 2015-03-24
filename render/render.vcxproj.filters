@@ -81,6 +81,9 @@
     <ClCompile Include="Render\Config.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Render\Primitive.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -129,6 +132,9 @@
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Render\Config.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Primitive.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>

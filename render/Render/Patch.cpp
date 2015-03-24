@@ -3,8 +3,7 @@
 #include <algorithm>
 
 namespace Render {
-	Patch::Patch(Geo::Vector points[16], const Draw::Color &color)
-		: mColor(color)
+	Patch::Patch(Geo::Vector points[16])
 	{
 		mPoints = std::make_unique<Geo::Vector[]>(16);
 
@@ -14,7 +13,7 @@ namespace Render {
 	}
 
 	Patch::Patch(Patch &&other)
-		: mPoints(std::move(other.mPoints)), mColor(other.mColor)
+		: mPoints(std::move(other.mPoints))
 	{
 	}
 
@@ -23,8 +22,9 @@ namespace Render {
 		return mPoints[y * 4 + x];
 	}
 
-	Grid Patch::tesselate(const Config &config, int divisions) const
+	Grid Patch::dice(const Config &config) const
 	{
+		int divisions = 16;
 		Grid grid(divisions, divisions);
 
 		for(int i = 0; i <= divisions; i++) {
@@ -58,30 +58,5 @@ namespace Render {
 		}
 
 		return grid;
-	}
-
-	void Patch::render(const Config &config) const
-	{
-		Grid grid = tesselate(config, 16);
-
-		for(int x = 0; x < grid.width(); x++) {
-			for(int y = 0; y < grid.height(); y++) {
-				Geo::Vector u = grid.point(x + 1, y + 1) - grid.point(x, y);
-				Geo::Vector v = grid.point(x, y + 1) - grid.point(x + 1, y);
-				Geo::Vector normal = u % v;
-				normal.setW(0);
-				normal = normal.normalize();
-				float l = std::max(normal * (Geo::Vector(1, 1, -1, 0).normalize()), 0.0f);
-				grid.setColor(x, y, mColor * l);
-			}
-		}
-
-		for(int x = 0; x <= grid.width(); x++) {
-			for(int y = 0; y <= grid.height(); y++) {
-				grid.setPoint(x, y, config.viewport() * (config.projection() * grid.point(x, y)).project());
-			}
-		}
-
-		grid.render(config);
 	}
 }
