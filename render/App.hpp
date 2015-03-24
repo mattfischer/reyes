@@ -2,8 +2,10 @@
 #define APP_HPP
 
 #include "Draw/Framebuffer.hpp"
+#include "Render/Object.hpp"
 
 #include <windows.h>
+#include <memory>
 
 class App
 {
@@ -25,6 +27,7 @@ private:
 	HWND mHWnd;
 	HDC mBackDC;
 	Draw::Framebuffer mFramebuffer;
+	std::unique_ptr<Render::Object> mObject;
 };
 
 #endif
