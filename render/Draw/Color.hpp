@@ -18,6 +18,7 @@ namespace Draw {
 			return Color(r + other.r, g + other.g, b + other.b);
 		}
 
+		Color() = default;
 		Color(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b) {}
 	};
 }

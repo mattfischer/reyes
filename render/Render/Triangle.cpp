@@ -112,7 +112,7 @@ namespace Render{
 							Color c = c0 * sf * tf + cs * (1 - s) * t + ct * s * (1 - t) + cst * (1 - s) * (1 - t);
 							*/
 							float l = std::max(normal * (Geo::Vector(1, 1, -1, 0).normalize()), 0.0f);
-							framebuffer.setPixel(x, y, m, color * l);
+							framebuffer.setPixel(x, y, m, color);
 							framebuffer.setDepth(x, y, m, depth);
 						}
 					}

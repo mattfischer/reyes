@@ -11,17 +11,7 @@ namespace Render {
 	class Grid : public Object
 	{
 	public:
-		struct Point
-		{
-			Geo::Vector position;
-			Geo::Vector texCoord;
-			Geo::Vector normal;
-
-			Point() = default;
-			Point(const Geo::Vector &_position, const Geo::Vector &_texCoord, Geo::Vector &_normal) : position(_position), texCoord(_texCoord), normal(_normal) {}
-		};
-
-		Grid(int width, int height, const Draw::Color &color);
+		Grid(int width, int height);
 		Grid(Grid &&other);
 
 		Grid &operator=(Grid &&other);
@@ -29,8 +19,11 @@ namespace Render {
 		int width() const;
 		int height() const;
 
-		void setPoint(int x, int y, const Point &point);
-		const Point &point(int x, int y) const;
+		const Geo::Vector &point(int x, int y) const;
+		void setPoint(int x, int y, const Geo::Vector &point);
+
+		const Draw::Color &color(int x, int y) const;
+		void setColor(int x, int y, const Draw::Color &color);
 
 		virtual void render(const Config &config) const;
 
@@ -40,8 +33,8 @@ namespace Render {
 
 		int mWidth;
 		int mHeight;
-		Draw::Color mColor;
-		std::unique_ptr<Point[]> mPoints;
+		std::unique_ptr<Geo::Vector[]> mPoints;
+		std::unique_ptr<Draw::Color[]> mColors;
 	};
 }
 
