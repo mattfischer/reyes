@@ -98,10 +98,10 @@ namespace Render {
 				continue;
 			}
 
-			Triangle::Vertex p0(config.viewport() * clippedPolygon.vertices[0].position, clippedPolygon.vertices[0].texCoord, clippedPolygon.vertices[0].normal);
-			Triangle::Vertex p1(config.viewport() * clippedPolygon.vertices[1].position, clippedPolygon.vertices[1].texCoord, clippedPolygon.vertices[1].normal);
+			Geo::Vector p0 = config.viewport() * clippedPolygon.vertices[0].position;
+			Geo::Vector p1 = config.viewport() * clippedPolygon.vertices[1].position;
 			for(int i = 2; i < clippedPolygon.numVertices; i++) {
-				Triangle::Vertex p2(config.viewport() * clippedPolygon.vertices[i].position, clippedPolygon.vertices[i].texCoord, clippedPolygon.vertices[i].normal);
+				Geo::Vector p2 = config.viewport() * clippedPolygon.vertices[i].position;
 				Triangle::render(config.framebuffer(), p0, p1, p2, polygon.color);
 				p1 = p2;
 			}

@@ -3,24 +3,17 @@
 #include <algorithm>
 
 namespace Render{
-	void Triangle::render(Draw::Framebuffer &framebuffer, const Vertex &p0, const Vertex &p1, const Vertex &p2, const Draw::Color &color)
+	void Triangle::render(Draw::Framebuffer &framebuffer, const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, const Draw::Color &color)
 	{
-		Geo::Vector pv0 = p0.position.project();
-		Geo::Vector pv1 = p1.position.project();
-		Geo::Vector pv2 = p2.position.project();
-
-		float x0 = pv0.x();
-		float y0 = pv0.y();
-		float z0 = pv0.z();
-		float w0 = p0.position.w();
-		float x1 = pv1.x();
-		float y1 = pv1.y();
-		float z1 = pv1.z();
-		float w1 = p1.position.w();
-		float x2 = pv2.x();
-		float y2 = pv2.y();
-		float z2 = pv2.z();
-		float w2 = p2.position.w();
+		float x0 = p0.x();
+		float y0 = p0.y();
+		float z0 = p0.z();
+		float x1 = p1.x();
+		float y1 = p1.y();
+		float z1 = p1.z();
+		float x2 = p2.x();
+		float y2 = p2.y();
+		float z2 = p2.z();
 
 		float det = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
 		float winding = (det > 0) ? 1.0f : -1.0f;
@@ -59,18 +52,6 @@ namespace Render{
 		float e1 = x02 * ys2 - y02 * xs2;
 		float e2 = x10 * ys0 - y10 * xs0;
 
-		float iw0 = 1.0f / w0;
-		float iw1 = 1.0f / w1;
-		float iw2 = 1.0f / w2;
-
-		Geo::Vector texCoord0 = p0.texCoord * iw0;
-		Geo::Vector texCoord1 = p1.texCoord * iw1;
-		Geo::Vector texCoord2 = p2.texCoord * iw2;
-
-		Geo::Vector normal0 = p0.normal * iw0;
-		Geo::Vector normal1 = p1.normal * iw1;
-		Geo::Vector normal2 = p2.normal * iw2;
-
 		float multisampleBiasX[] = { -0.2f, 0.3f, -0.3f, 0.2f };
 		float multisampleBiasY[] = { -0.3f, -0.2f, 0.2f, 0.3f };
 
@@ -93,25 +74,6 @@ namespace Render{
 						float z = a * z0 + b * z1 + c * z2;
 						unsigned short depth = unsigned short(z);
 						if(depth <= framebuffer.getDepth(x, y, m)) {
-							float iw = a * iw0 + b * iw1 + c * iw2;
-							float w = 1.0f / iw;
-							Geo::Vector texCoord = (a * texCoord0 + b * texCoord1 + c * texCoord2) * w;
-							Geo::Vector normal = (a * normal0 + b * normal1 + c * normal2) * w;
-
-							float s = texCoord.x();
-							float t = texCoord.y();
-							int si = int(std::floor(s));
-							int ti = int(std::floor(t));
-							float sf = s - float(si);
-							float tf = t - float(ti);
-							/*
-							Color c0 = texture.data[ti * texture.width + si];
-							Color cs = texture.data[ti * texture.width + si + 1];
-							Color ct = texture.data[(ti + 1) * texture.width + si];
-							Color cst = texture.data[(ti + 1) * texture.width + si + 1];
-							Color c = c0 * sf * tf + cs * (1 - s) * t + ct * s * (1 - t) + cst * (1 - s) * (1 - t);
-							*/
-							float l = std::max(normal * (Geo::Vector(1, 1, -1, 0).normalize()), 0.0f);
 							framebuffer.setPixel(x, y, m, color);
 							framebuffer.setDepth(x, y, m, depth);
 						}

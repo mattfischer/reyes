@@ -89,10 +89,10 @@ namespace Render {
 	{
 		for(int x = 0; x < width(); x++) {
 			for(int y = 0; y < height(); y++) {
-				Triangle::Vertex p0(point(x, y), Geo::Vector(), Geo::Vector());
-				Triangle::Vertex p1(point(x + 1, y), Geo::Vector(), Geo::Vector());
-				Triangle::Vertex p2(point(x + 1, y + 1), Geo::Vector(), Geo::Vector());
-				Triangle::Vertex p3(point(x, y + 1), Geo::Vector(), Geo::Vector());
+				Geo::Vector p0 = point(x, y).project();
+				Geo::Vector p1 = point(x + 1, y).project();
+				Geo::Vector p2 = point(x + 1, y + 1).project();
+				Geo::Vector p3 = point(x, y + 1).project();
 
 				Triangle::render(config.framebuffer(), p0, p1, p2, color(x, y));
 				Triangle::render(config.framebuffer(), p0, p2, p3, color(x, y));
