@@ -24,9 +24,7 @@ std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename,
 		}
 		std::unique_ptr<Render::Patch> patch = std::make_unique<Render::Patch>(points);
 		unsigned int index = patch->newUniform("color", 3);
-		patch->setUniform(index + 0, color.r);
-		patch->setUniform(index + 1, color.g);
-		patch->setUniform(index + 2, color.b);
+		patch->setUniformColor(index, color);
 		patches.push_back(std::move(patch));
 	}
 

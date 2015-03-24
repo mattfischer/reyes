@@ -8,13 +8,12 @@ namespace Render {
 		Grid grid = dice(config);
 
 		unsigned int index = uniformIndex("color");
-		Draw::Color color(unsigned char(uniform(index)), unsigned char(uniform(index + 1)), unsigned char(uniform(index + 2)));
+		Draw::Color color = uniformColor(index);
 		for(int x = 0; x < grid.width(); x++) {
 			for(int y = 0; y < grid.height(); y++) {
 				Geo::Vector u = grid.point(x + 1, y + 1) - grid.point(x, y);
 				Geo::Vector v = grid.point(x, y + 1) - grid.point(x + 1, y);
 				Geo::Vector normal = u % v;
-				normal.setW(0);
 				normal = normal.normalize();
 				float l = std::max(normal * (Geo::Vector(1, 1, -1, 0).normalize()), 0.0f);
 				grid.setColor(x, y, color * l);
@@ -51,13 +50,6 @@ namespace Render {
 		return mUniformIndices.find(name)->second;
 	}
 
-	void Primitive::setUniform(unsigned int index, float value)
-	{
-		if(index > 0 && index <= mUniforms.size()) {
-			mUniforms[index - 1] = value;
-		}
-	}
-
 	float Primitive::uniform(unsigned int index) const
 	{
 		if(index > 0 && index <= mUniforms.size()) {
@@ -65,5 +57,36 @@ namespace Render {
 		}
 
 		return 0;
+	}
+
+	Draw::Color Primitive::uniformColor(unsigned int index) const
+	{
+		return Draw::Color(uniform(index), uniform(index + 1), uniform(index + 2));
+	}
+
+	Geo::Vector Primitive::uniformVector(unsigned int index) const
+	{
+		return Geo::Vector(uniform(index), uniform(index + 1), uniform(index + 2));
+	}
+
+	void Primitive::setUniform(unsigned int index, float value)
+	{
+		if(index > 0 && index <= mUniforms.size()) {
+			mUniforms[index - 1] = value;
+		}
+	}
+
+	void Primitive::setUniformColor(unsigned int index, const Draw::Color &color)
+	{
+		setUniform(index + 0, color.r);
+		setUniform(index + 1, color.g);
+		setUniform(index + 2, color.b);
+	}
+
+	void Primitive::setUniformVector(unsigned int index, const Geo::Vector &vector)
+	{
+		setUniform(index + 0, vector.x());
+		setUniform(index + 1, vector.y());
+		setUniform(index + 2, vector.z());
 	}
 }
