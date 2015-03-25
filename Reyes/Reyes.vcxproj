@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4DF81247-2473-4B50-AE72-B3A49364ADC5}</ProjectGuid>
     <RootNamespace>render</RootNamespace>
+    <ProjectName>Reyes</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
