@@ -9,20 +9,22 @@ namespace Render {
 
 		unsigned int index = uniformIndex("color");
 		Draw::Color color = uniformColor(index);
+		Geo::Vector light = Geo::Vector(1, 1, -1, 0).normalize();
 		for(int x = 0; x < grid.width(); x++) {
 			for(int y = 0; y < grid.height(); y++) {
 				Geo::Vector u = grid.point(x + 1, y + 1) - grid.point(x, y);
 				Geo::Vector v = grid.point(x, y + 1) - grid.point(x + 1, y);
 				Geo::Vector normal = u % v;
 				normal = normal.normalize();
-				float l = std::max(normal * (Geo::Vector(1, 1, -1, 0).normalize()), 0.0f);
+				float l = std::max(normal * light, 0.0f);
 				grid.setColor(x, y, color * l);
 			}
 		}
 
+		Geo::Matrix matrix = config.viewport() * config.projection();
 		for(int x = 0; x <= grid.width(); x++) {
 			for(int y = 0; y <= grid.height(); y++) {
-				grid.setPoint(x, y, config.viewport() * (config.projection() * grid.point(x, y)).project());
+				grid.setPoint(x, y, (matrix * grid.point(x, y)).project());
 			}
 		}
 

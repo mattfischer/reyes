@@ -27,22 +27,23 @@ namespace Render {
 		int divisions = 16;
 		Grid grid(divisions, divisions);
 
+		Geo::Matrix matrix = config.view() * transformation();
+		Geo::Vector points[16];
+		for(int k = 0; k < 4; k++) {
+			for(int l = 0; l < 4; l++) {
+				points[k * 4 + l] = matrix * point(l, k);
+			}
+		}
+
 		for(int i = 0; i <= divisions; i++) {
 			for(int j = 0; j <= divisions; j++) {
 				float s = float(i) / float(divisions);
 				float t = float(j) / float(divisions);
 
 				Geo::Vector interp[16];
-
-				for(int k = 0; k < 4; k++) {
-					for(int l = 0; l < 4; l++) {
-						interp[k * 4 + l] = config.view() * transformation() * point(l, k);
-					}
-				}
-
 				for(int k = 0; k < 3; k++) {
 					for(int l = 0; l < 3; l++) {
-						interp[k * 4 + l] = interp[k * 4 + l] * s * t + interp[k * 4 + l + 1] * (1 - s) * t + interp[(k + 1) * 4 + l] * s * (1 - t) + interp[(k + 1) * 4 + l + 1] * (1 - s) * (1 - t);
+						interp[k * 4 + l] = points[k * 4 + l] * s * t + points[k * 4 + l + 1] * (1 - s) * t + points[(k + 1) * 4 + l] * s * (1 - t) + points[(k + 1) * 4 + l + 1] * (1 - s) * (1 - t);
 					}
 				}
 
