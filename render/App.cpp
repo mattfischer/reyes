@@ -95,6 +95,7 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 		case WM_TIMER:
 		{
 			draw();
+			KillTimer(hWnd, wParam);
 			return 0;
 		}
 	}
