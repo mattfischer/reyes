@@ -13,7 +13,7 @@ namespace Draw {
 		int width();
 		int height();
 
-		void blendDisplayPixel(int x, int y, const Color &color, float alpha);
+		void blendPixel(int x, int y, const Color &color, float alpha);
 		void aaline(float x0, float y0, float x1, float y1, const Color &color);
 
 	private:

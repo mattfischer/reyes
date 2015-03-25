@@ -19,17 +19,19 @@ namespace Draw {
 		return mFramebuffer.height();
 	}
 
-	void Context::blendDisplayPixel(int x, int y, const Color &color, float alpha)
+	void Context::blendPixel(int x, int y, const Color &color, float alpha)
 	{
 		if(x < 0 || y < 0 || x >= mFramebuffer.width() || y >= mFramebuffer.height()) {
 			return;
 		}
 
-		unsigned char *bits = mFramebuffer.displayColorBits();
-		int addr = (y * mFramebuffer.width() + x) * 3;
-		bits[addr + 0] = unsigned char(bits[addr + 0] * (1.0f - alpha) + color.b * alpha);
-		bits[addr + 1] = unsigned char(bits[addr + 1] * (1.0f - alpha) + color.g * alpha);
-		bits[addr + 2] = unsigned char(bits[addr + 2] * (1.0f - alpha) + color.r * alpha);
+		unsigned char *bits = mFramebuffer.colorBits();
+		for(int m = 0; m < mFramebuffer.multisample(); m++) {
+			int addr = ((y * mFramebuffer.width() + x) * mFramebuffer.multisample() + m) * 3;
+			bits[addr + 0] = unsigned char(bits[addr + 0] * (1.0f - alpha) + color.b * 0xff * alpha);
+			bits[addr + 1] = unsigned char(bits[addr + 1] * (1.0f - alpha) + color.g * 0xff * alpha);
+			bits[addr + 2] = unsigned char(bits[addr + 2] * (1.0f - alpha) + color.r * 0xff * alpha);
+		}
 	}
 
 	void Context::aaline(float x0, float y0, float x1, float y1, const Color &color)
@@ -56,11 +58,11 @@ namespace Draw {
 
 		float err = y0start - ((float)y - 0.5f);
 		if(steep) {
-			blendDisplayPixel(y - 1, x, color, (1.0f - err) * (1.0f - x0gap));
-			blendDisplayPixel(y, x, color, err * (1.0f - x0gap));
+			blendPixel(y - 1, x, color, (1.0f - err) * (1.0f - x0gap));
+			blendPixel(y, x, color, err * (1.0f - x0gap));
 		} else {
-			blendDisplayPixel(x, y - 1, color, (1.0f - err) * (1.0f - x0gap));
-			blendDisplayPixel(x, y, color, err * (1.0f - x0gap));
+			blendPixel(x, y - 1, color, (1.0f - err) * (1.0f - x0gap));
+			blendPixel(x, y, color, err * (1.0f - x0gap));
 		}
 
 		int xend = (int)std::floor(x1);
@@ -76,21 +78,21 @@ namespace Draw {
 			x++;
 
 			if(steep) {
-				blendDisplayPixel(y - 1, x, color, (1.0f - err));
-				blendDisplayPixel(y, x, color, err);
+				blendPixel(y - 1, x, color, (1.0f - err));
+				blendPixel(y, x, color, err);
 			} else {
-				blendDisplayPixel(x, y - 1, color, (1.0f - err));
-				blendDisplayPixel(x, y, color, err);
+				blendPixel(x, y - 1, color, (1.0f - err));
+				blendPixel(x, y, color, err);
 			}
 		}
 
 		float x1gap = x1 - xend;
 		if(steep) {
-			blendDisplayPixel(y - 1, x, color, (1.0f - err) * x1gap);
-			blendDisplayPixel(y, x, color, err * x1gap);
+			blendPixel(y - 1, x, color, (1.0f - err) * x1gap);
+			blendPixel(y, x, color, err * x1gap);
 		} else {
-			blendDisplayPixel(x, y - 1, color, (1.0f - err) * x1gap);
-			blendDisplayPixel(x, y, color, err * x1gap);
+			blendPixel(x, y - 1, color, (1.0f - err) * x1gap);
+			blendPixel(x, y, color, err * x1gap);
 		}
 	}
 }
