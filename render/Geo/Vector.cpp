@@ -125,4 +125,13 @@ namespace Geo {
 	{
 		return v * b;
 	}
+
+	Vector &Vector::operator+=(const Vector &b)
+	{
+		for(int i = 0; i < 4; i++) {
+			mValues[i] += b.mValues[i];
+		}
+
+		return *this;
+	}
 }

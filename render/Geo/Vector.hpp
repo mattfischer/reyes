@@ -39,6 +39,8 @@ namespace Geo {
 		Vector operator-() const;
 		Vector operator%(const Vector &b) const;
 
+		Vector &operator+=(const Vector &b);
+
 	protected:
 		float mValues[4];
 	};

@@ -40,21 +40,16 @@ namespace Render {
 				float s = float(i) / float(divisions);
 				float t = float(j) / float(divisions);
 
-				Geo::Vector interp[16];
-				for(int k = 0; k < 3; k++) {
-					for(int l = 0; l < 3; l++) {
-						interp[k * 4 + l] = points[k * 4 + l] * s * t + points[k * 4 + l + 1] * (1 - s) * t + points[(k + 1) * 4 + l] * s * (1 - t) + points[(k + 1) * 4 + l + 1] * (1 - s) * (1 - t);
+				float Bs[4] = { (1 - s)*(1 - s)*(1 - s), 3 * s*(1 - s)*(1 - s), 3 * s*s*(1 - s), s*s*s };
+				float Bt[4] = { (1 - t)*(1 - t)*(1 - t), 3 * t*(1 - t)*(1 - t), 3 * t*t*(1 - t), t*t*t };
+
+				Geo::Vector p(0, 0, 0, 0);
+				for(int k = 0; k < 4; k++) {
+					for(int l = 0; l < 4; l++) {
+						p += Bs[l] * Bt[k] * points[k * 4 + l];
 					}
 				}
-
-				for(int k = 0; k < 2; k++) {
-					for(int l = 0; l < 2; l++) {
-						interp[k * 4 + l] = interp[k * 4 + l] * s * t + interp[k * 4 + l + 1] * (1 - s) * t + interp[(k + 1) * 4 + l] * s * (1 - t) + interp[(k + 1) * 4 + l + 1] * (1 - s) * (1 - t);
-					}
-				}
-
-				Geo::Vector point = interp[0 * 4 + 0] * s * t + interp[0 * 4 + 1] * (1 - s) * t + interp[1 * 4 + 0] * s * (1 - t) + interp[1 * 4 + 1] * (1 - s) * (1 - t);
-				grid.setPoint(i, j, point);
+				grid.setPoint(i, j, p);
 			}
 		}
 
