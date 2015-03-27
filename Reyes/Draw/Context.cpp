@@ -25,12 +25,9 @@ namespace Draw {
 			return;
 		}
 
-		unsigned char *bits = mFramebuffer.colorBits();
 		for(int m = 0; m < mFramebuffer.multisample(); m++) {
-			int addr = ((y * mFramebuffer.width() + x) * mFramebuffer.multisample() + m) * 3;
-			bits[addr + 0] = unsigned char(bits[addr + 0] * (1.0f - alpha) + color.b * 0xff * alpha);
-			bits[addr + 1] = unsigned char(bits[addr + 1] * (1.0f - alpha) + color.g * 0xff * alpha);
-			bits[addr + 2] = unsigned char(bits[addr + 2] * (1.0f - alpha) + color.r * 0xff * alpha);
+			Color current = mFramebuffer.getPixel(x, y, m);
+			mFramebuffer.setPixel(x, y, m, current * (1.0f - alpha) + color * alpha);
 		}
 	}
 

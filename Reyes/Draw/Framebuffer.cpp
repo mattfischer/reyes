@@ -133,6 +133,16 @@ namespace Draw {
 		bits[addr + 2] = unsigned char(color.r * 0xff);
 	}
 
+	Color Framebuffer::getPixel(int x, int y, int m) const
+	{
+		const unsigned char *bits = colorBits();
+		int addr = ((y * width() + x) * multisample() + m) * 3;
+		float r = float(bits[addr + 0]) / 0xff;
+		float g = float(bits[addr + 1]) / 0xff;
+		float b = float(bits[addr + 2]) / 0xff;
+		return Color(r, g, b);
+	}
+
 	void Framebuffer::setDepth(int x, int y, int m, float depth)
 	{
 		depthBits()[(y * width() + x) * multisample() + m] = unsigned short(depth * float(USHRT_MAX));
