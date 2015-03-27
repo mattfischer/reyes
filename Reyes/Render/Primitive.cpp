@@ -12,8 +12,8 @@ namespace Render {
 		Geo::Vector light = Geo::Vector(1, 1, -1, 0).normalize();
 		for(int x = 0; x < grid.width(); x++) {
 			for(int y = 0; y < grid.height(); y++) {
-				Geo::Vector u = grid.point(x + 1, y + 1) - grid.point(x, y);
-				Geo::Vector v = grid.point(x, y + 1) - grid.point(x + 1, y);
+				Geo::Vector u = grid.point(x + 1, y) - grid.point(x, y);
+				Geo::Vector v = grid.point(x, y + 1) - grid.point(x, y);
 				Geo::Vector normal = u % v;
 				normal = normal.normalize();
 				float l = std::max(normal * light, 0.0f);

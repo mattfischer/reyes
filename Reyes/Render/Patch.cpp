@@ -92,8 +92,8 @@ namespace Render {
 
 		for(int i = 0; i <= dsm; i++) {
 			for(int j = 0; j <= dtm; j++) {
-				float s = float(i) / float(dsm);
-				float t = float(j) / float(dtm);
+				float s = float(i) / float(dsm - 1);
+				float t = float(j) / float(dtm - 1);
 
 				float Bs[4] = { (1 - s)*(1 - s)*(1 - s), 3 * s*(1 - s)*(1 - s), 3 * s*s*(1 - s), s*s*s };
 				float Bt[4] = { (1 - t)*(1 - t)*(1 - t), 3 * t*(1 - t)*(1 - t), 3 * t*t*(1 - t), t*t*t };

@@ -21,6 +21,11 @@ namespace Draw {
 		Color() = default;
 		Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
 	};
+
+	static Color operator*(float f, const Color &c)
+	{
+		return c * f;
+	}
 }
 
 #endif

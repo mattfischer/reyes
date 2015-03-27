@@ -3,7 +3,7 @@
 #include <algorithm>
 
 namespace Render{
-	void Triangle::render(Draw::Framebuffer &framebuffer, const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, const Draw::Color &color)
+	void Triangle::render(Draw::Framebuffer &framebuffer, const Geo::Vector &p0, const Draw::Color &c0, Geo::Vector &p1, const Draw::Color &c1, Geo::Vector &p2, const Draw::Color &c2)
 	{
 		float x0 = p0.x();
 		float y0 = p0.y();
@@ -73,6 +73,7 @@ namespace Render{
 
 						float z = a * z0 + b * z1 + c * z2;
 						if(z <= framebuffer.getDepth(x, y, m)) {
+							Draw::Color color = a * c0 + b * c1 + c * c2;
 							framebuffer.setPixel(x, y, m, color);
 							framebuffer.setDepth(x, y, m, z);
 						}

@@ -87,15 +87,19 @@ namespace Render {
 
 	void Grid::renderSolid(const Config &config) const
 	{
-		for(int x = 0; x < width(); x++) {
-			for(int y = 0; y < height(); y++) {
+		for(int x = 0; x < width() - 1; x++) {
+			for(int y = 0; y < height() - 1; y++) {
 				Geo::Vector p0 = point(x, y);
+				Draw::Color c0 = color(x, y);
 				Geo::Vector p1 = point(x + 1, y);
+				Draw::Color c1 = color(x + 1, y);
 				Geo::Vector p2 = point(x + 1, y + 1);
+				Draw::Color c2 = color(x + 1, y + 1);
 				Geo::Vector p3 = point(x, y + 1);
+				Draw::Color c3 = color(x, y + 1);
 
-				Triangle::render(config.framebuffer(), p0, p1, p2, color(x, y));
-				Triangle::render(config.framebuffer(), p0, p2, p3, color(x, y));
+				Triangle::render(config.framebuffer(), p0, c0, p1, c1, p2, c2);
+				Triangle::render(config.framebuffer(), p0, c0, p2, c2, p3, c3);
 			}
 		}
 	}

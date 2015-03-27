@@ -9,7 +9,7 @@ namespace Render {
 	class Triangle
 	{
 	public:
-		static void render(Draw::Framebuffer &framebuffer, const Geo::Vector &p0, const Geo::Vector &p1, const Geo::Vector &p2, const Draw::Color &color);
+		static void render(Draw::Framebuffer &framebuffer, const Geo::Vector &p0, const Draw::Color &c0, Geo::Vector &p1, const Draw::Color &c1, Geo::Vector &p2, const Draw::Color &c2);
 	};
 }
 #endif
