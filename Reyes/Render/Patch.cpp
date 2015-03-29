@@ -3,7 +3,8 @@
 #include <algorithm>
 
 namespace Render {
-	Patch::Patch(Geo::Vector points[16])
+	Patch::Patch(Geo::Vector points[16], Texture &texture)
+		: Primitive(texture)
 	{
 		mPoints = std::make_unique<Geo::Vector[]>(16);
 
@@ -13,7 +14,7 @@ namespace Render {
 	}
 
 	Patch::Patch(Patch &&other)
-		: mPoints(std::move(other.mPoints))
+		: Primitive(other), mPoints(std::move(other.mPoints))
 	{
 	}
 

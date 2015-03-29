@@ -84,6 +84,12 @@
     <ClCompile Include="Render\Primitive.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Render\Texture.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="BmpFileLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -136,6 +142,12 @@
     </ClInclude>
     <ClInclude Include="Render\Primitive.hpp">
       <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Texture.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="BmpFileLoader.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

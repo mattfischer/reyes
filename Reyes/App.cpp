@@ -1,5 +1,6 @@
 #include "App.hpp"
 #include "BptFileLoader.hpp"
+#include "BmpFileLoader.hpp"
 #include "Geo/Transformation.hpp"
 
 #define CLASSNAME "render"
@@ -46,7 +47,8 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	mObject = BptFileLoader::load("teapot.bpt", Draw::Color(1.0f, 0.0f, 0.0f));
+	std::unique_ptr<Render::Texture> texture = BmpFileLoader::load("bricks.bmp");
+	mObject = BptFileLoader::load("teapot.bpt", *texture);
 	draw();
 
 	MSG msg;

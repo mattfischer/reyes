@@ -5,6 +5,7 @@
 
 #include "Render/Grid.hpp"
 #include "Render/Primitive.hpp"
+#include "Render/Texture.hpp"
 
 #include "Draw/Color.hpp"
 
@@ -14,7 +15,7 @@ namespace Render {
 	class Patch : public Primitive
 	{
 	public:
-		Patch(Geo::Vector points[16]);
+		Patch(Geo::Vector points[16], Texture &texture);
 		Patch(Patch &&other);
 
 		const Geo::Vector &point(int x, int y) const;

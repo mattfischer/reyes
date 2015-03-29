@@ -3,6 +3,11 @@
 #include <algorithm>
 
 namespace Render {
+	Primitive::Primitive(Texture &texture)
+		: mTexture(texture)
+	{
+	}
+
 	void Primitive::render(const Config &config) const
 	{
 		Grid grid = dice(config);
@@ -10,8 +15,6 @@ namespace Render {
 		std::vector<float> varyings;
 		varyings.resize(mVaryings.size());
 
-		unsigned int index = uniformIndex("color");
-		Draw::Color color = uniformColor(index);
 		Geo::Vector light = Geo::Vector(1, 1, -1, 0).normalize();
 		for(int x = 0; x < grid.width(); x++) {
 			for(int y = 0; y < grid.height(); y++) {
@@ -24,8 +27,9 @@ namespace Render {
 				float s = float(x) / float(grid.width());
 				float t = float(y) / float(grid.height());
 				for(unsigned int i = 0; i < varyings.size(); i++) {
-					varyings[i] = varying(i, 0) * (1 - s) * (1 - t) + varying(i, 1) * s * (1 - t) + varying(i, 2) * (1 - s) * t + varying(i, 3) * s * t;
+					varyings[i] = varying(i + 1, 0) * (1 - s) * (1 - t) + varying(i + 1, 1) * s * (1 - t) + varying(i + 1, 2) * (1 - s) * t + varying(i + 1, 3) * s * t;
 				}
+				Draw::Color color = mTexture.sample(varyings[0], varyings[1]);
 				grid.setColor(x, y, color * l);
 			}
 		}
@@ -110,7 +114,7 @@ namespace Render {
 		int index = mVaryings.size() + 1;
 		mVaryings.resize(mVaryings.size() + size);
 		for(unsigned int i = 0; i < size; i++) {
-			mVaryings[index + i].resize(numVaryingPoints());
+			mVaryings[index + i - 1].resize(numVaryingPoints());
 		}
 		mVaryingIndices[name] = index;
 		return index;
@@ -127,7 +131,7 @@ namespace Render {
 
 	float Primitive::varying(unsigned int index, unsigned int point) const
 	{
-		if(index > 0 && index <= mUniforms.size() && point >=0 && point < numVaryingPoints()) {
+		if(index > 0 && index <= mVaryings.size() && point >=0 && point < numVaryingPoints()) {
 			return mVaryings[index - 1][point];
 		}
 
@@ -146,7 +150,7 @@ namespace Render {
 
 	void Primitive::setVarying(unsigned int index, unsigned int point, float value)
 	{
-		if(index > 0 && index <= mUniforms.size() && point >= 0 && point < numVaryingPoints()) {
+		if(index > 0 && index <= mVaryings.size() && point >= 0 && point < numVaryingPoints()) {
 			mVaryings[index - 1][point] = value;
 		}
 	}

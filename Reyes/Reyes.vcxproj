@@ -68,6 +68,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="BmpFileLoader.cpp" />
     <ClCompile Include="BptFileLoader.cpp" />
     <ClCompile Include="Render\Clipper.cpp" />
     <ClCompile Include="Render\Objects.cpp" />
@@ -83,10 +84,12 @@
     <ClCompile Include="Render\Patch.cpp" />
     <ClCompile Include="Render\Config.cpp" />
     <ClCompile Include="Render\Primitive.cpp" />
+    <ClCompile Include="Render\Texture.cpp" />
     <ClCompile Include="Render\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="BmpFileLoader.hpp" />
     <ClInclude Include="BptFileLoader.hpp" />
     <ClInclude Include="Render\Clipper.hpp" />
     <ClInclude Include="Draw\Color.hpp" />
@@ -102,6 +105,7 @@
     <ClInclude Include="Render\Patch.hpp" />
     <ClInclude Include="Render\Config.hpp" />
     <ClInclude Include="Render\Primitive.hpp" />
+    <ClInclude Include="Render\Texture.hpp" />
     <ClInclude Include="Render\Triangle.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

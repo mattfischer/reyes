@@ -6,7 +6,7 @@
 #include <vector>
 #include <fstream>
 
-std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename, const Draw::Color &color)
+std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename, Render::Texture &texture)
 {
 	std::ifstream file(filename.c_str());
 	int numPatches;
@@ -22,9 +22,12 @@ std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename,
 			file >> x >> y >> z;
 			points[j] = Geo::Vector(x, y, z);
 		}
-		std::unique_ptr<Render::Patch> patch = std::make_unique<Render::Patch>(points);
-		unsigned int index = patch->newUniform("color", 3);
-		patch->setUniformColor(index, color);
+		std::unique_ptr<Render::Patch> patch = std::make_unique<Render::Patch>(points, texture);
+		unsigned int index = patch->newVarying("tex", 3);
+		patch->setVaryingVector(index, 0, Geo::Vector(0, 0, 0));
+		patch->setVaryingVector(index, 1, Geo::Vector(1, 0, 0));
+		patch->setVaryingVector(index, 2, Geo::Vector(0, 1, 0));
+		patch->setVaryingVector(index, 3, Geo::Vector(1, 1, 0));
 		patches.push_back(std::move(patch));
 	}
 

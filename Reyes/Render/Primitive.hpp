@@ -3,6 +3,7 @@
 
 #include "Render/Object.hpp"
 #include "Render/Grid.hpp"
+#include "Render/Texture.hpp"
 #include "Draw/Color.hpp"
 
 #include <string>
@@ -13,6 +14,8 @@ namespace Render {
 	class Primitive : public Object
 	{
 	public:
+		Primitive(Texture &texture);
+
 		virtual Grid dice(const Config &config) const = 0;
 
 		virtual void render(const Config &config) const;
@@ -47,6 +50,8 @@ namespace Render {
 
 		std::map<std::string, int> mVaryingIndices;
 		std::vector<std::vector<float>> mVaryings;
+
+		Texture &mTexture;
 	};
 }
 
