@@ -22,6 +22,11 @@ namespace Render {
 		return mPoints[y * 4 + x];
 	}
 
+	unsigned int Patch::numVaryingPoints() const
+	{
+		return 4;
+	}
+
 	void getDerivatives(const Geo::Vector points[], const Config &config, float s, float t, int &ds, int &dt)
 	{
 		float Bs[4] = { (1 - s)*(1 - s)*(1 - s), 3 * s*(1 - s)*(1 - s), 3 * s*s*(1 - s), s*s*s };

@@ -22,6 +22,8 @@ namespace Render {
 		Grid dice(const Config &config) const;
 
 	private:
+		virtual unsigned int numVaryingPoints() const;
+
 		std::unique_ptr<Geo::Vector[]> mPoints;
 	};
 }
