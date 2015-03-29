@@ -26,8 +26,8 @@ std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename,
 		unsigned int index = patch->newVarying("tex", 3);
 		patch->setVaryingVector(index, 0, Geo::Vector(0, 0, 0));
 		patch->setVaryingVector(index, 1, Geo::Vector(1, 0, 0));
-		patch->setVaryingVector(index, 2, Geo::Vector(0, 1, 0));
-		patch->setVaryingVector(index, 3, Geo::Vector(1, 1, 0));
+		patch->setVaryingVector(index, 2, Geo::Vector(0, 0.5f, 0));
+		patch->setVaryingVector(index, 3, Geo::Vector(1, 0.5f, 0));
 		patches.push_back(std::move(patch));
 	}
 
