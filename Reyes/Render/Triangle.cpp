@@ -26,10 +26,10 @@ namespace Render{
 		float x02 = (x0 - x2) * winding;
 		float y02 = (y0 - y2) * winding;
 
-		float xMin = std::min({ x0, x1, x2 });
-		float xMax = std::max({ x0, x1, x2 });
-		float yMin = std::min({ y0, y1, y2 });
-		float yMax = std::max({ y0, y1, y2 });
+		float xMin = std::max(std::min({ x0, x1, x2 }), 0.0f);
+		float xMax = std::min(std::max({ x0, x1, x2 }), float(framebuffer.width() - 1));
+		float yMin = std::max(std::min({ y0, y1, y2 }), 0.0f);
+		float yMax = std::min(std::max({ y0, y1, y2 }), float(framebuffer.height() - 1));
 
 		float xs = std::floor(xMin) + 0.5f;
 		float ys = std::floor(yMin) + 0.5f;
