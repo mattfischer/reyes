@@ -10,6 +10,10 @@ namespace Render {
 
 	void Primitive::render(const Config &config) const
 	{
+		if(!inFrustum(config)) {
+			return;
+		}
+
 		Grid grid = dice(config);
 
 		std::vector<float> varyings;

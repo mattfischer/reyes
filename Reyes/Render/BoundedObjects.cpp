@@ -11,6 +11,10 @@ namespace Render {
 
 	void BoundedObjects::render(const Config &config) const
 	{
+		if(!inFrustum(config)) {
+			return;
+		}
+
 		for(const std::unique_ptr<const BoundedObject> &object : mObjects) {
 			object->render(config);
 		}

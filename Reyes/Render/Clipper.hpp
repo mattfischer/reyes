@@ -2,6 +2,8 @@
 #define CLIPPER_HPP
 
 #include "Geo/Vector.hpp"
+#include "Geo/Box.hpp"
+#include "Geo/Matrix.hpp"
 
 #include <vector>
 
@@ -27,7 +29,9 @@ namespace Render {
 			int numVertices;
 		};
 
-		static bool Clipper::clipPolygon(Polygon &polygon);
+		static bool clipPolygon(Polygon &polygon);
+
+		static bool boxInFrustum(const Geo::Box &box, const Geo::Matrix &transformation);
 	};
 }
 

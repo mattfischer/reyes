@@ -2,6 +2,7 @@
 #define RENDER_BOUNDED_OBJECT_HPP
 
 #include "Render/Object.hpp"
+#include "Render/Config.hpp"
 
 #include "Geo/Box.hpp"
 
@@ -10,6 +11,8 @@ namespace Render {
 	{
 	public:
 		const Geo::Box &boundingBox() const;
+
+		bool inFrustum(const Config &config) const;
 
 	protected:
 		Geo::Box &boundingBox();

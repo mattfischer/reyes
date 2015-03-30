@@ -101,4 +101,28 @@ namespace Render {
 
 		return true;
 	}
+
+	bool Clipper::boxInFrustum(const Geo::Box &box, const Geo::Matrix &transformation)
+	{
+		std::array<Geo::Vector, 8> points = box.points();
+		for(Geo::Vector &point : points) {
+			point = transformation * point;
+		}
+
+		for(Geo::Vector &normal : clipPlanes) {
+			bool outside = true;
+			for(Geo::Vector &point : points) {
+				if(point * normal > 0) {
+					outside = false;
+					break;
+				}
+			}
+
+			if(outside) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }
