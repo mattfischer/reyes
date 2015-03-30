@@ -70,8 +70,10 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="BmpFileLoader.cpp" />
     <ClCompile Include="BptFileLoader.cpp" />
+    <ClCompile Include="Geo\Box.cpp" />
+    <ClCompile Include="Render\BoundedObject.cpp" />
     <ClCompile Include="Render\Clipper.cpp" />
-    <ClCompile Include="Render\Objects.cpp" />
+    <ClCompile Include="Render\BoundedObjects.cpp" />
     <ClCompile Include="Draw\Context.cpp" />
     <ClCompile Include="Draw\Framebuffer.cpp" />
     <ClCompile Include="Geo\Matrix.cpp" />
@@ -91,9 +93,11 @@
     <ClInclude Include="App.hpp" />
     <ClInclude Include="BmpFileLoader.hpp" />
     <ClInclude Include="BptFileLoader.hpp" />
+    <ClInclude Include="Render\BoundedObject.hpp" />
+    <ClInclude Include="Geo\Box.hpp" />
     <ClInclude Include="Render\Clipper.hpp" />
     <ClInclude Include="Draw\Color.hpp" />
-    <ClInclude Include="Render\Objects.hpp" />
+    <ClInclude Include="Render\BoundedObjects.hpp" />
     <ClInclude Include="Draw\Context.hpp" />
     <ClInclude Include="Draw\Framebuffer.hpp" />
     <ClInclude Include="Geo\Matrix.hpp" />

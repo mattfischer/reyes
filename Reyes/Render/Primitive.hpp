@@ -1,7 +1,7 @@
 #ifndef RENDER_PRIMITIVE_HPP
 #define RENDER_PRIMITIVE_HPP
 
-#include "Render/Object.hpp"
+#include "Render/BoundedObject.hpp"
 #include "Render/Grid.hpp"
 #include "Render/Texture.hpp"
 #include "Draw/Color.hpp"
@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace Render {
-	class Primitive : public Object
+	class Primitive : public BoundedObject
 	{
 	public:
 		Primitive(Texture &texture);

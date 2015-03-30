@@ -10,6 +10,7 @@ namespace Render {
 
 		for(int i = 0; i < 16; i++) {
 			mPoints[i] = points[i];
+			boundingBox().surround(points[i]);
 		}
 	}
 

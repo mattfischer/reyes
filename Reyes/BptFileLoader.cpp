@@ -1,6 +1,6 @@
 #include "BptFileLoader.hpp"
 
-#include "Render/Objects.hpp"
+#include "Render/BoundedObjects.hpp"
 #include "Render/Patch.hpp"
 
 #include <vector>
@@ -12,7 +12,7 @@ std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename,
 	int numPatches;
 
 	file >> numPatches;
-	std::vector<std::unique_ptr<Render::Object>> patches;
+	std::vector<std::unique_ptr<const Render::BoundedObject>> patches;
 	for(int i = 0; i < numPatches; i++) {
 		int dimx, dimy;
 		file >> dimx >> dimy;
@@ -31,5 +31,5 @@ std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename,
 		patches.push_back(std::move(patch));
 	}
 
-	return std::make_unique<Render::Objects>(std::move(patches));
+	return std::make_unique<Render::BoundedObjects>(std::move(patches));
 }
