@@ -11,10 +11,11 @@ namespace Render {
 		mHeight = height;
 		mPoints = std::make_unique<Geo::Vector[]>((width + 1) * (height + 1));
 		mColors = std::make_unique<Draw::Color[]>(width * height);
+		mVisible = std::make_unique<bool[]>(width * height);
 	}
 
 	Grid::Grid(Grid &&other)
-		: mPoints(std::move(other.mPoints)), mColors(std::move(other.mColors))
+		: mPoints(std::move(other.mPoints)), mColors(std::move(other.mColors)), mVisible(std::move(other.mVisible))
 	{
 		mWidth = other.mWidth;
 		mHeight = other.mHeight;
@@ -48,6 +49,16 @@ namespace Render {
 	void Grid::setColor(int x, int y, const Draw::Color &color)
 	{
 		mColors[y * mWidth + x] = color;
+	}
+
+	bool Grid::visible(int x, int y) const
+	{
+		return mVisible[y * mWidth + x];
+	}
+
+	void Grid::setVisible(int x, int y, bool visible)
+	{
+		mVisible[y * mWidth + x] = visible;
 	}
 
 	void Grid::render(const Config &config) const
@@ -89,6 +100,10 @@ namespace Render {
 	{
 		for(int x = 0; x < width() - 1; x++) {
 			for(int y = 0; y < height() - 1; y++) {
+				if(!visible(x, y)) {
+					continue;
+				}
+
 				Geo::Vector p0 = point(x, y);
 				Draw::Color c0 = color(x, y);
 				Geo::Vector p1 = point(x + 1, y);

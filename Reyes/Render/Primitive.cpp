@@ -43,16 +43,22 @@ namespace Render {
 				Geo::Vector u = grid.point(x + 1, y) - grid.point(x, y);
 				Geo::Vector v = grid.point(x, y + 1) - grid.point(x, y);
 				Geo::Vector normal = u % v;
-				normal = normal.normalize();
-				float l = std::max(normal * light, 0.0f);
+				if(normal.z() > 0) {
+					grid.setVisible(x, y, false);
+				} else {
+					grid.setVisible(x, y, true);
 
-				float s = segment.uMin + (segment.uMax - segment.uMin) * float(x) / float(grid.width());
-				float t = segment.vMin + (segment.vMax - segment.vMin) * float(y) / float(grid.height());
-				for(unsigned int i = 0; i < varyings.size(); i++) {
-					varyings[i] = varying(i + 1, 0) * (1 - s) * (1 - t) + varying(i + 1, 1) * s * (1 - t) + varying(i + 1, 2) * (1 - s) * t + varying(i + 1, 3) * s * t;
+					normal = normal.normalize();
+					float l = std::max(normal * light, 0.0f);
+
+					float s = segment.uMin + (segment.uMax - segment.uMin) * float(x) / float(grid.width());
+					float t = segment.vMin + (segment.vMax - segment.vMin) * float(y) / float(grid.height());
+					for(unsigned int i = 0; i < varyings.size(); i++) {
+						varyings[i] = varying(i + 1, 0) * (1 - s) * (1 - t) + varying(i + 1, 1) * s * (1 - t) + varying(i + 1, 2) * (1 - s) * t + varying(i + 1, 3) * s * t;
+					}
+					Draw::Color color = mTexture.sample(varyings[0], varyings[1]);
+					grid.setColor(x, y, color * l);
 				}
-				Draw::Color color = mTexture.sample(varyings[0], varyings[1]);
-				grid.setColor(x, y, color * l);
 			}
 		}
 

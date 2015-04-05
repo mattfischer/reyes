@@ -25,6 +25,9 @@ namespace Render {
 		const Draw::Color &color(int x, int y) const;
 		void setColor(int x, int y, const Draw::Color &color);
 
+		bool visible(int x, int y) const;
+		void setVisible(int x, int y, bool visible);
+
 		virtual void render(const Config &config) const;
 
 	private:
@@ -35,6 +38,7 @@ namespace Render {
 		int mHeight;
 		std::unique_ptr<Geo::Vector[]> mPoints;
 		std::unique_ptr<Draw::Color[]> mColors;
+		std::unique_ptr<bool[]> mVisible;
 	};
 }
 
