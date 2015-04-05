@@ -41,9 +41,9 @@ namespace Render {
 		Geo::Vector pv(0, 0, 0, 0);
 		for(int i = 0; i < 4; i++) {
 			for(int j = 0; j < 4; j++) {
-				dsv += Bds[j] * Bt[i] * points[i * 4 + j];
-				dtv += Bs[j] * Bdt[i] * points[i * 4 + j];
-				pv += Bs[j] * Bt[i] * points[i * 4 + j];
+				dsv += (Bds[j] * Bt[i]) * points[i * 4 + j];
+				dtv += (Bs[j] * Bdt[i]) * points[i * 4 + j];
+				pv += (Bs[j] * Bt[i]) * points[i * 4 + j];
 			}
 		}
 
@@ -120,7 +120,7 @@ namespace Render {
 				Geo::Vector p(0, 0, 0, 0);
 				for(int k = 0; k < 4; k++) {
 					for(int l = 0; l < 4; l++) {
-						p += Bs[l] * Bt[k] * points[k * 4 + l];
+						p += (Bs[l] * Bt[k]) * points[k * 4 + l];
 					}
 				}
 				grid.setPoint(i, j, p);
