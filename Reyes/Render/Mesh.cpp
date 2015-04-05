@@ -1,7 +1,7 @@
 #include "Render/Mesh.hpp"
 #include "Draw/Context.hpp"
 #include "Render/Clipper.hpp"
-#include "Render/Triangle.hpp"
+#include "Render/Rasterize.hpp"
 
 namespace Render {
 	Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<Edge> &&edges, std::vector<Polygon> &&polygons, std::vector<Texture> &&textures)
@@ -102,7 +102,7 @@ namespace Render {
 			Geo::Vector p1 = config.viewport() * clippedPolygon.vertices[1].position;
 			for(int i = 2; i < clippedPolygon.numVertices; i++) {
 				Geo::Vector p2 = config.viewport() * clippedPolygon.vertices[i].position;
-				Triangle::render(config.framebuffer(), p0, polygon.color, p1, polygon.color, p2, polygon.color);
+				Rasterize::renderTriangle(config.framebuffer(), p0, polygon.color, p1, polygon.color, p2, polygon.color);
 				p1 = p2;
 			}
 		}

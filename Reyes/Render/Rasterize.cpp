@@ -1,9 +1,9 @@
-#include "Render/Triangle.hpp"
+#include "Render/Rasterize.hpp"
 
 #include <algorithm>
 
 namespace Render{
-	void Triangle::render(Draw::Framebuffer &framebuffer, const Geo::Vector &p0, const Draw::Color &c0, Geo::Vector &p1, const Draw::Color &c1, Geo::Vector &p2, const Draw::Color &c2)
+	void Rasterize::renderTriangle(Draw::Framebuffer &framebuffer, const Geo::Vector &p0, const Draw::Color &c0, Geo::Vector &p1, const Draw::Color &c1, Geo::Vector &p2, const Draw::Color &c2)
 	{
 		float x0 = p0.x();
 		float y0 = p0.y();

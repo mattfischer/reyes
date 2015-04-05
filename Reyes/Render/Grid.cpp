@@ -1,7 +1,7 @@
 #include "Render/Grid.hpp"
 
 #include "Render/Clipper.hpp"
-#include "Render/Triangle.hpp"
+#include "Render/Rasterize.hpp"
 #include "Draw/Context.hpp"
 
 namespace Render {
@@ -113,8 +113,8 @@ namespace Render {
 				Geo::Vector p3 = point(x, y + 1);
 				Draw::Color c3 = color(x, y + 1);
 
-				Triangle::render(config.framebuffer(), p0, c0, p1, c1, p2, c2);
-				Triangle::render(config.framebuffer(), p0, c0, p2, c2, p3, c3);
+				Rasterize::renderTriangle(config.framebuffer(), p0, c0, p1, c1, p2, c2);
+				Rasterize::renderTriangle(config.framebuffer(), p0, c0, p2, c2, p3, c3);
 			}
 		}
 	}

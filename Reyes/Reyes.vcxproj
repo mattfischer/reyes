@@ -88,7 +88,7 @@
     <ClCompile Include="Render\Config.cpp" />
     <ClCompile Include="Render\Primitive.cpp" />
     <ClCompile Include="Render\Texture.cpp" />
-    <ClCompile Include="Render\Triangle.cpp" />
+    <ClCompile Include="Render\Rasterize.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
@@ -112,7 +112,7 @@
     <ClInclude Include="Render\Config.hpp" />
     <ClInclude Include="Render\Primitive.hpp" />
     <ClInclude Include="Render\Texture.hpp" />
-    <ClInclude Include="Render\Triangle.hpp" />
+    <ClInclude Include="Render\Rasterize.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
