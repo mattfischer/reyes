@@ -10,11 +10,29 @@ namespace Render {
 
 	void Primitive::render(const Config &config) const
 	{
+		Segment segment(0, 0, 1, 1);
+
+		renderSegment(segment, config, 0);
+	}
+
+	void Primitive::renderSegment(const Segment &segment, const Config &config, int depth) const
+	{
 		if(!inFrustum(config)) {
 			return;
 		}
 
-		Grid grid = dice(config);
+		if(depth < 8 && !canDice(segment, config)) {
+			float uMid = (segment.uMin + segment.uMax) / 2;
+			float vMid = (segment.vMin + segment.vMax) / 2;
+
+			renderSegment(Segment(segment.uMin, segment.vMin, uMid, vMid), config, depth + 1);
+			renderSegment(Segment(uMid, segment.vMin, segment.uMax, vMid), config, depth + 1);
+			renderSegment(Segment(segment.uMin, vMid, uMid, segment.vMax), config, depth + 1);
+			renderSegment(Segment(uMid, vMid, segment.uMax, segment.vMax), config, depth + 1);
+			return;
+		}
+
+		Grid grid = dice(segment, config);
 
 		std::vector<float> varyings;
 		varyings.resize(mVaryings.size());
@@ -28,8 +46,8 @@ namespace Render {
 				normal = normal.normalize();
 				float l = std::max(normal * light, 0.0f);
 
-				float s = float(x) / float(grid.width());
-				float t = float(y) / float(grid.height());
+				float s = segment.uMin + (segment.uMax - segment.uMin) * float(x) / float(grid.width());
+				float t = segment.vMin + (segment.vMax - segment.vMin) * float(y) / float(grid.height());
 				for(unsigned int i = 0; i < varyings.size(); i++) {
 					varyings[i] = varying(i + 1, 0) * (1 - s) * (1 - t) + varying(i + 1, 1) * s * (1 - t) + varying(i + 1, 2) * (1 - s) * t + varying(i + 1, 3) * s * t;
 				}

@@ -20,7 +20,9 @@ namespace Render {
 
 		const Geo::Vector &point(int x, int y) const;
 
-		Grid dice(const Config &config) const;
+	protected:
+		virtual Grid dice(const Segment &segment, const Config &config) const;
+		virtual bool canDice(const Segment &segment, const Config &config) const;
 
 	private:
 		virtual unsigned int numVaryingPoints() const;

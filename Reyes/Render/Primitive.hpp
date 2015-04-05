@@ -16,8 +16,6 @@ namespace Render {
 	public:
 		Primitive(Texture &texture);
 
-		virtual Grid dice(const Config &config) const = 0;
-
 		virtual void render(const Config &config) const;
 
 		unsigned int newUniform(const std::string &name, unsigned int size);
@@ -42,8 +40,24 @@ namespace Render {
 		void setVaryingColor(unsigned int index, unsigned int point, const Draw::Color &color);
 		void setVaryingVector(unsigned int index, unsigned int point, const Geo::Vector &vector);
 
+	protected:
+		struct Segment
+		{
+			float uMin;
+			float vMin;
+			float uMax;
+			float vMax;
+
+			Segment(float _uMin, float _vMin, float _uMax, float _vMax) : uMin(_uMin), vMin(_vMin), uMax(_uMax), vMax(_vMax) {}
+		};
+
+		virtual Grid dice(const Segment &segment, const Config &config) const = 0;
+		virtual bool canDice(const Segment &segment, const Config &config) const = 0;
+
 	private:
 		virtual unsigned int numVaryingPoints() const = 0;
+
+		void renderSegment(const Segment &segment, const Config &config, int depth) const;
 
 		std::map<std::string, int> mUniformIndices;
 		std::vector<float> mUniforms;
