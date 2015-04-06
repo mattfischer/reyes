@@ -31,15 +31,6 @@ namespace Render{
 		float yMin = std::max(std::min({ y0, y1, y2 }), 0.0f);
 		float yMax = std::min(std::max({ y0, y1, y2 }), float(framebuffer.height() - 1));
 
-		float xs = std::floor(xMin) + 0.5f;
-		float ys = std::floor(yMin) + 0.5f;
-		float xs0 = xs - x0;
-		float ys0 = ys - y0;
-		float xs1 = xs - x1;
-		float ys1 = ys - y1;
-		float xs2 = xs - x2;
-		float ys2 = ys - y2;
-
 		float X0 = -y21;
 		float X1 = -y02;
 		float X2 = -y10;
@@ -48,19 +39,25 @@ namespace Render{
 		float Y1 = x02;
 		float Y2 = x10;
 
-		float e0 = x21 * ys1 - y21 * xs1;
-		float e1 = x02 * ys2 - y02 * xs2;
-		float e2 = x10 * ys0 - y10 * xs0;
-
 		float multisampleBiasX[] = { -0.2f, 0.3f, -0.3f, 0.2f };
 		float multisampleBiasY[] = { -0.3f, -0.2f, 0.2f, 0.3f };
 
 		for(int y = int(yMin); y <= int(yMax); y++) {
-			float e0r = e0;
-			float e1r = e1;
-			float e2r = e2;
-
 			for(int x = int(xMin); x <= int(xMax); x++) {
+				float xs = float(x) + 0.5f;
+				float ys = float(y) + 0.5f;
+
+				float xs0 = xs - x0;
+				float ys0 = ys - y0;
+				float xs1 = xs - x1;
+				float ys1 = ys - y1;
+				float xs2 = xs - x2;
+				float ys2 = ys - y2;
+
+				float e0 = x21 * ys1 - y21 * xs1;
+				float e1 = x02 * ys2 - y02 * xs2;
+				float e2 = x10 * ys0 - y10 * xs0;
+
 				for(int m = 0; m < 4; m++) {
 					float e0m = e0 + X0 * multisampleBiasX[m] + Y0 * multisampleBiasY[m];
 					float e1m = e1 + X1 * multisampleBiasX[m] + Y1 * multisampleBiasY[m];
@@ -79,15 +76,7 @@ namespace Render{
 						}
 					}
 				}
-
-				e0 += X0;
-				e1 += X1;
-				e2 += X2;
 			}
-
-			e0 = e0r + Y0;
-			e1 = e1r + Y1;
-			e2 = e2r + Y2;
 		}
 	}
 }
