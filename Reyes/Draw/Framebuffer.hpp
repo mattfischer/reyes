@@ -3,6 +3,8 @@
 
 #include "Draw/Color.hpp"
 
+#include <memory>
+
 namespace Draw {
 	class Framebuffer
 	{
@@ -11,7 +13,6 @@ namespace Draw {
 		Framebuffer(int width, int height, int multisample);
 		Framebuffer(Framebuffer &&other);
 		Framebuffer(const Framebuffer &) = delete;
-		~Framebuffer();
 
 		Framebuffer &operator=(Framebuffer &&other);
 		Framebuffer &operator=(const Framebuffer &) = delete;
@@ -21,13 +22,6 @@ namespace Draw {
 		int multisample() const;
 
 		const unsigned char *displayColorBits() const;
-		unsigned char *displayColorBits();
-
-		const unsigned char *colorBits() const;
-		unsigned char *colorBits();
-
-		const unsigned short *depthBits() const;
-		unsigned short *depthBits();
 
 		void setPixel(int x, int y, int m, const Color &color);
 		Color getPixel(int x, int y, int m) const;
@@ -42,9 +36,9 @@ namespace Draw {
 		int mWidth;
 		int mHeight;
 		int mMultisample;
-		unsigned char *mDisplayColorBits;
-		unsigned char *mColorBits;
-		unsigned short *mDepthBits;
+		std::unique_ptr<unsigned char[]> mDisplayColorBits;
+		std::unique_ptr<unsigned char[]> mColorBits;
+		std::unique_ptr<unsigned short[]> mDepthBits;
 	};
 }
 
