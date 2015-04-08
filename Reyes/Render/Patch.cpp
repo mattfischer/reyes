@@ -105,8 +105,8 @@ namespace Render {
 		int a;
 		getDerivatives(points, config, (segment.uMin + segment.uMax) / 2, (segment.vMin + segment.vMax) / 2, dsm, dtm, a);
 
-		dsm = std::max(int(dsm * (segment.uMax - segment.uMin)), 2);
-		dtm = std::max(int(dtm * (segment.vMax - segment.vMin)), 2);
+		dsm = std::max(int(dsm * (segment.uMax - segment.uMin)), 4);
+		dtm = std::max(int(dtm * (segment.vMax - segment.vMin)), 4);
 		Grid grid(dsm, dtm);
 
 		for(int i = 0; i <= dsm; i++) {
