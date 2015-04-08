@@ -102,7 +102,7 @@ namespace Render {
 			Geo::Vector p1 = config.viewport() * clippedPolygon.vertices[1].position;
 			for(int i = 2; i < clippedPolygon.numVertices; i++) {
 				Geo::Vector p2 = config.viewport() * clippedPolygon.vertices[i].position;
-				Rasterize::renderTriangle(config.framebuffer(), p0, polygon.color, p1, polygon.color, p2, polygon.color);
+				Rasterize::renderQuad(config.framebuffer(), p0, polygon.color, p1, polygon.color, p0, polygon.color, p2, polygon.color, false);
 				p1 = p2;
 			}
 		}

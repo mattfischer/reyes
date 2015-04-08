@@ -113,8 +113,7 @@ namespace Render {
 				Geo::Vector p3 = point(x, y + 1);
 				Draw::Color c3 = color(x, y + 1);
 
-				Rasterize::renderTriangle(config.framebuffer(), p0, c0, p1, c1, p2, c2);
-				Rasterize::renderTriangle(config.framebuffer(), p0, c0, p2, c2, p3, c3);
+				Rasterize::renderQuad(config.framebuffer(), p0, c0, p1, c1, p2, c2, p3, c3, true);
 			}
 		}
 	}
