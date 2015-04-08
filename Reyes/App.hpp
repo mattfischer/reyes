@@ -28,6 +28,7 @@ private:
 	HDC mBackDC;
 	Draw::Framebuffer mFramebuffer;
 	std::unique_ptr<Render::Object> mObject;
+	int mDrawTime;
 };
 
 #endif

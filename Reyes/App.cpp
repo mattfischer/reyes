@@ -81,6 +81,11 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 
 			BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top, mBackDC, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
 
+			char buf[80];
+			sprintf_s(buf, sizeof(buf), "Draw Time: %ims", mDrawTime);
+			SetBkMode(ps.hdc, TRANSPARENT);
+			TextOut(ps.hdc, 0, 0, buf, strlen(buf));
+
 			EndPaint(hWnd, &ps);
 			break;
 		}
@@ -129,7 +134,11 @@ void App::draw()
 	config.setType(Render::Config::Type::Solid);
 
 	mFramebuffer.clear(Draw::Color(0.5f, 0.5f, 0.5f));
+
+	int startTicks = GetTickCount();
 	mObject->render(config);
+	mDrawTime = GetTickCount() - startTicks;
+
 	mFramebuffer.postMultisampleBuffer();
 
 	postFramebuffer();
