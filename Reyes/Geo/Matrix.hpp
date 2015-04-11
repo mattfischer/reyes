@@ -23,6 +23,7 @@ public:
 	bool identity() const;
 
 	Matrix operator*(const Matrix &b) const;
+	Matrix inverse() const;
 
 protected:
 	float mValues[16];

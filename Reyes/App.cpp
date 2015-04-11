@@ -128,7 +128,8 @@ void App::postFramebuffer()
 void App::draw()
 {
 	Render::Config config(mFramebuffer);
-	config.setView(Geo::Transformation::translate(0, -2, 23) * Geo::Transformation::rotate(-100, 0, 0));
+	Geo::Matrix m = Geo::Transformation::rotate(100, 0, 0) * Geo::Transformation::translate(0, 2, -23);
+	config.setView(m.inverse());
 	config.setProjection(Geo::Transformation::perspective(0.25f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 0.25f, 1.0f, 30.0f));
 	config.setViewport(Geo::Transformation::viewport(0.0f, 0.0f, float(mFramebuffer.width()), float(mFramebuffer.height()), 0.0f, 1.0f));
 	config.setType(Render::Config::Type::Solid);

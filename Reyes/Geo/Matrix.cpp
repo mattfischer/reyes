@@ -2,6 +2,8 @@
 
 #include "Geo/vector.hpp"
 
+#include <algorithm>
+
 namespace Geo {
 
 Matrix::Matrix()
@@ -92,6 +94,46 @@ Matrix Matrix::operator*(const Matrix &b) const
 	r.mIdentity = false;
 
 	return r;
+}
+
+Matrix Matrix::inverse() const
+{
+	float m[32];
+	for(int i = 0; i < 4; i++) {
+		for(int j = 0; j < 4; j++) {
+			m[j * 8 + i] = at(i, j);
+			m[j * 8 + i + 4] = float((i == j) ? 1 : 0);
+		}
+	}
+
+	for(int c = 0; c < 4; c++) {
+		int maxrow = c;
+		for(int j = maxrow + 1; j < 4; j++) {
+			if(std::abs(m[j * 8 + c]) > std::abs(m[maxrow * 8 + c])) {
+				maxrow = j;
+			}
+		}
+
+		for(int i = 0; i < 8; i++) {
+			std::swap(m[c * 8 + i], m[maxrow * 8 + i]);
+		}
+
+		for(int j = 0; j < 4; j++) {
+			if(j != c) {
+				float f = m[j * 8 + c] / m[c * 8 + c];
+				for(int i = 0; i < 8; i++) {
+					m[j * 8 + i] -= m[c * 8 + i] * f;
+				}
+			}
+		}
+
+		float f = m[c * 8 + c];
+		for(int i = 0; i < 8; i++) {
+			m[c * 8 + i] /= f;
+		}
+	}
+
+	return Matrix(m[4], m[5], m[6], m[7], m[12], m[13], m[14], m[15], m[20], m[21], m[22], m[23], m[28], m[29], m[30], m[31]);
 }
 
 Vector operator*(const Matrix &matrix, const Vector &vector)
