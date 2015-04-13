@@ -48,7 +48,9 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	DeleteObject(oldBitmap);
 
 	std::unique_ptr<Render::Texture> texture = BmpFileLoader::load("bricks.bmp");
-	mObject = BptFileLoader::load("teapot.bpt", *texture);
+	std::vector<std::unique_ptr<Render::Object>> objects;
+	objects.push_back(BptFileLoader::load("teapot.bpt", *texture));
+	mScene = Render::Scene(std::move(objects));
 	draw();
 
 	MSG msg;
@@ -137,7 +139,7 @@ void App::draw()
 	mFramebuffer.clear(Draw::Color(0.5f, 0.5f, 0.5f));
 
 	int startTicks = GetTickCount();
-	mObject->render(config);
+	mScene.render(config);
 	mDrawTime = GetTickCount() - startTicks;
 
 	mFramebuffer.postMultisampleBuffer();

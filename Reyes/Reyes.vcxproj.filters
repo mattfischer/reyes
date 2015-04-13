@@ -99,6 +99,9 @@
     <ClCompile Include="Render\Rasterize.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Render\Scene.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -165,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Rasterize.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Scene.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>

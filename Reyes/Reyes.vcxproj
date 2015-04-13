@@ -87,6 +87,7 @@
     <ClCompile Include="Render\Patch.cpp" />
     <ClCompile Include="Render\Config.cpp" />
     <ClCompile Include="Render\Primitive.cpp" />
+    <ClCompile Include="Render\Scene.cpp" />
     <ClCompile Include="Render\Texture.cpp" />
     <ClCompile Include="Render\Rasterize.cpp" />
   </ItemGroup>
@@ -111,6 +112,7 @@
     <ClInclude Include="Render\Patch.hpp" />
     <ClInclude Include="Render\Config.hpp" />
     <ClInclude Include="Render\Primitive.hpp" />
+    <ClInclude Include="Render\Scene.hpp" />
     <ClInclude Include="Render\Texture.hpp" />
     <ClInclude Include="Render\Rasterize.hpp" />
   </ItemGroup>

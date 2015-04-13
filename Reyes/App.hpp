@@ -3,6 +3,7 @@
 
 #include "Draw/Framebuffer.hpp"
 #include "Render/Object.hpp"
+#include "Render/Scene.hpp"
 
 #include <windows.h>
 #include <memory>
@@ -27,7 +28,7 @@ private:
 	HWND mHWnd;
 	HDC mBackDC;
 	Draw::Framebuffer mFramebuffer;
-	std::unique_ptr<Render::Object> mObject;
+	Render::Scene mScene;
 	int mDrawTime;
 };
 
