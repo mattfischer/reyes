@@ -51,7 +51,8 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	std::vector<std::unique_ptr<Render::Object>> objects;
 	objects.push_back(BptFileLoader::load("teapot.bpt", *texture));
 	std::unique_ptr<Render::Camera> camera = std::make_unique<Render::Camera>(Geo::Transformation::perspective(0.25f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 0.25f, 1.0f, 30.0f));
-	camera->setTransformation(Geo::Transformation::rotate(100, 0, 0) * Geo::Transformation::translate(0, 2, -23));
+	camera->transform(Geo::Transformation::translate(0, 2, -23));
+	camera->transform(Geo::Transformation::rotate(100, 0, 0));
 	mScene = Render::Scene(std::move(objects), std::move(camera));
 	draw();
 

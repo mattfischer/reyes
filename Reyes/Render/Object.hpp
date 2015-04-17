@@ -11,7 +11,7 @@ namespace Render {
 	{
 	public:
 		const Geo::Matrix &transformation() const;
-		void setTransformation(const Geo::Matrix &transformation);
+		void transform(const Geo::Matrix &transformation);
 
 		virtual void render(const Config &config) const = 0;
 

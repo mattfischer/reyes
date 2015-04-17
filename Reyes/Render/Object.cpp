@@ -6,8 +6,8 @@ namespace Render {
 		return mTransformation;
 	}
 
-	void Object::setTransformation(const Geo::Matrix &transformation)
+	void Object::transform(const Geo::Matrix &transformation)
 	{
-		mTransformation = transformation;
+		mTransformation = transformation * mTransformation;
 	}
 }
