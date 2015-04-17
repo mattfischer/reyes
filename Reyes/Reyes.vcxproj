@@ -73,6 +73,7 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Geo\Box.cpp" />
     <ClCompile Include="Render\BoundedObject.cpp" />
+    <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Clipper.cpp" />
     <ClCompile Include="Render\BoundedObjects.cpp" />
     <ClCompile Include="Draw\Context.cpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="Debug.hpp" />
     <ClInclude Include="Render\BoundedObject.hpp" />
     <ClInclude Include="Geo\Box.hpp" />
+    <ClInclude Include="Render\Camera.hpp" />
     <ClInclude Include="Render\Clipper.hpp" />
     <ClInclude Include="Draw\Color.hpp" />
     <ClInclude Include="Render\BoundedObjects.hpp" />

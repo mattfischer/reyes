@@ -1,21 +1,27 @@
 #include "Render/Scene.hpp"
 
 namespace Render {
-	Scene::Scene(std::vector<std::unique_ptr<Object>> &&objects)
-		: mObjects(std::move(objects))
+	Scene::Scene(std::vector<std::unique_ptr<Object>> &&objects, std::unique_ptr<Camera> camera)
+		: mObjects(std::move(objects)), mCamera(std::move(camera))
 	{
 	}
 
 	Scene::Scene(Scene &&other)
-		: mObjects(std::move(other.mObjects))
+		: mObjects(std::move(other.mObjects)), mCamera(std::move(other.mCamera))
 	{
 	}
 
 	Scene &Scene::operator=(Scene &&other)
 	{
 		mObjects = std::move(other.mObjects);
+		mCamera = std::move(other.mCamera);
 
 		return *this;
+	}
+
+	const Camera &Scene::camera() const
+	{
+		return *mCamera;
 	}
 
 	void Scene::render(const Config &config) const
