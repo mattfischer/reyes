@@ -22,13 +22,18 @@ namespace Object {
 		}
 
 		if(depth < 8 && !canDice(segment, config)) {
-			float uMid = (segment.uMin + segment.uMax) / 2;
-			float vMid = (segment.vMin + segment.vMax) / 2;
+			if(segment.uMax - segment.uMin > segment.vMax - segment.vMin) {
+				float uMid = (segment.uMin + segment.uMax) / 2;
 
-			renderSegment(Segment(segment.uMin, segment.vMin, uMid, vMid), config, depth + 1);
-			renderSegment(Segment(uMid, segment.vMin, segment.uMax, vMid), config, depth + 1);
-			renderSegment(Segment(segment.uMin, vMid, uMid, segment.vMax), config, depth + 1);
-			renderSegment(Segment(uMid, vMid, segment.uMax, segment.vMax), config, depth + 1);
+				renderSegment(Segment(segment.uMin, segment.vMin, uMid, segment.vMax), config, depth + 1);
+				renderSegment(Segment(uMid, segment.vMin, segment.uMax, segment.vMax), config, depth + 1);
+			} else {
+				float vMid = (segment.vMin + segment.vMax) / 2;
+
+				renderSegment(Segment(segment.uMin, segment.vMin, segment.uMax, vMid), config, depth + 1);
+				renderSegment(Segment(segment.uMin, vMid, segment.uMax, segment.vMax), config, depth + 1);
+			}
+
 			return;
 		}
 
