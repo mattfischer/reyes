@@ -13,8 +13,6 @@ namespace Render {
 		const Geo::Matrix &transformation() const;
 		void transform(const Geo::Matrix &transformation);
 
-		virtual void render(const Config &config) const = 0;
-
 	private:
 		Geo::Matrix mTransformation;
 	};

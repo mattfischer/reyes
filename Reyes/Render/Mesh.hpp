@@ -3,14 +3,14 @@
 
 #include "Geo/Vector.hpp"
 #include "Draw/Color.hpp"
-#include "Render/Object.hpp"
+#include "Render/RenderableObject.hpp"
 
 #include <vector>
 #include <memory>
 #include <tuple>
 
 namespace Render {
-	class Mesh : public Object
+	class Mesh : public RenderableObject
 	{
 	public:
 		typedef std::tuple<int, int> Edge;

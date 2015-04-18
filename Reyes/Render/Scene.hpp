@@ -1,7 +1,7 @@
 #ifndef RENDER_SCENE_HPP
 #define RENDER_SCENE_HPP
 
-#include "Render/Object.hpp"
+#include "Render/RenderableObject.hpp"
 #include "Render/Config.hpp"
 #include "Render/Camera.hpp"
 
@@ -13,7 +13,7 @@ namespace Render {
 	{
 	public:
 		Scene() = default;
-		Scene(std::vector<std::unique_ptr<Object>> &&objects, std::unique_ptr<Camera> camera);
+		Scene(std::vector<std::unique_ptr<RenderableObject>> &&objects, std::unique_ptr<Camera> camera);
 		Scene(Scene &&other);
 
 		Scene &operator=(Scene &&other);
@@ -23,7 +23,7 @@ namespace Render {
 		void render(const Config &config) const;
 
 	private:
-		std::vector<std::unique_ptr<Object>> mObjects;
+		std::vector<std::unique_ptr<RenderableObject>> mObjects;
 		std::unique_ptr<Camera> mCamera;
 	};
 }

@@ -48,7 +48,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	DeleteObject(oldBitmap);
 
 	std::unique_ptr<Render::Texture> texture = BmpFileLoader::load("bricks.bmp");
-	std::vector<std::unique_ptr<Render::Object>> objects;
+	std::vector<std::unique_ptr<Render::RenderableObject>> objects;
 	objects.push_back(BptFileLoader::load("teapot.bpt", *texture));
 	std::unique_ptr<Render::Camera> camera = std::make_unique<Render::Camera>(Geo::Transformation::perspective(0.25f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 0.25f, 1.0f, 30.0f));
 	camera->transform(Geo::Transformation::translate(0, 2, -23));

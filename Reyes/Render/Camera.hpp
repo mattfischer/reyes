@@ -13,8 +13,6 @@ namespace Render {
 
 		const Geo::Matrix &projection() const;
 
-		void render(const Config &config) const {}
-
 	private:
 		Geo::Matrix mProjection;
 	};

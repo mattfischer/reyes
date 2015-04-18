@@ -1,7 +1,7 @@
 #include "Render/Scene.hpp"
 
 namespace Render {
-	Scene::Scene(std::vector<std::unique_ptr<Object>> &&objects, std::unique_ptr<Camera> camera)
+	Scene::Scene(std::vector<std::unique_ptr<RenderableObject>> &&objects, std::unique_ptr<Camera> camera)
 		: mObjects(std::move(objects)), mCamera(std::move(camera))
 	{
 	}
@@ -26,7 +26,7 @@ namespace Render {
 
 	void Scene::render(const Config &config) const
 	{
-		for(const std::unique_ptr<Object> &object : mObjects) {
+		for(const std::unique_ptr<RenderableObject> &object : mObjects) {
 			object->render(config);
 		}
 	}

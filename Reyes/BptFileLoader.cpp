@@ -1,18 +1,18 @@
 #include "BptFileLoader.hpp"
 
-#include "Render/BoundedObjects.hpp"
+#include "Render/RenderableObjects.hpp"
 #include "Render/Patch.hpp"
 
 #include <vector>
 #include <fstream>
 
-std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename, Render::Texture &texture)
+std::unique_ptr<Render::RenderableObject> BptFileLoader::load(const std::string &filename, Render::Texture &texture)
 {
 	std::ifstream file(filename.c_str());
 	int numPatches;
 
 	file >> numPatches;
-	std::vector<std::unique_ptr<const Render::BoundedObject>> patches;
+	std::vector<std::unique_ptr<const Render::RenderableObject>> patches;
 	for(int i = 0; i < numPatches; i++) {
 		int dimx, dimy;
 		file >> dimx >> dimy;
@@ -31,5 +31,5 @@ std::unique_ptr<Render::Object> BptFileLoader::load(const std::string &filename,
 		patches.push_back(std::move(patch));
 	}
 
-	return std::make_unique<Render::BoundedObjects>(std::move(patches));
+	return std::make_unique<Render::RenderableObjects>(std::move(patches));
 }

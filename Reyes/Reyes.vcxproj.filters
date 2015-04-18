@@ -63,9 +63,6 @@
     <ClCompile Include="Render\Grid.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Mesh.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Render\Object.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
@@ -87,9 +84,6 @@
     <ClCompile Include="Geo\Box.cpp">
       <Filter>Source Files\Geo</Filter>
     </ClCompile>
-    <ClCompile Include="Render\BoundedObjects.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Render\BoundedObject.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
@@ -103,6 +97,12 @@
       <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="Render\Camera.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Mesh.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\RenderableObjects.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
@@ -137,9 +137,6 @@
     <ClInclude Include="Render\Grid.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Mesh.hpp">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Render\Object.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
@@ -164,9 +161,6 @@
     <ClInclude Include="Geo\Box.hpp">
       <Filter>Header Files\Geo</Filter>
     </ClInclude>
-    <ClInclude Include="Render\BoundedObjects.hpp">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Debug.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -177,6 +171,15 @@
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Render\Camera.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\RenderableObject.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Mesh.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\RenderableObjects.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
