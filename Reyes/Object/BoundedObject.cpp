@@ -1,8 +1,8 @@
-#include "Render/BoundedObject.hpp"
+#include "Object/BoundedObject.hpp"
 
 #include "Render/Clipper.hpp"
 
-namespace Render {
+namespace Object {
 	const Geo::Box &BoundedObject::boundingBox() const
 	{
 		return mBox;
@@ -13,9 +13,9 @@ namespace Render {
 		return mBox;
 	}
 
-	bool BoundedObject::inFrustum(const Config &config) const
+	bool BoundedObject::inFrustum(const Render::Config &config) const
 	{
 		Geo::Matrix matrix = config.projection() * config.view() * transformation();
-		return Clipper::boxInFrustum(boundingBox(), matrix);
+		return Render::Clipper::boxInFrustum(boundingBox(), matrix);
 	}
 }

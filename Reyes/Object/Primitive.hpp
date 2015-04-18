@@ -1,7 +1,7 @@
-#ifndef RENDER_PRIMITIVE_HPP
-#define RENDER_PRIMITIVE_HPP
+#ifndef OBJECT_PRIMITIVE_HPP
+#define OBJECT_PRIMITIVE_HPP
 
-#include "Render/RenderableObject.hpp"
+#include "Object/RenderableObject.hpp"
 #include "Render/Grid.hpp"
 #include "Render/Texture.hpp"
 #include "Draw/Color.hpp"
@@ -10,13 +10,13 @@
 #include <map>
 #include <vector>
 
-namespace Render {
+namespace Object {
 	class Primitive : public RenderableObject
 	{
 	public:
-		Primitive(Texture &texture);
+		Primitive(Render::Texture &texture);
 
-		virtual void render(const Config &config) const;
+		virtual void render(const Render::Config &config) const;
 
 		unsigned int newUniform(const std::string &name, unsigned int size);
 		unsigned int uniformIndex(const std::string &name) const;
@@ -51,13 +51,13 @@ namespace Render {
 			Segment(float _uMin, float _vMin, float _uMax, float _vMax) : uMin(_uMin), vMin(_vMin), uMax(_uMax), vMax(_vMax) {}
 		};
 
-		virtual Grid dice(const Segment &segment, const Config &config) const = 0;
-		virtual bool canDice(const Segment &segment, const Config &config) const = 0;
+		virtual Render::Grid dice(const Segment &segment, const Render::Config &config) const = 0;
+		virtual bool canDice(const Segment &segment, const Render::Config &config) const = 0;
 
 	private:
 		virtual unsigned int numVaryingPoints() const = 0;
 
-		void renderSegment(const Segment &segment, const Config &config, int depth) const;
+		void renderSegment(const Segment &segment, const Render::Config &config, int depth) const;
 
 		std::map<std::string, int> mUniformIndices;
 		std::vector<float> mUniforms;
@@ -65,7 +65,7 @@ namespace Render {
 		std::map<std::string, int> mVaryingIndices;
 		std::vector<std::vector<float>> mVaryings;
 
-		Texture &mTexture;
+		Render::Texture &mTexture;
 	};
 }
 

@@ -1,11 +1,11 @@
-#ifndef RENDER_CAMERA_HPP
-#define RENDER_CAMERA_HPP
+#ifndef OBJECT_CAMERA_HPP
+#define OBJECT_CAMERA_HPP
 
-#include "Render/Object.hpp"
+#include "Object/Object.hpp"
 
 #include "Geo/Matrix.hpp"
 
-namespace Render {
+namespace Object {
 	class Camera : public Object
 	{
 	public:

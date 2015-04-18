@@ -1,15 +1,15 @@
-#ifndef RENDER_MESH_HPP
-#define RENDER_MESH_HPP
+#ifndef OBJECT_MESH_HPP
+#define OBJECT_MESH_HPP
 
 #include "Geo/Vector.hpp"
 #include "Draw/Color.hpp"
-#include "Render/RenderableObject.hpp"
+#include "Object/RenderableObject.hpp"
 
 #include <vector>
 #include <memory>
 #include <tuple>
 
-namespace Render {
+namespace Object {
 	class Mesh : public RenderableObject
 	{
 	public:
@@ -51,11 +51,11 @@ namespace Render {
 		const std::vector<Polygon> &polygons() const;
 		const std::vector<Texture> &textures() const;
 
-		virtual void render(const Config &config) const;
+		virtual void render(const Render::Config &config) const;
 
 	private:
-		void renderWireframe(const Config &config) const;
-		void renderSolid(const Config &renderer) const;
+		void renderWireframe(const Render::Config &config) const;
+		void renderSolid(const Render::Config &renderer) const;
 
 		std::vector<Vertex> mVertices;
 		std::vector<Edge> mEdges;

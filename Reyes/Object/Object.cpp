@@ -1,6 +1,6 @@
-#include "Render/Object.hpp"
+#include "Object/Object.hpp"
 
-namespace Render {
+namespace Object {
 	const Geo::Matrix &Object::transformation() const
 	{
 		return mTransformation;

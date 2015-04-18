@@ -1,6 +1,6 @@
-#include "Render/RenderableObjects.hpp"
+#include "Object/RenderableObjects.hpp"
 
-namespace Render {
+namespace Object {
 	RenderableObjects::RenderableObjects(std::vector<std::unique_ptr<const RenderableObject>> &&objects)
 		: mObjects(std::move(objects))
 	{
@@ -9,7 +9,7 @@ namespace Render {
 		}
 	}
 
-	void RenderableObjects::render(const Config &config) const
+	void RenderableObjects::render(const Render::Config &config) const
 	{
 		if(!inFrustum(config)) {
 			return;

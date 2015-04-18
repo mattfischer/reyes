@@ -2,8 +2,7 @@
 #define APP_HPP
 
 #include "Draw/Framebuffer.hpp"
-#include "Render/Object.hpp"
-#include "Render/Scene.hpp"
+#include "Object/Scene.hpp"
 
 #include <windows.h>
 #include <memory>
@@ -28,7 +27,7 @@ private:
 	HWND mHWnd;
 	HDC mBackDC;
 	Draw::Framebuffer mFramebuffer;
-	Render::Scene mScene;
+	Object::Scene mScene;
 	int mDrawTime;
 };
 

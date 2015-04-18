@@ -1,9 +1,9 @@
-#include "Render/Mesh.hpp"
+#include "Object/Mesh.hpp"
 #include "Draw/Context.hpp"
 #include "Render/Clipper.hpp"
 #include "Render/Rasterize.hpp"
 
-namespace Render {
+namespace Object {
 	Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<Edge> &&edges, std::vector<Polygon> &&polygons, std::vector<Texture> &&textures)
 		: mVertices(std::move(vertices)),
 		mEdges(std::move(edges)),
@@ -32,19 +32,19 @@ namespace Render {
 		return mTextures;
 	}
 
-	void Mesh::render(const Config &config) const
+	void Mesh::render(const Render::Config &config) const
 	{
 		switch(config.type()) {
-		case Config::Type::Wireframe:
+		case Render::Config::Type::Wireframe:
 			renderWireframe(config);
 			break;
-		case Config::Type::Solid:
+		case Render::Config::Type::Solid:
 			renderSolid(config);
 			break;
 		}
 	}
 
-	void Mesh::renderWireframe(const Config &config) const
+	void Mesh::renderWireframe(const Render::Config &config) const
 	{
 		std::vector<Vertex> verts = vertices();
 
@@ -61,7 +61,7 @@ namespace Render {
 			Geo::Vector a = verts[std::get<0>(edge)].position;
 			Geo::Vector b = verts[std::get<1>(edge)].position;
 
-			if(!Clipper::clipLine(a, b)) {
+			if(!Render::Clipper::clipLine(a, b)) {
 				continue;
 			}
 
@@ -71,7 +71,7 @@ namespace Render {
 		}
 	}
 
-	void Mesh::renderSolid(const Config &config) const
+	void Mesh::renderSolid(const Render::Config &config) const
 	{
 		std::vector<Vertex> verts = vertices();
 
@@ -82,7 +82,7 @@ namespace Render {
 			vertex = Vertex(position, texCoord, normal);
 		}
 
-		Clipper::Polygon clippedPolygon;
+		Render::Clipper::Polygon clippedPolygon;
 		for(const Polygon &polygon : polygons()) {
 			if(clippedPolygon.vertices.size() < polygon.indices.size() + 6) {
 				clippedPolygon.vertices.resize(polygon.indices.size() + 6);
@@ -90,11 +90,11 @@ namespace Render {
 
 			for(unsigned int i = 0; i < polygon.indices.size(); i++) {
 				const Vertex &vertex = verts[polygon.indices[i]];
-				clippedPolygon.vertices[i] = Clipper::Vertex(vertex.position, vertex.texCoord, vertex.normal);
+				clippedPolygon.vertices[i] = Render::Clipper::Vertex(vertex.position, vertex.texCoord, vertex.normal);
 			}
 			clippedPolygon.numVertices = polygon.indices.size();
 
-			if(!Clipper::clipPolygon(clippedPolygon)) {
+			if(!Render::Clipper::clipPolygon(clippedPolygon)) {
 				continue;
 			}
 
@@ -102,7 +102,7 @@ namespace Render {
 			Geo::Vector p1 = config.viewport() * clippedPolygon.vertices[1].position;
 			for(int i = 2; i < clippedPolygon.numVertices; i++) {
 				Geo::Vector p2 = config.viewport() * clippedPolygon.vertices[i].position;
-				Rasterize::renderQuad(config.framebuffer(), p0, polygon.color, p1, polygon.color, p0, polygon.color, p2, polygon.color, false);
+				Render::Rasterize::renderQuad(config.framebuffer(), p0, polygon.color, p1, polygon.color, p0, polygon.color, p2, polygon.color, false);
 				p1 = p2;
 			}
 		}

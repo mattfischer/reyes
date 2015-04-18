@@ -1,18 +1,18 @@
 #include "BptFileLoader.hpp"
 
-#include "Render/RenderableObjects.hpp"
-#include "Render/Patch.hpp"
+#include "Object/RenderableObjects.hpp"
+#include "Object/Patch.hpp"
 
 #include <vector>
 #include <fstream>
 
-std::unique_ptr<Render::RenderableObject> BptFileLoader::load(const std::string &filename, Render::Texture &texture)
+std::unique_ptr<Object::RenderableObject> BptFileLoader::load(const std::string &filename, Render::Texture &texture)
 {
 	std::ifstream file(filename.c_str());
 	int numPatches;
 
 	file >> numPatches;
-	std::vector<std::unique_ptr<const Render::RenderableObject>> patches;
+	std::vector<std::unique_ptr<const Object::RenderableObject>> patches;
 	for(int i = 0; i < numPatches; i++) {
 		int dimx, dimy;
 		file >> dimx >> dimy;
@@ -22,7 +22,7 @@ std::unique_ptr<Render::RenderableObject> BptFileLoader::load(const std::string 
 			file >> x >> y >> z;
 			points[j] = Geo::Vector(x, y, z);
 		}
-		std::unique_ptr<Render::Patch> patch = std::make_unique<Render::Patch>(points, texture);
+		std::unique_ptr<Object::Patch> patch = std::make_unique<Object::Patch>(points, texture);
 		unsigned int index = patch->newVarying("tex", 3);
 		patch->setVaryingVector(index, 0, Geo::Vector(0, 0, 0));
 		patch->setVaryingVector(index, 1, Geo::Vector(1, 0, 0));
@@ -31,5 +31,5 @@ std::unique_ptr<Render::RenderableObject> BptFileLoader::load(const std::string 
 		patches.push_back(std::move(patch));
 	}
 
-	return std::make_unique<Render::RenderableObjects>(std::move(patches));
+	return std::make_unique<Object::RenderableObjects>(std::move(patches));
 }

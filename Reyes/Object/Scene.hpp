@@ -1,14 +1,15 @@
-#ifndef RENDER_SCENE_HPP
-#define RENDER_SCENE_HPP
+#ifndef OBJECT_SCENE_HPP
+#define OBJECT_SCENE_HPP
 
-#include "Render/RenderableObject.hpp"
+#include "Object/RenderableObject.hpp"
+#include "Object/Camera.hpp"
+
 #include "Render/Config.hpp"
-#include "Render/Camera.hpp"
 
 #include <vector>
 #include <memory>
 
-namespace Render {
+namespace Object {
 	class Scene
 	{
 	public:
@@ -20,7 +21,7 @@ namespace Render {
 
 		const Camera &camera() const;
 
-		void render(const Config &config) const;
+		void render(const Render::Config &config) const;
 
 	private:
 		std::vector<std::unique_ptr<RenderableObject>> mObjects;

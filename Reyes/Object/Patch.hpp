@@ -1,28 +1,29 @@
-#ifndef PATCH_HPP
-#define PATCH_HPP
+#ifndef OBJECT_PATCH_HPP
+#define OBJECT_PATCH_HPP
 
 #include "Geo/Vector.hpp"
 
+#include "Object/Primitive.hpp"
+
 #include "Render/Grid.hpp"
-#include "Render/Primitive.hpp"
 #include "Render/Texture.hpp"
 
 #include "Draw/Color.hpp"
 
 #include <memory>
 
-namespace Render {
+namespace Object {
 	class Patch : public Primitive
 	{
 	public:
-		Patch(Geo::Vector points[16], Texture &texture);
+		Patch(Geo::Vector points[16], Render::Texture &texture);
 		Patch(Patch &&other);
 
 		const Geo::Vector &point(int x, int y) const;
 
 	protected:
-		virtual Grid dice(const Segment &segment, const Config &config) const;
-		virtual bool canDice(const Segment &segment, const Config &config) const;
+		virtual Render::Grid dice(const Segment &segment, const Render::Config &config) const;
+		virtual bool canDice(const Segment &segment, const Render::Config &config) const;
 
 	private:
 		virtual unsigned int numVaryingPoints() const;

@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Render">
       <UniqueIdentifier>{7c968970-987c-4c37-8221-e7979e94a8cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Object">
+      <UniqueIdentifier>{eae80014-49d6-4ed9-97d2-0d7c7ac013e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object">
+      <UniqueIdentifier>{d971c144-945d-4f3a-b84e-ea439bbc24ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -63,16 +69,7 @@
     <ClCompile Include="Render\Grid.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Object.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Patch.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Render\Config.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Primitive.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="Render\Texture.cpp">
@@ -84,26 +81,35 @@
     <ClCompile Include="Geo\Box.cpp">
       <Filter>Source Files\Geo</Filter>
     </ClCompile>
-    <ClCompile Include="Render\BoundedObject.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Rasterize.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Scene.cpp">
-      <Filter>Source Files\Render</Filter>
+    <ClCompile Include="Object\BoundedObject.cpp">
+      <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Camera.cpp">
-      <Filter>Source Files\Render</Filter>
+    <ClCompile Include="Object\Camera.cpp">
+      <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Mesh.cpp">
-      <Filter>Source Files\Render</Filter>
+    <ClCompile Include="Object\Mesh.cpp">
+      <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Render\RenderableObjects.cpp">
-      <Filter>Source Files\Render</Filter>
+    <ClCompile Include="Object\Object.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Patch.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\RenderableObjects.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Scene.cpp">
+      <Filter>Source Files\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,16 +143,7 @@
     <ClInclude Include="Render\Grid.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Object.hpp">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Patch.hpp">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Render\Config.hpp">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Primitive.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Render\Texture.hpp">
@@ -154,9 +151,6 @@
     </ClInclude>
     <ClInclude Include="BmpFileLoader.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\BoundedObject.hpp">
-      <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Geo\Box.hpp">
       <Filter>Header Files\Geo</Filter>
@@ -167,20 +161,32 @@
     <ClInclude Include="Render\Rasterize.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Scene.hpp">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="Object\BoundedObject.hpp">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Camera.hpp">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="Object\Camera.hpp">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Render\RenderableObject.hpp">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="Object\Mesh.hpp">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Mesh.hpp">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="Object\Object.hpp">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Render\RenderableObjects.hpp">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="Object\Patch.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\RenderableObject.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\RenderableObjects.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Scene.hpp">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

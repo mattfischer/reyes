@@ -2,13 +2,13 @@
 #define GRID_HPP
 
 #include "Geo/Vector.hpp"
-#include "Render/Object.hpp"
+#include "Object/Object.hpp"
 #include "Draw/Color.hpp"
 
 #include <memory>
 
 namespace Render {
-	class Grid : public Object
+	class Grid
 	{
 	public:
 		Grid(int width, int height);

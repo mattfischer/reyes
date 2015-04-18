@@ -1,21 +1,21 @@
-#include "Render/Primitive.hpp"
+#include "Object/Primitive.hpp"
 
 #include <algorithm>
 
-namespace Render {
-	Primitive::Primitive(Texture &texture)
+namespace Object {
+	Primitive::Primitive(Render::Texture &texture)
 		: mTexture(texture)
 	{
 	}
 
-	void Primitive::render(const Config &config) const
+	void Primitive::render(const Render::Config &config) const
 	{
 		Segment segment(0, 0, 1, 1);
 
 		renderSegment(segment, config, 0);
 	}
 
-	void Primitive::renderSegment(const Segment &segment, const Config &config, int depth) const
+	void Primitive::renderSegment(const Segment &segment, const Render::Config &config, int depth) const
 	{
 		if(!inFrustum(config)) {
 			return;
@@ -32,7 +32,7 @@ namespace Render {
 			return;
 		}
 
-		Grid grid = dice(segment, config);
+		Render::Grid grid = dice(segment, config);
 
 		std::vector<float> varyings;
 		varyings.resize(mVaryings.size());

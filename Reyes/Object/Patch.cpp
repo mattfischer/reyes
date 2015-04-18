@@ -1,9 +1,9 @@
-#include "Render/Patch.hpp"
+#include "Object/Patch.hpp"
 
 #include <algorithm>
 
-namespace Render {
-	Patch::Patch(Geo::Vector points[16], Texture &texture)
+namespace Object {
+	Patch::Patch(Geo::Vector points[16], Render::Texture &texture)
 		: Primitive(texture)
 	{
 		mPoints = std::make_unique<Geo::Vector[]>(16);
@@ -29,7 +29,7 @@ namespace Render {
 		return 4;
 	}
 
-	void getDerivatives(const Geo::Vector points[], const Config &config, float s, float t, int &ds, int &dt, int &a)
+	void getDerivatives(const Geo::Vector points[], const Render::Config &config, float s, float t, int &ds, int &dt, int &a)
 	{
 		float Bs[4] = { (1 - s)*(1 - s)*(1 - s), 3 * s*(1 - s)*(1 - s), 3 * s*s*(1 - s), s*s*s };
 		float Bt[4] = { (1 - t)*(1 - t)*(1 - t), 3 * t*(1 - t)*(1 - t), 3 * t*t*(1 - t), t*t*t };
@@ -62,7 +62,7 @@ namespace Render {
 		a = int(std::abs((dsv % dtv).z()));
 	}
 
-	bool Patch::canDice(const Segment &segment, const Config &config) const
+	bool Patch::canDice(const Segment &segment, const Render::Config &config) const
 	{
 		Geo::Matrix matrix = config.view() * transformation();
 		Geo::Vector points[16];
@@ -90,7 +90,7 @@ namespace Render {
 		return true;
 	}
 
-	Grid Patch::dice(const Segment &segment, const Config &config) const
+	Render::Grid Patch::dice(const Segment &segment, const Render::Config &config) const
 	{
 		Geo::Matrix matrix = config.view() * transformation();
 		Geo::Vector points[16];
@@ -107,7 +107,7 @@ namespace Render {
 
 		dsm = std::max(int(dsm * (segment.uMax - segment.uMin)), 4);
 		dtm = std::max(int(dtm * (segment.vMax - segment.vMin)), 4);
-		Grid grid(dsm, dtm);
+		Render::Grid grid(dsm, dtm);
 
 		for(int i = 0; i <= dsm; i++) {
 			for(int j = 0; j <= dtm; j++) {

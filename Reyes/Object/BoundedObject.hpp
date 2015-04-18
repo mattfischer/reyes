@@ -1,18 +1,18 @@
-#ifndef RENDER_BOUNDED_OBJECT_HPP
-#define RENDER_BOUNDED_OBJECT_HPP
+#ifndef OBJECT_BOUNDED_OBJECT_HPP
+#define OBJECT_BOUNDED_OBJECT_HPP
 
-#include "Render/Object.hpp"
+#include "Object/Object.hpp"
 #include "Render/Config.hpp"
 
 #include "Geo/Box.hpp"
 
-namespace Render {
+namespace Object {
 	class BoundedObject : public Object
 	{
 	public:
 		const Geo::Box &boundingBox() const;
 
-		bool inFrustum(const Config &config) const;
+		bool inFrustum(const Render::Config &config) const;
 
 	protected:
 		Geo::Box &boundingBox();

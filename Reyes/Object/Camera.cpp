@@ -1,6 +1,6 @@
-#include "Render/Camera.hpp"
+#include "Object/Camera.hpp"
 
-namespace Render {
+namespace Object {
 	Camera::Camera(const Geo::Matrix &projection)
 		: mProjection(projection)
 	{
