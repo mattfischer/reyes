@@ -1,13 +1,13 @@
 #include "Object/Scene.hpp"
 
 namespace Object {
-	Scene::Scene(std::vector<std::unique_ptr<RenderableObject>> &&objects, std::unique_ptr<Camera> camera)
-		: mObjects(std::move(objects)), mCamera(std::move(camera))
+	Scene::Scene(std::vector<std::unique_ptr<RenderableObject>> &&objects, std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Render::Texture>> &&textures)
+		: mObjects(std::move(objects)), mCamera(std::move(camera)), mTextures(std::move(textures))
 	{
 	}
 
 	Scene::Scene(Scene &&other)
-		: mObjects(std::move(other.mObjects)), mCamera(std::move(other.mCamera))
+		: mObjects(std::move(other.mObjects)), mCamera(std::move(other.mCamera)), mTextures(std::move(other.mTextures))
 	{
 	}
 
@@ -15,6 +15,7 @@ namespace Object {
 	{
 		mObjects = std::move(other.mObjects);
 		mCamera = std::move(other.mCamera);
+		mTextures = std::move(other.mTextures);
 
 		return *this;
 	}

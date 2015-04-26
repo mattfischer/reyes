@@ -5,6 +5,7 @@
 #include "Object/Camera.hpp"
 
 #include "Render/Config.hpp"
+#include "Render/Texture.hpp"
 
 #include <vector>
 #include <memory>
@@ -14,7 +15,7 @@ namespace Object {
 	{
 	public:
 		Scene() = default;
-		Scene(std::vector<std::unique_ptr<RenderableObject>> &&objects, std::unique_ptr<Camera> camera);
+		Scene(std::vector<std::unique_ptr<RenderableObject>> &&objects, std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Render::Texture>> &&textures);
 		Scene(Scene &&other);
 
 		Scene &operator=(Scene &&other);
@@ -26,6 +27,7 @@ namespace Object {
 	private:
 		std::vector<std::unique_ptr<RenderableObject>> mObjects;
 		std::unique_ptr<Camera> mCamera;
+		std::vector<std::unique_ptr<Render::Texture>> mTextures;
 	};
 }
 

@@ -22,6 +22,7 @@ private:
 	LRESULT CALLBACK wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	void postFramebuffer();
 
+	Object::Scene createScene();
 	void draw();
 
 	HWND mHWnd;

@@ -47,13 +47,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	std::unique_ptr<Render::Texture> texture = BmpFileLoader::load("bricks.bmp");
-	std::vector<std::unique_ptr<Object::RenderableObject>> objects;
-	objects.push_back(BptFileLoader::load("teapot.bpt", *texture));
-	std::unique_ptr<Object::Camera> camera = std::make_unique<Object::Camera>(Geo::Transformation::perspective(0.25f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 0.25f, 1.0f, 30.0f));
-	camera->transform(Geo::Transformation::translate(0, 2, -23));
-	camera->transform(Geo::Transformation::rotate(100, 0, 0));
-	mScene = Object::Scene(std::move(objects), std::move(camera));
+	mScene = createScene();
 	draw();
 
 	MSG msg;
@@ -128,6 +122,19 @@ void App::postFramebuffer()
 	HBITMAP hBitmap = (HBITMAP)GetCurrentObject(mBackDC, OBJ_BITMAP);
 	SetDIBits(mBackDC, hBitmap, 0, mFramebuffer.height(), mFramebuffer.displayColorBits(), &bi, DIB_RGB_COLORS);
 	InvalidateRect(mHWnd, NULL, FALSE);
+}
+
+Object::Scene App::createScene()
+{
+	std::unique_ptr<Render::Texture> texture = BmpFileLoader::load("bricks.bmp");
+	std::vector<std::unique_ptr<Object::RenderableObject>> objects;
+	objects.push_back(BptFileLoader::load("teapot.bpt", *texture));
+	std::unique_ptr<Object::Camera> camera = std::make_unique<Object::Camera>(Geo::Transformation::perspective(0.25f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 0.25f, 1.0f, 30.0f));
+	camera->transform(Geo::Transformation::translate(0, 2, -23));
+	camera->transform(Geo::Transformation::rotate(100, 0, 0));
+	std::vector<std::unique_ptr<Render::Texture>> textures;
+	textures.push_back(std::move(texture));
+	return Object::Scene(std::move(objects), std::move(camera), std::move(textures));
 }
 
 void App::draw()
