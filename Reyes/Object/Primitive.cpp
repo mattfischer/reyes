@@ -1,4 +1,5 @@
 #include "Object/Primitive.hpp"
+#include "Render/Clipper.hpp"
 
 #include <algorithm>
 
@@ -10,29 +11,29 @@ namespace Object {
 
 	void Primitive::render(const Render::Config &config) const
 	{
-		Segment segment(0, 0, 1, 1);
+		Segment segment(0, 0, 1, 1, boundingBox());
 
 		renderSegment(segment, config, 0);
 	}
 
 	void Primitive::renderSegment(const Segment &segment, const Render::Config &config, int depth) const
 	{
-		if(!inFrustum(config)) {
+		if(!Render::Clipper::boxInFrustum(segment.boundingBox, config.projection() * config.view() * transformation())) {
 			return;
 		}
 
 		if(depth < 8 && !canDice(segment, config)) {
+			Segment a;
+			Segment b;
+
 			if(segment.uMax - segment.uMin > segment.vMax - segment.vMin) {
-				float uMid = (segment.uMin + segment.uMax) / 2;
-
-				renderSegment(Segment(segment.uMin, segment.vMin, uMid, segment.vMax), config, depth + 1);
-				renderSegment(Segment(uMid, segment.vMin, segment.uMax, segment.vMax), config, depth + 1);
+				splitU(segment, a, b);
 			} else {
-				float vMid = (segment.vMin + segment.vMax) / 2;
-
-				renderSegment(Segment(segment.uMin, segment.vMin, segment.uMax, vMid), config, depth + 1);
-				renderSegment(Segment(segment.uMin, vMid, segment.uMax, segment.vMax), config, depth + 1);
+				splitV(segment, a, b);
 			}
+
+			renderSegment(a, config, depth + 1);
+			renderSegment(b, config, depth + 1);
 
 			return;
 		}

@@ -24,9 +24,13 @@ namespace Object {
 	protected:
 		virtual Render::Grid dice(const Segment &segment, const Render::Config &config) const;
 		virtual bool canDice(const Segment &segment, const Render::Config &config) const;
+		virtual void splitU(const Segment &segment, Segment &a, Segment &b) const;
+		virtual void splitV(const Segment &segment, Segment &a, Segment &b) const;
 
 	private:
 		virtual unsigned int numVaryingPoints() const;
+
+		void computeHull(float uMin, float vMin, float uMax, float vMax, Geo::Vector points[16]) const;
 
 		std::unique_ptr<Geo::Vector[]> mPoints;
 	};

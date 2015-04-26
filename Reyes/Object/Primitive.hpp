@@ -14,6 +14,18 @@ namespace Object {
 	class Primitive : public RenderableObject
 	{
 	public:
+		struct Segment
+		{
+			float uMin;
+			float vMin;
+			float uMax;
+			float vMax;
+			Geo::Box boundingBox;
+
+			Segment() = default;
+			Segment(float _uMin, float _vMin, float _uMax, float _vMax, const Geo::Box &_boundingBox) : uMin(_uMin), vMin(_vMin), uMax(_uMax), vMax(_vMax), boundingBox(_boundingBox) {}
+		};
+
 		Primitive(Render::Texture &texture);
 
 		virtual void render(const Render::Config &config) const;
@@ -41,18 +53,10 @@ namespace Object {
 		void setVaryingVector(unsigned int index, unsigned int point, const Geo::Vector &vector);
 
 	protected:
-		struct Segment
-		{
-			float uMin;
-			float vMin;
-			float uMax;
-			float vMax;
-
-			Segment(float _uMin, float _vMin, float _uMax, float _vMax) : uMin(_uMin), vMin(_vMin), uMax(_uMax), vMax(_vMax) {}
-		};
-
 		virtual Render::Grid dice(const Segment &segment, const Render::Config &config) const = 0;
 		virtual bool canDice(const Segment &segment, const Render::Config &config) const = 0;
+		virtual void splitU(const Segment &segment, Segment &a, Segment &b) const = 0;
+		virtual void splitV(const Segment &segment, Segment &a, Segment &b) const = 0;
 
 	private:
 		virtual unsigned int numVaryingPoints() const = 0;

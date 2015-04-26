@@ -129,4 +129,81 @@ namespace Object {
 
 		return grid;
 	}
+
+	void Patch::splitU(const Segment &segment, Segment &a, Segment &b) const
+	{
+		float uMid = (segment.uMin + segment.uMax) / 2;
+		Geo::Vector pointsA[16];
+		Geo::Vector pointsB[16];
+
+		computeHull(segment.uMin, segment.vMin, uMid, segment.vMax, pointsA);
+		computeHull(uMid, segment.vMin, segment.uMax, segment.vMax, pointsB);
+
+		Geo::Box boxA;
+		Geo::Box boxB;
+
+		for(int i = 0; i < 16; i++) {
+			boxA.surround(pointsA[i]);
+			boxB.surround(pointsB[i]);
+		}
+
+		a = Segment(segment.uMin, segment.vMin, uMid, segment.vMax, boxA);
+		b = Segment(uMid, segment.vMin, segment.uMax, segment.vMax, boxB);
+	}
+
+	void Patch::splitV(const Segment &segment, Segment &a, Segment &b) const
+	{
+		float vMid = (segment.vMin + segment.vMax) / 2;
+		Geo::Vector pointsA[16];
+		Geo::Vector pointsB[16];
+
+		computeHull(segment.uMin, segment.vMin, segment.uMax, vMid, pointsA);
+		computeHull(segment.uMin, vMid, segment.uMax, segment.vMax, pointsB);
+
+		Geo::Box boxA;
+		Geo::Box boxB;
+
+		for(int i = 0; i < 16; i++) {
+			boxA.surround(pointsA[i]);
+			boxB.surround(pointsB[i]);
+		}
+
+		a = Segment(segment.uMin, segment.vMin, segment.uMax, vMid, boxA);
+		b = Segment(segment.uMin, vMid, segment.uMax, segment.vMax, boxB);
+	}
+
+	void Patch::computeHull(float uMin, float vMin, float uMax, float vMax, Geo::Vector points[16]) const
+	{
+		for(int i = 0; i < 16; i++) {
+			points[i] = mPoints[i];
+		}
+
+		for(int v = 0; v < 4; v++) {
+			for(int i = 0; i < 3; i++) {
+				for(int j = 3; j > i; j--) {
+					points[v * 4 + j] = points[v * 4 + j - 1] * (1 - uMax) + points[v * 4 + j] * uMax;
+				}
+			}
+
+			for(int i = 3; i > 0; i--) {
+				for(int j = 0; j < i; j++) {
+					points[v * 4 + j] = points[v * 4 + j] * (1 - uMin) + points[v * 4 + j + 1] * uMin;
+				}
+			}
+		}
+
+		for(int u = 0; u < 4; u++) {
+			for(int i = 0; i < 3; i++) {
+				for(int j = 3; j > i; j--) {
+					points[j * 4 + u] = points[(j - 1) * 4 + u] * (1 - vMax) + points[j * 4 + u] * vMax;
+				}
+			}
+
+			for(int i = 3; i > 0; i--) {
+				for(int j = 0; j < i; j++) {
+					points[j * 4 + u] = points[j * 4 + u] * (1 - vMin) + points[j * 4 + u + 1] * vMin;
+				}
+			}
+		}
+	}
 }
