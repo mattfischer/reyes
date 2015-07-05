@@ -117,6 +117,9 @@
     <ClCompile Include="Object\Primitives\Patch.cpp">
       <Filter>Source Files\Object\Primitives</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Primitives\Quad.cpp">
+      <Filter>Source Files\Object\Primitives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -192,6 +195,9 @@
       <Filter>Header Files\Object</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitives\Patch.hpp">
+      <Filter>Header Files\Object\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitives\Quad.hpp">
       <Filter>Header Files\Object\Primitives</Filter>
     </ClInclude>
   </ItemGroup>

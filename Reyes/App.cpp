@@ -3,6 +3,8 @@
 #include "BmpFileLoader.hpp"
 #include "Geo/Transformation.hpp"
 
+#include "Object/Primitives/Quad.hpp"
+
 #define CLASSNAME "render"
 
 App *App::sInstance;
@@ -127,13 +129,24 @@ void App::postFramebuffer()
 Object::Scene App::createScene()
 {
 	std::unique_ptr<Render::Texture> texture = BmpFileLoader::load("bricks.bmp");
+	std::unique_ptr<Render::Texture> blueTexture = std::make_unique<Render::Texture>(1, 1);
+	blueTexture->setColor(0, 0, Draw::Color(0, 0, 1));
 	std::vector<std::unique_ptr<Object::RenderableObject>> objects;
 	objects.push_back(BptFileLoader::load("teapot.bpt", *texture));
+	std::unique_ptr<Object::Primitives::Quad> quad = std::make_unique<Object::Primitives::Quad>(*blueTexture, Geo::Vector(-4, -8, -1), Geo::Vector(8.5, 0, 0, 0), Geo::Vector(0, 8, 0, 0));
+	unsigned int index = quad->newVarying("tex", 3);
+	quad->setVaryingVector(index, 0, Geo::Vector(0, 0, 0));
+	quad->setVaryingVector(index, 1, Geo::Vector(1, 0, 0));
+	quad->setVaryingVector(index, 2, Geo::Vector(0, 1, 0));
+	quad->setVaryingVector(index, 3, Geo::Vector(1, 1, 0));
+	objects.push_back(std::move(quad));
+
 	std::unique_ptr<Object::Camera> camera = std::make_unique<Object::Camera>(Geo::Transformation::perspective(0.25f * float(mFramebuffer.width()) / float(mFramebuffer.height()), 0.25f, 1.0f, 30.0f));
 	camera->transform(Geo::Transformation::translate(0, 2, -23));
 	camera->transform(Geo::Transformation::rotate(100, 0, 0));
 	std::vector<std::unique_ptr<Render::Texture>> textures;
 	textures.push_back(std::move(texture));
+	textures.push_back(std::move(blueTexture));
 	return Object::Scene(std::move(objects), std::move(camera), std::move(textures));
 }
 

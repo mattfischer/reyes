@@ -78,6 +78,7 @@
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Object\Primitives\Patch.cpp" />
     <ClCompile Include="Object\Primitive.cpp" />
+    <ClCompile Include="Object\Primitives\Quad.cpp" />
     <ClCompile Include="Object\RenderableObjects.cpp" />
     <ClCompile Include="Object\Scene.cpp" />
     <ClCompile Include="Render\Clipper.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="Object\Object.hpp" />
     <ClInclude Include="Object\Primitives\Patch.hpp" />
     <ClInclude Include="Object\Primitive.hpp" />
+    <ClInclude Include="Object\Primitives\Quad.hpp" />
     <ClInclude Include="Object\RenderableObject.hpp" />
     <ClInclude Include="Object\RenderableObjects.hpp" />
     <ClInclude Include="Object\Scene.hpp" />
