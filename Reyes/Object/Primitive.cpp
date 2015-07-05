@@ -148,7 +148,7 @@ namespace Object {
 		int index = mVaryings.size() + 1;
 		mVaryings.resize(mVaryings.size() + size);
 		for(unsigned int i = 0; i < size; i++) {
-			mVaryings[index + i - 1].resize(numVaryingPoints());
+			mVaryings[index + i - 1].resize(4);
 		}
 		mVaryingIndices[name] = index;
 		return index;
@@ -165,7 +165,7 @@ namespace Object {
 
 	float Primitive::varying(unsigned int index, unsigned int point) const
 	{
-		if(index > 0 && index <= mVaryings.size() && point >=0 && point < numVaryingPoints()) {
+		if(index > 0 && index <= mVaryings.size() && point >=0 && point < 4) {
 			return mVaryings[index - 1][point];
 		}
 
@@ -184,7 +184,7 @@ namespace Object {
 
 	void Primitive::setVarying(unsigned int index, unsigned int point, float value)
 	{
-		if(index > 0 && index <= mVaryings.size() && point >= 0 && point < numVaryingPoints()) {
+		if(index > 0 && index <= mVaryings.size() && point >= 0 && point < 4) {
 			mVaryings[index - 1][point] = value;
 		}
 	}

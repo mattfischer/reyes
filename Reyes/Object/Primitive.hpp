@@ -59,8 +59,6 @@ namespace Object {
 		virtual void splitV(const Segment &segment, Segment &a, Segment &b) const = 0;
 
 	private:
-		virtual unsigned int numVaryingPoints() const = 0;
-
 		void renderSegment(const Segment &segment, const Render::Config &config, int depth) const;
 
 		std::map<std::string, int> mUniformIndices;
