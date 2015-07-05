@@ -1,7 +1,7 @@
 #include "BptFileLoader.hpp"
 
 #include "Object/RenderableObjects.hpp"
-#include "Object/Patch.hpp"
+#include "Object/Primitives/Patch.hpp"
 
 #include <vector>
 #include <fstream>
@@ -22,7 +22,7 @@ std::unique_ptr<Object::RenderableObject> BptFileLoader::load(const std::string 
 			file >> x >> y >> z;
 			points[j] = Geo::Vector(x, y, z);
 		}
-		std::unique_ptr<Object::Patch> patch = std::make_unique<Object::Patch>(points, texture);
+		std::unique_ptr<Object::Primitive> patch = std::make_unique<Object::Primitives::Patch>(points, texture);
 		unsigned int index = patch->newVarying("tex", 3);
 		patch->setVaryingVector(index, 0, Geo::Vector(0, 0, 0));
 		patch->setVaryingVector(index, 1, Geo::Vector(1, 0, 0));
